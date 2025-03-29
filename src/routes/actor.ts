@@ -1,4 +1,5 @@
 import {Request, Response, Router} from 'express';
+import {db} from '../db';
 
 const actorRouter: Router = Router();
 
@@ -7,6 +8,7 @@ const actorRouter: Router = Router();
  * /actor:
  *   get:
  *     summary: Retrieve a list of actors
+ *     tags: [Actors]
  *     responses:
  *       200:
  *         description: A list of actors
@@ -26,8 +28,13 @@ const actorRouter: Router = Router();
  *                   last_update:
  *                     type: string
  */
-actorRouter.get('/', (req: Request, res: Response) => {
-    res.send('List of actors');
+actorRouter.get('/', async (req: Request, res: Response) => {
+    const connection = db();
+    const actors = await connection.select("*").from("actor");
+
+    console.log("Selected actors: ", actors);
+
+    res.send(actors);
 });
 
 
@@ -36,6 +43,7 @@ actorRouter.get('/', (req: Request, res: Response) => {
  * /actor/{id}:
  *   get:
  *     summary: Retrieve an actor
+ *     tags: [Actors]
  *     parameters:
  *       - in: path
  *         name: id
@@ -60,20 +68,134 @@ actorRouter.get('/', (req: Request, res: Response) => {
  *                 last_update:
  *                   type: string
  */
-actorRouter.get('/:id', (req: Request, res: Response) => {
-    res.send(`Actor with id ${req.params.id}`);
+actorRouter.get('/:id', async (req: Request, res: Response) => {
+    const connection = db();
+    const actor = await connection.select("*")
+        .from("actor")
+        .where("actor_id", req.params.id)
+        .first();
+
+    console.log("Selected actor: ", actor);
+
+    if (!actor) {
+        res.status(404).send({error: "Actor not found"});
+        return
+    }
+
+    res.send(actor);
 });
 
-actorRouter.post('/', (req: Request, res: Response) => {
-    res.send('Create actor');
+/**
+ * @swagger
+ * /actor:
+ *   post:
+ *     summary: Create a new actor
+ *     tags: [Actors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *                 example: Tom
+ *               last_name:
+ *                 type: string
+ *                 example: Hanks
+ *     responses:
+ *       200:
+ *         description: Actor created successfully
+ */
+actorRouter.post('/', async (req: Request, res: Response) => {
+    console.log("Creating actor: ", req.body);
+
+    const connection = db();
+    const insertOperation = await connection.insert(req.body).into("actor");
+
+    res.send({id: insertOperation[0]});
 });
 
-actorRouter.put('/:id', (req: Request, res: Response) => {
-    res.send(`Update actor with id ${req.params.id}`);
+/**
+ * @swagger
+ * /actor/{id}:
+ *   put:
+ *     summary: Update an actor
+ *     tags: [Actors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the actor
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *                 example: Tom
+ *               last_name:
+ *                 type: string
+ *                 example: Hanks
+ *     responses:
+ *       200:
+ *         description: Actor updated successfully
+ */
+actorRouter.put('/:id', async (req: Request, res: Response) => {
+    const connection = db();
+
+    const actor = await connection.select("*")
+        .from("actor")
+        .where("actor_id", req.params.id).first();
+
+    if (!actor) {
+        res.status(404).send({error: "Actor not found"});
+        return
+    }
+
+    actor.first_name = req.body.first_name;
+    actor.last_name = req.body.last_name;
+
+    const updateOperation = await connection("actor").update(actor)
+        .where("actor_id", req.params.id);
+    res.send(`Updated ${updateOperation} actors`);
 });
 
-actorRouter.delete('/:id', (req: Request, res: Response) => {
-    res.send(`Delete actor with id ${req.params.id}`);
+/**
+ * @swagger
+ * /actor/{id}:
+ *  delete:
+ *   summary: Delete an actor
+ *   tags: [Actors]
+ *   parameters:
+ *    - in: path
+ *      name: id
+ *      required: true
+ *      description: ID of the actor
+ *      schema:
+ *      type: integer
+ *   responses:
+ *     200:
+ *       description: Actor deleted successfully
+ *
+ */
+actorRouter.delete('/:id', async (req: Request, res: Response) => {
+    const connection = db();
+    const deleteOperation = await connection("actor")
+        .where("actor_id", req.params.id).delete();
+
+    if (!deleteOperation) {
+        res.status(404).send({error: "Actor not found"});
+        return
+    }
+
+    res.send(`Deleted ${deleteOperation} actors`);
 });
 
 export default actorRouter;

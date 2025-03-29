@@ -1,10 +1,12 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
 import randomRouter from "./routes/randoms";
 import actorRouter from "./routes/actor";
 
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+
+import {db} from "./db";
 
 // Initialize environment variables
 dotenv.config();
@@ -21,6 +23,15 @@ const options = {
     apis: ['./src/routes/**/*.ts'], // Path to the API docs
 };
 
+// Checking database connection
+const dbConnection = db();
+// Check if the database connection is successful
+// noinspection SqlNoDataSourceInspection
+dbConnection.raw("SELECT 1 FROM DUAL").then(() => {
+    console.log("Database connection successful");
+}).catch((err) => {
+    console.error("Database connection failed", err);
+});
 
 
 const app = express();
@@ -40,5 +51,4 @@ app.use('/actor', actorRouter);
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
     console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
-
 });
