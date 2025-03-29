@@ -9,6 +9,14 @@ const actorRouter: Router = Router();
  *   get:
  *     summary: Retrieve a list of actors
  *     tags: [Actors]
+ *     parameters:
+ *     - in: query
+ *       name: first_name
+ *       required: false
+ *       description: Filter actors by first name
+ *       schema:
+ *         type: string
+ *         example: Tom
  *     responses:
  *       200:
  *         description: A list of actors
@@ -30,7 +38,8 @@ const actorRouter: Router = Router();
  */
 actorRouter.get('/', async (req: Request, res: Response) => {
     const connection = db();
-    const actors = await connection.select("*").from("actor");
+    const actors = await connection.select("*").from("actor")
+        .whereLike("first_name", `%${req.query.first_name}%`);
 
     console.log("Selected actors: ", actors);
 
