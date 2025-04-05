@@ -7,18 +7,15 @@ import { db } from "../db"; // db() fun. wird mitgebracht
  */
 
 // 1.get wird erstellt
-export async function getAllCategory(CategoryName?: string) {
-    const connection = db(); // Verbindung zur DB öffnen
-
-    const categories = await connection
+export async function getAllCategory() {
+    const connection = db();
+    const category = await connection
         .select("*")
-        .from("category")
-        .whereLike("name", `${CategoryName || ""}%`);
-    // Kategorien holen, optional nach Name filtern
+        .from("category");
 
-    console.log("Gefundene Kategorien:", categories); // Ergebnis in Konsole zeigen
+    console.log("Selected categories: ", category);
 
-    return categories; // Kategorien zurückgeben
+    return category;
 }
 
 
