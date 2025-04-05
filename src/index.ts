@@ -1,8 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import randomRouter from "./routes/randoms";
-//categoryRouter import
 import actorRouter from "./routes/actor";
+import categoryRouter from "./routes/category";
 
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
@@ -46,6 +46,7 @@ const port = process.env.PORT || 3000;
 // region Routes
 app.use('/randoms', randomRouter);
 app.use('/actor', actorRouter);
+app.use('/category', categoryRouter);
 // endregion
 
 // Start the server
