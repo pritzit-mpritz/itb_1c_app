@@ -68,3 +68,21 @@ export async function deleteFilm(id: number) {
 
     return deleteOperation;
 }
+
+/**
+ * Adds a film-category relation
+ * @param filmId the actor to add to a film
+ * @param categoryId the film the actor is added to
+ */
+export async function addFilmToCategory(filmId: number, categoryId: number) {
+    const connection = db();
+    const insertOperation = await connection("film_category")
+        .insert({
+            film_id: filmId,
+            category_id: categoryId
+        });
+
+    console.log("Inserted film to category: ", insertOperation);
+
+    return insertOperation;
+}

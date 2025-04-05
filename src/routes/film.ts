@@ -1,5 +1,7 @@
 import {Request, Response, Router} from 'express';
-import {getAllFilms, getFilmById, createFilm, updateFilm, deleteFilm} from '../services/filmService'
+import {getAllFilms, getFilmById, createFilm, updateFilm, deleteFilm, addFilmToCategory} from '../services/filmService'
+import {addActorToFilm} from "../services/actorService";
+import actorRouter from "./actor";
 
 const filmRouter: Router = Router();
 
@@ -175,7 +177,44 @@ filmRouter.delete('/:id', async (req: Request, res: Response) => {
     res.send(`Deleted ${deleteOperation} film(s)`);
 })
 
+/**
+ * @swagger
+ * /film/{film_id}/category/{category_id}:
+ *  post:
+ *    summary: Add a film to a category - the film should already exist
+ *    tags: [Films]
+ *    parameters:
+ *    - in: path
+ *      name: film_id
+ *      required: true
+ *      description: ID of the film
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    - in: path
+ *      name: category_id
+ *      required: true
+ *      description: ID of the category
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    responses:
+ *      200:
+ *        description: Film added successfully
+ */
+filmRouter.post('/:film_id/category/:category_id/', async (req: Request, res: Response) => {
+    const filmId = req.params.film_id;
+    const categoryId = req.params.category_id;
 
+    try {
+        await addFilmToCategory(Number(filmId), Number(categoryId));
+        console.log(`Film ${filmId} added to category ${categoryId}`);
 
+        res.status(201).send("Film-Category created");
+    } catch (error) {
+        console.error("Error adding film to category: ", error);
+        res.status(400).send({error: "Failed to add film to category. " + (error)});
+    }
+})
 
 export default filmRouter;
