@@ -1,5 +1,7 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
+import {getAllFilms, getFilmById, createFilm} from '../services/filmService'
+import {addActorToFilm} from "../services/actorService";
 
 const filmRouter: Router = Router();
 
@@ -7,7 +9,7 @@ const filmRouter: Router = Router();
  * @swagger
  * /film:
  *   get:
- *     summary: Retrieve a list of films
+ *     summary: Retrieve a list of all films from database
  *     tags: [Films]
  *     responses:
  *       200:
@@ -25,11 +27,7 @@ const filmRouter: Router = Router();
  *                     type: string
  */
 filmRouter.get('/', async (req: Request, res: Response) => {
-    const connection = db();
-    const films = await connection.select("*").from("film");
-
-    console.log("Selected films: ", films);
-
+    const films = await getAllFilms();
     res.send(films);
 });
 
@@ -37,7 +35,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  * @swagger
  * /film/{id}:
  *   get:
- *     summary: Retrieve a film
+ *     summary: Retrieve a film by ID
  *     tags: [Films]
  *     parameters:
  *       - in: path
@@ -60,12 +58,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *                   type: string
  */
 filmRouter.get('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-    const film = await connection.select("*").from("film")
-        .where("film_id", req.params.id)
-        .first();
-
-    console.log("Selected film: ", film);
+    const film = await getFilmById(Number(req.params.id))
 
     if (!film) {
         res.status(404).send({error: "No film found"});
@@ -79,7 +72,7 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /film:
  *   post:
- *     summary: Create a new film
+ *     summary: Create a new film.
  *     tags: [Films]
  *     requestBody:
  *       required: true
@@ -102,12 +95,15 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  *         description: Film created successfully
  */
 filmRouter.post('/', async (req: Request, res: Response) => {
-    console.log("Creating film: ", req.body);
-
-    const connection = db();
-    const insertOperation = await connection.insert(req.body).into("film");
-
-    res.send({id: insertOperation[0]});
+    /** If the function is successful, the following try and catch responds with the id of the created film.
+     *  If an error occurs it responds with the error message. */
+    try {
+        const insertOperation = await createFilm(req.body);
+        res.send({id: insertOperation[0]});
+    } catch (error) {
+        console.error("Error creating film: ", error);
+        res.status(400).send({error: "Failed to create film. " + (error)});
+    }
 })
 
 /**
