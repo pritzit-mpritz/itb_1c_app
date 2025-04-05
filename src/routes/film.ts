@@ -7,11 +7,11 @@ const filmRouter: Router = Router();
  * @swagger
  * /film:
  *   get:
- *     summary: Retrieve a list of film
+ *     summary: Retrieve a list of all films
  *     tags: [film]
  *     responses:
  *       200:
- *         description: A list of film
+ *         description: A list of films
  *         content:
  *           application/json:
  *             schema:
@@ -26,10 +26,19 @@ const filmRouter: Router = Router();
  *                   description:
  *                     type: string
  */
+
+/**
+ * Retrieves all films from the database.
+ */
 filmRouter.get('/', async (req: Request, res: Response) => {
     const connection = db();
-    const films = await connection.select('*').from('film');
-    res.send(films);
+    try {
+        const films = await connection.select('*').from('film');
+        res.send(films);
+    } catch (error) {
+        console.error('Error retrieving films:', error);
+        res.status(404).send({ error: 'Failed to load films' });
+    }
 });
 
 /**
@@ -48,23 +57,33 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *       200:
  *         description: A film object
  */
+
+/**
+ * Retrieves a film by its ID.
+ */
 filmRouter.get('/:id', async (req: Request, res: Response) => {
     const connection = db();
-    const film = await connection('film').where('film_id', req.params.id).first();
+    try {
+        const film = await connection('film').where('film_id', req.params.id).first();
 
-    if (!film) {
-        res.status(404).send({ error: 'Film not found' });
-        return;
+        if (!film) {
+            res.status(404).send({ error: 'Film not found' });
+            return;
+        }
+
+        res.send(film);
+    } catch (error) {
+        console.error('Error retrieving film by ID:', error);
+        res.status(404).send({ error: 'Failed to load film' });
     }
-
-    res.send(film);
 });
 
 /**
  * @swagger
  * /film:
  *   post:
- *     summary: Create a new film *     tags: [Film]
+ *     summary: Create a new film
+ *     tags: [film]
  *     requestBody:
  *       required: true
  *       content:
@@ -80,21 +99,32 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  *       200:
  *         description: Film created
  */
+
+/**
+ * Creates a new film with title and description.
+ */
 filmRouter.post('/', async (req: Request, res: Response) => {
     const connection = db();
-    const insertResult = await connection('film').insert(req.body);
-    res.send({ success: true, id: insertResult[0] });
+    try {
+        const insertResult = await connection('film').insert(req.body);
+        res.send({ success: true, id: insertResult[0] });
+    } catch (error) {
+        console.error('Error creating film:', error);
+        res.status(404).send({ error: 'Failed to create film' });
+    }
 });
 
 /**
  * @swagger
  * /film/{id}:
  *   put:
- *     summary: Update a film *     tags: [Film]
+ *     summary: Update an existing film
+ *     tags: [film]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: ID of the film
  *         schema:
  *           type: integer
  *     requestBody:
@@ -106,50 +136,42 @@ filmRouter.post('/', async (req: Request, res: Response) => {
  *             properties:
  *               title:
  *                 type: string
+ *                 example: Inception
  *               description:
  *                 type: string
+ *                 example: A mind-bending thriller by Christoph Nolan
  *     responses:
  *       200:
- *         description: film updated
+ *         description: Film updated
+ */
+
+/**
+ * Updates an existing film with new data.
  */
 filmRouter.put('/:id', async (req: Request, res: Response) => {
     const connection = db();
-    const updateCount = await connection('film').where('film_id', req.params.id).update(req.body);
+    try {
+        //get existing film
+        const film= await connection('film')
+            .select('*')
+            .where('id', req.params.id)
+            .first();
+        if (film) {
+            res.status(404).send({ error: 'Film not found' });
+            return;
+        }
 
-    if (updateCount === 0) {
-        res.status(404).send({ error: 'Film not found' });
-        return;
+        //Update values from request body
+        film.title = req.body.title;
+        film.description = req.body.description;
+
+        const updateResult = await connection('film')
+            .update(film)
+            .where('film_id', req.params.id);
+
+        res.send({ message: `Updated ${updateResult} film(s)` });
+    } catch (error) {
+        console.error('Error updating film:', error);
+        res.status(404).send({ error: 'Failed to update film' });
     }
-
-    res.send({ success: true });
 });
-
-/**
- * @swagger
- * /film/{id}:
- *   delete:
- *     summary: Delete a film *     tags: [Film]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: film deleted
- */
-filmRouter.delete('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-    const deleted = await connection('film').where('film_id', req.params.id).delete();
-
-    if (!deleted) {
-        res.status(404).send({ error: 'Film not found' });
-        return;
-    }
-
-    res.send({ success: true });
-});
-
-
-export default filmRouter;
