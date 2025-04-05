@@ -19,7 +19,7 @@ export async function getAllActors(firstNameFilter?: string) {
     return actors;
 }
 
-export async function getActorById(id: number) {
+export async function getFilmById(id: number) {
     const connection = db();
     const actor = await connection.select("*")
         .from("actor")
