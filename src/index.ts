@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import randomRouter from "./routes/randoms";
 import actorRouter from "./routes/actor";
+import filmRouter from "./routes/Film"; // ✅ hinzugefügt
 
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
@@ -20,34 +21,31 @@ const options = {
             description: '',
         },
     },
-    apis: ['./src/routes/**/*.ts'], // Path to the API docs
+    apis: ['./src/routes/**/*.ts'], // ✅ nur ändern wenn nötig
 };
 
 // Checking database connection
 const dbConnection = db();
-// Check if the database connection is successful
-// noinspection SqlNoDataSourceInspection
-dbConnection.raw("SELECT 1 FROM DUAL").then(() => {
+dbConnection.raw("SELECT 1").then(() => {
     console.log("Database connection successful");
 }).catch((err) => {
     console.error("Database connection failed", err);
 });
 
-
 const app = express();
+const port = process.env.PORT || 3000;
+
 app.use(express.json());
 
 const swaggerSpec = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-const port = process.env.PORT || 3000;
-
 // region Routes
 app.use('/randoms', randomRouter);
 app.use('/actor', actorRouter);
+app.use('/film', filmRouter); // ✅ HIER AKTIVIERT
 // endregion
 
-// Start the server
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
     console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
