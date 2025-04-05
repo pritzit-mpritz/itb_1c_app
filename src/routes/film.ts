@@ -1,6 +1,7 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
-import {getAllFilms, getFilmById} from '../services/filmService'
+import {getAllFilms, getFilmById, createFilm} from '../services/filmService'
+import {addActorToFilm} from "../services/actorService";
 
 const filmRouter: Router = Router();
 
@@ -71,7 +72,7 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /film:
  *   post:
- *     summary: Create a new film
+ *     summary: Create a new film.
  *     tags: [Films]
  *     requestBody:
  *       required: true
@@ -94,12 +95,15 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  *         description: Film created successfully
  */
 filmRouter.post('/', async (req: Request, res: Response) => {
-    console.log("Creating film: ", req.body);
-
-    const connection = db();
-    const insertOperation = await connection.insert(req.body).into("film");
-
-    res.send({id: insertOperation[0]});
+    /** If the function is successful, the following try and catch responds with the id of the created film.
+     *  If an error occurs it responds with the error message. */
+    try {
+        const insertOperation = await createFilm(req.body);
+        res.send({id: insertOperation[0]});
+    } catch (error) {
+        console.error("Error creating film: ", error);
+        res.status(400).send({error: "Failed to create film. " + (error)});
+    }
 })
 
 /**
