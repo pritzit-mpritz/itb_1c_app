@@ -200,7 +200,7 @@ actorRouter.delete('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /actor/{actor_id}/film/{film_id}:
  *  post:
- *    summary: Add an actor to a film
+ *    summary: Add an actor to a film - the film should already exist
  *    tags: [Actors]
  *    parameters:
  *    - in: path
