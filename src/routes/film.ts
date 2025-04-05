@@ -154,9 +154,9 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
         //get existing film
         const film= await connection('film')
             .select('*')
-            .where('id', req.params.id)
+            .where('film_id', req.params.id)
             .first();
-        if (film) {
+        if (!film) {
             res.status(404).send({ error: 'Film not found' });
             return;
         }
