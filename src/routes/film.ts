@@ -1,23 +1,19 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
-import {getAllFilms} from '../services/filmService';
 import {addFilmtoCategory} from "../services/filmService";
 
 const filmRouter = Router();
 
 
-filmRouter.get('/', async (req: Request, res: Response) => {
-    res.send(await getAllFilms(req.query.title as string));
-});
 /**
  * @swagger
  * /film:
  *   get:
- *     summary: Gibt eine Liste aller Filme zurück
- *     tags: [Film]
+ *     summary: Retrieve a list of all films
+ *     tags: [film]
  *     responses:
  *       200:
- *         description: Eine Liste von Filmen aus der Datenbank
+ *         description: A list of films
  *         content:
  *           application/json:
  *             schema:
@@ -26,48 +22,28 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *                 type: object
  *                 properties:
  *                   film_id:
- *                     type: integer
+ *                     type: number
  *                   title:
  *                     type: string
  *                   description:
  *                     type: string
- *                   release_year:
- *                     type: string
- *                   language_id:
- *                     type: integer
- *                   rental_duration:
- *                     type: integer
- *                   rental_rate:
- *                     type: number
- *                     format: float
- *                   length:
- *                     type: integer
- *                   replacement_cost:
- *                     type: number
- *                     format: float
- *                   rating:
- *                     type: string
- *                   last_update:
- *                     type: string
- *                     format: date-time
- *                   special_features:
- *                     type: string
- *                   fulltext:
- *                     type: string
- *       500:
- *         description: Fehler beim Abrufen der Filme
+ *       404:
+ *         description: Failed to load films
  */
 
-
-//GetAll Liste aller Filme abrufen
+// GetAll – Liste aller Filme abrufen
 filmRouter.get('/', async (_req: Request, res: Response) => {
     const connection = db();
-    const films = await connection.select("*").from("film");
+    try {
+        const films = await connection.select("*").from("film");
+        res.send(films);
+    } catch (error) {
+        console.error("Error retrieving films from film: ", error);
+        res.status(404).send({ error: 'Failed to load films' });
+    }
+});
 
-    console.log("Selected films:...", films);
 
-    res.send(films);
-})
 
 //GetByID einzelnes Element nach ID abrufen
 filmRouter.get('/:id', async (req: Request, res: Response) => {
@@ -89,6 +65,71 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
 
 
 //Insert: Post neues Element erstellen
+/**
+ * @swagger
+ * /film:
+ *   post:
+ *     summary: Neuen Film erstellen
+ *     tags: [film]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - language_id
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: The Matrix
+ *               description:
+ *                 type: string
+ *                 example: A hacker discovers reality is a simulation.
+ *               release_year:
+ *                 type: string
+ *                 example: 1999
+ *               language_id:
+ *                 type: integer
+ *                 example: 1
+ *               rental_duration:
+ *                 type: integer
+ *                 example: 5
+ *               rental_rate:
+ *                 type: number
+ *                 format: float
+ *                 example: 4.99
+ *               length:
+ *                 type: integer
+ *                 example: 136
+ *               replacement_cost:
+ *                 type: number
+ *                 format: float
+ *                 example: 19.99
+ *               rating:
+ *                 type: string
+ *                 example: PG-13
+ *               special_features:
+ *                 type: string
+ *                 example: Deleted Scenes,Behind the Scenes
+ *     responses:
+ *       200:
+ *         description: Film erfolgreich erstellt
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: ID des neu erstellten Films
+ *       400:
+ *         description: Ungültige Eingabe
+ */
+
+
+
 filmRouter.post('/', async (req: Request, res: Response) => {
     console.log("Creating film: ", req.body);
 
