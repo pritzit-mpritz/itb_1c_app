@@ -1,72 +1,72 @@
-import { db } from "../db"; // db() fun. wird mitgebracht
-
+import { db } from "../db";
 
 /**
- * Get all categories from the database
- * @param CategoryName Optional filter for the name of the category
+ * Retrieve a list of all categories from database.
  */
-
-// 1.get wird erstellt
 export async function getAllCategory() {
     const connection = db();
-    const category = await connection
-        .select("*")
-        .from("category");
+    const categories = await connection.select("*").from("category");
 
-    console.log("Selected categories: ", category);
+    console.log("Selected categories: ", categories);
 
-    return category;
+    return categories;
 }
 
-
-
-
 /**
- * Get a category by ID
- * @param id The ID of the category
+ * Retrieve a category by ID.
+ * @param id filter to find category by ID.
  */
-
-// 2.get wird erstellt
 export async function getCategoryById(id: number) {
-    const connection = db(); // Verbindung zur DB öffnen
-
+    const connection = db();
     const category = await connection
         .select("*")
         .from("category")
         .where("category_id", id)
         .first();
 
-    console.log("Selected categories:", category); // Ergebnis in Konsole zeigen
+    console.log("Selected category: ", category);
 
-    return category; // Kategorie zurückgeben
+    return category;
 }
 
-
-//insert wird erstellt
 /**
- * Adds a category-film relation
- * @param categoryId the category to add to a film
- * @param filmId the film the category is added to
+ * Create a new category. Required value is name.
+ * @param body takes in name to create a new category.
  */
-export async function addCategoryToFilm(categoryId: number, filmId: number) {
-    const connection = db(); // Verbindung zur Datenbank öffnen
+export async function createCategory(body: string) {
+    console.log("Creating category: ", body);
 
-    // Einfügen die Kategorie-Film-Beziehung in die Tabelle film_category
-    const insertOperation = await connection("film_category")
-        .insert({
-            category_id: categoryId, // Kategorie ID
-            film_id: filmId // Film ID
-        });
+    const connection = db();
+    const insertOperation = await connection.insert(body).into("category");
 
-    console.log("Kategorie zum Film hinzugefügt: ", insertOperation); // Erfolgreiche Einfügung wird in der Konsole angezeigt
-
-    return insertOperation; // Ergebnis zurückgeben
+    return insertOperation;
 }
 
+/**
+ * Update the name of a category.
+ * @param body takes in new name to update.
+ * @param id takes in ID to know which category needs to be updated.
+ */
+export async function updateCategory(body: any, id: number) {
+    const connection = db();
 
+    const updateOperation = await connection("category").update({
+        name: body.name
+    })
+        .where("category_id", id)
 
+    return updateOperation;
+}
 
+/**
+ * Delete a category by ID.
+ * @param id filter to find category by ID to delete.
+ */
+export async function deleteCategory(id: number) {
+    const connection = db();
+    const deleteOperation = await connection("category")
+        .where("category_id", id).delete();
 
-
-
+    return deleteOperation;
+}
 
