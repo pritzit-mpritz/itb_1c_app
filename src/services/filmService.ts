@@ -14,7 +14,7 @@ export async function getAllFilms() {
 
 /**
  * Retrieve a film by ID.
- * @param id filter to find film by ID (via req.params.id).
+ * @param id filter to find film by ID.
  */
 export async function getFilmById(id: number) {
     const connection = db();
@@ -29,7 +29,7 @@ export async function getFilmById(id: number) {
 
 /**
  * Create a new film. Required values are title, description and language_id.
- * @param body takes in title, description and language_id to create a new film (via req.body).
+ * @param body takes in title, description and language_id to create a new film.
  */
 export async function createFilm(body: string) {
     console.log("Creating film: ", body);
@@ -39,7 +39,6 @@ export async function createFilm(body: string) {
 
     return insertOperation;
 }
-
 
 /**
  * Update the title and description of a film.
@@ -58,3 +57,14 @@ export async function updateFilm(body: any, id: number) {
     return updateOperation;
 }
 
+/**
+ * Delete a film by ID.
+ * @param id filter to find film by ID to delete.
+ */
+export async function deleteFilm(id: number) {
+    const connection = db();
+    const deleteOperation = await connection("film")
+        .where("film_id", id).delete();
+
+    return deleteOperation;
+}

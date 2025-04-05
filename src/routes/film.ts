@@ -1,6 +1,5 @@
 import {Request, Response, Router} from 'express';
-import {db} from '../db';
-import {getAllFilms, getFilmById, createFilm, updateFilm} from '../services/filmService'
+import {getAllFilms, getFilmById, createFilm, updateFilm, deleteFilm} from '../services/filmService'
 
 const filmRouter: Router = Router();
 
@@ -25,7 +24,7 @@ const filmRouter: Router = Router();
  *                   title:
  *                     type: string
  */
-filmRouter.get('/', async (req: Request, res: Response) => {
+filmRouter.get('/', async (res: Response) => {
     const films = await getAllFilms();
     res.send(films);
 });
@@ -57,7 +56,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *                   type: string
  */
 filmRouter.get('/:id', async (req: Request, res: Response) => {
-    const film = await getFilmById(Number(req.params.id))
+    const film = await getFilmById(Number(req.params.id));
 
     if (!film) {
         res.status(404).send({error: "No film found"});
@@ -136,7 +135,7 @@ filmRouter.post('/', async (req: Request, res: Response) => {
  *         description: Film updated successfully
  */
 filmRouter.put('/:id', async (req: Request, res: Response) => {
-    const film = await getFilmById(Number(req.params.id))
+    const film = await getFilmById(Number(req.params.id));
 
     if (!film) {
         res.status(404).send({error: "No film found"});
@@ -166,9 +165,7 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
  *
  */
 filmRouter.delete('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-    const deleteOperation = await connection("film")
-        .where("film_id", req.params.id).delete();
+    const deleteOperation = deleteFilm(Number(req.params.id));
 
     if (!deleteOperation) {
         res.status(404).send({error: "No film found"});
