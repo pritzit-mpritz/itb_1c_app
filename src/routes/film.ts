@@ -165,7 +165,7 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
  *
  */
 filmRouter.delete('/:id', async (req: Request, res: Response) => {
-    const deleteOperation = deleteFilm(Number(req.params.id));
+    const deleteOperation = await deleteFilm(Number(req.params.id));
 
     if (!deleteOperation) {
         res.status(404).send({error: "No film found"});
@@ -174,5 +174,8 @@ filmRouter.delete('/:id', async (req: Request, res: Response) => {
 
     res.send(`Deleted ${deleteOperation} film(s)`);
 })
+
+
+
 
 export default filmRouter;
