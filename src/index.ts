@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import randomRouter from "./routes/randoms";
+//categoryRouter import
 import actorRouter from "./routes/actor";
 
 import swaggerJsdoc from "swagger-jsdoc";
