@@ -38,12 +38,38 @@ export async function getCategoryById(id: number) {
         .from("category")
         .where("category_id", id)
         .first();
-    // Kategorie mit passender ID holen
 
-    console.log("Gefundene Kategorie:", category); // Ergebnis in Konsole zeigen
+    console.log("Selected categories:", category); // Ergebnis in Konsole zeigen
 
     return category; // Kategorie zurückgeben
 }
+
+
+//insert wird erstellt
+/**
+ * Adds a category-film relation
+ * @param categoryId the category to add to a film
+ * @param filmId the film the category is added to
+ */
+export async function addCategoryToFilm(categoryId: number, filmId: number) {
+    const connection = db(); // Verbindung zur Datenbank öffnen
+
+    // Einfügen die Kategorie-Film-Beziehung in die Tabelle film_category
+    const insertOperation = await connection("film_category")
+        .insert({
+            category_id: categoryId, // Kategorie ID
+            film_id: filmId // Film ID
+        });
+
+    console.log("Kategorie zum Film hinzugefügt: ", insertOperation); // Erfolgreiche Einfügung wird in der Konsole angezeigt
+
+    return insertOperation; // Ergebnis zurückgeben
+}
+
+
+
+
+
 
 
 

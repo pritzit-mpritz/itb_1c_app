@@ -3,7 +3,9 @@ import {
     getAllCategory,
     getCategoryById,
 
+
 } from "../services/categoryService";
+import {db} from "../db";
 
 const categoryRouter: Router = Router();
 
@@ -39,15 +41,13 @@ const categoryRouter: Router = Router();
  *                     type: string
  */
 categoryRouter.get('/', async (req: Request, res: Response) => {
-    res.send(await getAllCategory(req.query.CategoryName as string));
+    const categories = await getAllCategory(req.query.CategoryName as string);
 
-    if (!CategoryName) {
+    if (categories.length === 0) {
         res.status(404).send({ error: "Category not found" });
         return;
-
-
-
-
+    }
+    res.send(categories);  // Bu tek bir kategori değil, birden fazla kategori dönecek.
 });
 
 
@@ -81,6 +81,9 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
  *                 last_update:
  *                   type: string
  */
+
+
+
 categoryRouter.get('/:id', async (req: Request, res: Response) => {
     const category = await getCategoryById(Number(req.params.id));
 
@@ -94,6 +97,44 @@ categoryRouter.get('/:id', async (req: Request, res: Response) => {
 
 
 
+
+/**
+ * @swagger
+ * /category/{id}:
+ *   put:
+ *     summary: Update an existing category
+ *     tags: [Category]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the category
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Action
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ */
+
+
+categoryRouter.post('/', async (req: Request, res: Response) => {
+    console.log("Creating category: ", req.body);
+
+    const connection = db();
+    const insertOperation = await connection.insert(req.body).into("category");
+
+    res.send({id: insertOperation[0]});
+});
 
 
 
