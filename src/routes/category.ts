@@ -186,7 +186,7 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
     res.send(`Deleted ${deleteOperation} categories`);
 });
 
-//Category zu Film Verbindung
+//Category zu Film Tabellenverbindung
 
 /**
  * @swagger
