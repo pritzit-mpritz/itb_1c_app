@@ -1,5 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
+import {addActorToFilm, getActorById, getAllActors} from "../services/actorService";
 
 const actorRouter: Router = Router();
 
@@ -37,13 +38,7 @@ const actorRouter: Router = Router();
  *                     type: string
  */
 actorRouter.get('/', async (req: Request, res: Response) => {
-    const connection = db();
-    const actors = await connection.select("*").from("actor")
-        .whereLike("first_name", `%${req.query.first_name}%`);
-
-    console.log("Selected actors: ", actors);
-
-    res.send(actors);
+    res.send(await getAllActors(req.query.first_name as string));
 });
 
 
@@ -78,13 +73,7 @@ actorRouter.get('/', async (req: Request, res: Response) => {
  *                   type: string
  */
 actorRouter.get('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-    const actor = await connection.select("*")
-        .from("actor")
-        .where("actor_id", req.params.id)
-        .first();
-
-    console.log("Selected actor: ", actor);
+    const actor = await getActorById(Number(req.params.id))
 
     if (!actor) {
         res.status(404).send({error: "Actor not found"});
@@ -206,5 +195,40 @@ actorRouter.delete('/:id', async (req: Request, res: Response) => {
 
     res.send(`Deleted ${deleteOperation} actors`);
 });
+
+/**
+ * @swagger
+ * /actor/{actor_id}/film/{film_id}:
+ *  post:
+ *    summary: Add an actor to a film
+ *    tags: [Actors]
+ *    parameters:
+ *    - in: path
+ *      name: actor_id
+ *      required: true
+ *      description: ID of the actor
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    - in: path
+ *      name: film_id
+ *      required: true
+ *      description: ID of the film
+ *      schema:
+ *        type: integer
+ *        example: 1
+ */
+actorRouter.post('/:actor_id/film/:film_id', async (req: Request, res: Response) => {
+    const actorId = req.params.actor_id;
+    const filmId = req.params.film_id;
+
+    try {
+        await addActorToFilm(Number(actorId), Number(filmId));
+        res.status(201).send("Actor-Film created");
+    } catch (error) {
+        console.error("Error adding actor to film: ", error);
+        res.status(400).send({error: "Failed to add actor to film. " + (error)});
+    }
+})
 
 export default actorRouter;
