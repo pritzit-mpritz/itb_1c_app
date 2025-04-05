@@ -210,9 +210,30 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
 
 
     });
-    /**
-     *
-     * **/
+/**
+ * @swagger
+ * /category/{id}:
+ *   delete:
+ *     summary: Löscht eine Kategorie
+ *     description: Entfernt eine Kategorie anhand ihrer ID aus der Datenbank.
+ *     tags:
+ *       - Category
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Die ID der Kategorie, die gelöscht werden soll
+ *     responses:
+ *       200:
+ *         description: Kategorie erfolgreich gelöscht
+ *       404:
+ *         description: Kategorie wurde nicht gefunden
+ *       500:
+ *         description: Serverfehler beim Löschen der Kategorie
+ */
+
     categoryRouter.delete('/:id', async (req: Request, res: Response) => {
         const connection = db();
         try {
@@ -225,10 +246,39 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
 
 
     });
-    /**
-     *
-     * **/
-    categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+/**
+ * @swagger
+ * /category/{category_id}/film/{film_id}:
+ *   post:
+ *     summary: Ordnet einen Film einer Kategorie zu
+ *     description: Fügt eine Zuordnung zwischen einem Film und einer Kategorie in der Tabelle "film_category" hinzu, basierend auf den übergebenen IDs.
+ *     tags:
+ *       - Category
+ *     parameters:
+ *       - in: path
+ *         name: category_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Die ID der Kategorie, die dem Film zugeordnet werden soll
+ *       - in: path
+ *         name: film_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Die ID des Films, der der Kategorie zugeordnet werden soll
+ *     responses:
+ *       201:
+ *         description: Film erfolgreich der Kategorie zugeordnet
+ *       400:
+ *         description: Fehlerhafte Anfrage oder fehlerhafte Zuordnung
+ *       404:
+ *         description: Film oder Kategorie wurden nicht gefunden
+ *       500:
+ *         description: Serverfehler beim Erstellen der Zuordnung
+ */
+
+categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Response) => {
         const categoryId = req.params.category_id;
         const filmId = req.params.film_id;
 

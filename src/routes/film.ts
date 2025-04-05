@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { db } from '../db';
+import categoryRouter from "./category";
 
 const filmRouter: Router = Router();
 
@@ -175,3 +176,5 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
         res.status(404).send({ error: 'Failed to update film' });
     }
 });
+
+export default filmRouter;
