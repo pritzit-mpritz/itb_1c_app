@@ -7,8 +7,8 @@ import {db} from "../db";
 
 export async function getAllCategories(nameFilter?: string) : Promise<any[]> {
     const connection = db();
-    // const actors = await connection.select("*").from("actor")
-    //     .whereLike("first_name", `%${firstNameFilter}%`);
+    // const category = await connection.select("*").from("category")
+    //     .whereLike("name", `%${nameFilter}%`);
 
     const category:any[] = await connection
         .select("*")
