@@ -1,1 +1,6 @@
-import express from "express"; // test
+import { db } from "../db"; // db() fun. wird mitgebracht
+
+
+
+
+export async function getAllActors
