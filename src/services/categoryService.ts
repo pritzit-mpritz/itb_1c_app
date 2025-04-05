@@ -19,3 +19,15 @@ export async function getAllCategories(nameFilter?: string) : Promise<any[]> {
 
     return category;
 }
+
+export async function getCategoryById(id: number) {
+    const connection = db();
+    const category = await connection.select("*")
+        .from("category")
+        .where("category_id", id)
+        .first();
+
+    console.log("Selected category: ", category);
+
+    return category;
+}
