@@ -14,7 +14,7 @@ export async function getAllFilms() {
 
 /**
  * Retrieve a film by ID.
- * @param id filter to find film by ID (via req.params.id).
+ * @param id filter to find film by ID.
  */
 export async function getFilmById(id: number) {
     const connection = db();
@@ -28,8 +28,8 @@ export async function getFilmById(id: number) {
 }
 
 /**
- * summary: Create a new film. Required values are title, description and language_id.
- * @param body takes in title, description and language_id to create a new film (via req.body).
+ * Create a new film. Required values are title, description and language_id.
+ * @param body takes in title, description and language_id to create a new film.
  */
 export async function createFilm(body: string) {
     console.log("Creating film: ", body);
@@ -38,4 +38,33 @@ export async function createFilm(body: string) {
     const insertOperation = await connection.insert(body).into("film");
 
     return insertOperation;
+}
+
+/**
+ * Update the title and description of a film.
+ * @param body takes in new title and description to update.
+ * @param id takes in ID to know which film needs to be updated.
+ */
+export async function updateFilm(body: any, id: number) {
+    const connection = db();
+
+    const updateOperation = await connection("film").update({
+        title: body.title,
+        description: body.description
+    })
+        .where("film_id", id)
+
+    return updateOperation;
+}
+
+/**
+ * Delete a film by ID.
+ * @param id filter to find film by ID to delete.
+ */
+export async function deleteFilm(id: number) {
+    const connection = db();
+    const deleteOperation = await connection("film")
+        .where("film_id", id).delete();
+
+    return deleteOperation;
 }

@@ -1,7 +1,5 @@
 import {Request, Response, Router} from 'express';
-import {db} from '../db';
-import {getAllFilms, getFilmById, createFilm} from '../services/filmService'
-import {addActorToFilm} from "../services/actorService";
+import {getAllFilms, getFilmById, createFilm, updateFilm, deleteFilm} from '../services/filmService'
 
 const filmRouter: Router = Router();
 
@@ -26,7 +24,7 @@ const filmRouter: Router = Router();
  *                   title:
  *                     type: string
  */
-filmRouter.get('/', async (req: Request, res: Response) => {
+filmRouter.get('/', async (res: Response) => {
     const films = await getAllFilms();
     res.send(films);
 });
@@ -58,7 +56,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *                   type: string
  */
 filmRouter.get('/:id', async (req: Request, res: Response) => {
-    const film = await getFilmById(Number(req.params.id))
+    const film = await getFilmById(Number(req.params.id));
 
     if (!film) {
         res.status(404).send({error: "No film found"});
@@ -137,22 +135,14 @@ filmRouter.post('/', async (req: Request, res: Response) => {
  *         description: Film updated successfully
  */
 filmRouter.put('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-    const film = await connection.select("*")
-        .from("film")
-        .where("film_id", req.params.id)
-        .first();
+    const film = await getFilmById(Number(req.params.id));
 
     if (!film) {
         res.status(404).send({error: "No film found"});
         return
     }
 
-    film.title = req.body.title;
-    film.description = req.body.description;
-
-    const updateOperation = await connection("film").update(film)
-        .where("film_id", req.params.id)
+    const updateOperation = await updateFilm(req.body, Number(req.params.id))
     res.send(`Updated ${updateOperation} film(s)`);
 })
 
@@ -175,9 +165,7 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
  *
  */
 filmRouter.delete('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-    const deleteOperation = await connection("film")
-        .where("film_id", req.params.id).delete();
+    const deleteOperation = deleteFilm(Number(req.params.id));
 
     if (!deleteOperation) {
         res.status(404).send({error: "No film found"});
