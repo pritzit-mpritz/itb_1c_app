@@ -5,7 +5,9 @@ import { db } from "../db";
  */
 export async function getAllCategory() {
     const connection = db();
-    const categories = await connection.select("*").from("category");
+    const categories = await connection
+        .select("*")
+        .from("category");
 
     console.log("Selected categories: ", categories);
 
