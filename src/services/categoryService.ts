@@ -31,3 +31,21 @@ export async function getCategoryById(id: number) {
 
     return category;
 }
+
+/**
+ * Adds a category-film relation
+ * @param categoryId the category to add to a film
+ * @param filmId the film the category is added to
+ */
+export async function addCategoryToFilm(categoryId: number, filmId: number) {
+    const connection = db();
+    const insertOperation = await connection("film_category")
+        .insert({
+            category_id: categoryId,
+            film_id: filmId
+        });
+
+    console.log("Inserted category to film: ", insertOperation);
+
+    return insertOperation;
+}
