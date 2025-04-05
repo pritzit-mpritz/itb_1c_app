@@ -224,6 +224,7 @@ actorRouter.post('/:actor_id/film/:film_id', async (req: Request, res: Response)
 
     try {
         await addActorToFilm(Number(actorId), Number(filmId));
+        console.log(`Actor ${actorId} added to film ${filmId}`);
         res.status(201).send("Actor-Film created");
     } catch (error) {
         console.error("Error adding actor to film: ", error);
