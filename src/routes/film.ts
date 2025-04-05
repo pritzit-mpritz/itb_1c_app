@@ -1,5 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
+import {getAllFilms, getFilmById} from '../services/filmService'
 
 const filmRouter: Router = Router();
 
@@ -7,7 +8,7 @@ const filmRouter: Router = Router();
  * @swagger
  * /film:
  *   get:
- *     summary: Retrieve a list of films
+ *     summary: Retrieve a list of all films from database
  *     tags: [Films]
  *     responses:
  *       200:
@@ -25,11 +26,7 @@ const filmRouter: Router = Router();
  *                     type: string
  */
 filmRouter.get('/', async (req: Request, res: Response) => {
-    const connection = db();
-    const films = await connection.select("*").from("film");
-
-    console.log("Selected films: ", films);
-
+    const films = await getAllFilms();
     res.send(films);
 });
 
@@ -37,7 +34,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  * @swagger
  * /film/{id}:
  *   get:
- *     summary: Retrieve a film
+ *     summary: Retrieve a film by ID
  *     tags: [Films]
  *     parameters:
  *       - in: path
@@ -60,12 +57,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *                   type: string
  */
 filmRouter.get('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-    const film = await connection.select("*").from("film")
-        .where("film_id", req.params.id)
-        .first();
-
-    console.log("Selected film: ", film);
+    const film = await getFilmById(Number(req.params.id))
 
     if (!film) {
         res.status(404).send({error: "No film found"});
