@@ -71,8 +71,8 @@ export async function deleteFilm(id: number) {
 
 /**
  * Adds a film-category relation
- * @param filmId the actor to add to a film
- * @param categoryId the film the actor is added to
+ * @param filmId the film to add to a category
+ * @param categoryId the category the film is added to
  */
 export async function addFilmToCategory(filmId: number, categoryId: number) {
     const connection = db();
@@ -85,4 +85,19 @@ export async function addFilmToCategory(filmId: number, categoryId: number) {
     console.log("Inserted film to category: ", insertOperation);
 
     return insertOperation;
+}
+
+/**
+ * Deletes a film-category relation
+ * @param filmId the film to delete from relation
+ * @param categoryId the category to delete from relation
+ */
+export async function deleteFilmCategoryRelation(filmId: number, categoryId: number) {
+    const connection = db();
+    const deleteOperation = await connection("film_category")
+        .where({ film_id: filmId, category_id: categoryId }).delete();
+
+    console.log("Deleted Film-Category relation: ", deleteOperation);
+
+    return deleteOperation;
 }
