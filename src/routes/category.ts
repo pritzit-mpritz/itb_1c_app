@@ -1,8 +1,10 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
-import {getAllCategories, getCategoryById} from "../services/categoryService";
+import {getAllCategories, getCategoryById, addCategoryToFilm} from "../services/categoryService";
 
 const categoryRouter: Router = Router();
+
+//Category CRUD-Funktionalität
 
 /**
  * @swagger
@@ -106,5 +108,121 @@ categoryRouter.post('/', async (req: Request, res: Response) => {
 
     res.send({id: insertOperation[0]});
 });
+
+/**
+ * @swagger
+ * /category/{id}:
+ *   put:
+ *     summary: Update a category
+ *     tags: [Category]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the category
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Comedy
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ */
+categoryRouter.put('/:id', async (req: Request, res: Response) => {
+    const connection = db();
+
+    const category = await connection.select("*")
+        .from("category")
+        .where("category_id", req.params.id).first();
+
+    if (!category) {
+        res.status(404).send({error: "Category not found"});
+        return
+    }
+
+    category.name = req.body.name;
+
+    const updateOperation = await connection("category").update(category)
+        .where("category_id", req.params.id);
+    res.send(`Updated ${updateOperation} categories`);
+});
+
+/**
+ * @swagger
+ * /category/{id}:
+ *  delete:
+ *   summary: Delete a category
+ *   tags: [Category]
+ *   parameters:
+ *    - in: path
+ *      name: id
+ *      required: true
+ *      description: ID of the category
+ *      schema:
+ *      type: integer
+ *   responses:
+ *     200:
+ *       description: category deleted successfully
+ *
+ */
+categoryRouter.delete('/:id', async (req: Request, res: Response) => {
+    const connection = db();
+    const deleteOperation = await connection("category")
+        .where("category_id", req.params.id).delete();
+
+    if (!deleteOperation) {
+        res.status(404).send({error: "category not found"});
+        return
+    }
+
+    res.send(`Deleted ${deleteOperation} categories`);
+});
+
+//Category zu Film Verbindung
+
+/**
+ * @swagger
+ * /category/{category_id}/film/{film_id}:
+ *  post:
+ *    summary: Add a category to a film - the film should already exist
+ *    tags: [Category]
+ *    parameters:
+ *    - in: path
+ *      name: category_id
+ *      required: true
+ *      description: ID of the category
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    - in: path
+ *      name: film_id
+ *      required: true
+ *      description: ID of the film
+ *      schema:
+ *        type: integer
+ *        example: 1
+ */
+categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+    const categoryId = req.params.category_id;
+    const filmId = req.params.film_id;
+
+    try {
+        await addCategoryToFilm(Number(categoryId), Number(filmId));
+        console.log(`Category ${categoryId} added to film ${filmId}`);
+
+        res.status(201).send("Category-Film created");
+    } catch (error) {
+        console.error("Error adding category to film: ", error);
+        res.status(400).send({error: "Failed to add category to film. " + (error)});
+    }
+})
 
 export default categoryRouter;
