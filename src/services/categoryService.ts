@@ -46,16 +46,15 @@ export async function createCategory(body: string) {
 
 /**
  * Update the name of a category.
- * @param body takes in new name to update.
- * @param id takes in ID to know which category needs to be updated.
+ * @param id ID of the category to update.
+ * @param body New data for the category.
  */
-export async function updateCategory(body: any, id: number) {
+export async function updateCategory(id: number, body: { name: string }) {
     const connection = db();
 
-    const updateOperation = await connection("category").update({
-        name: body.name
-    })
-        .where("category_id", id)
+    const updateOperation = await connection("category")
+        .update({ name: body.name })
+        .where("category_id", id);
 
     return updateOperation;
 }
@@ -67,29 +66,52 @@ export async function updateCategory(body: any, id: number) {
 export async function deleteCategory(id: number) {
     const connection = db();
     const deleteOperation = await connection("category")
-        .where("category_id", id).delete();
+        .where("category_id", id)
+        .delete();
 
     return deleteOperation;
 }
 
 
 /**
- * Adds a category to a film (film_category relation)
- * @param categoryId ID of the category
+ * Adds a film to a category (film_category relation)
  * @param filmId ID of the film
+ * @param categoryId ID of the category
  */
-
-export async function addFilmToCategory(categoryId: number, filmId: number) {
+export async function addFilmToCategory(filmId: number, categoryId: number) {
     const connection = db();
-    const insertOperation = await connection("film_category")
-        .insert({
-            film_id: filmId,
-            category_id: categoryId
-        });
 
-    console.log("Inserted film to category: ", insertOperation);
+    const insertOperation = await connection("film_category").insert({
+        film_id: filmId,
+        category_id: categoryId
+    });
+
+    console.log(`Film ${filmId} added to category ${categoryId}`);
+
 
     return insertOperation;
 }
+
+
+/**
+ * Removes a film from a category (film_category relation)
+ * @param filmId ID of the film
+ * @param categoryId ID of the category
+ */
+export async function removeFilmFromCategory(categoryId: number, filmId: number) {
+    const connection = db();
+    const deleteOperation = await connection("film_category")
+        .where({
+            film_id: filmId,
+            category_id: categoryId
+        })
+        .delete();
+
+    console.log(`Film ${filmId} removed from category ${categoryId}`);
+
+
+    return deleteOperation;
+}
+
 
 
