@@ -1,7 +1,5 @@
 import {Request, Response, Router} from 'express';
 import {getAllFilms, getFilmById, createFilm, updateFilm, deleteFilm, addFilmToCategory, deleteFilmCategoryRelation} from '../services/filmService'
-import {addActorToFilm} from "../services/actorService";
-import actorRouter from "./actor";
 import {getCategoryById} from "../services/categoryService";
 
 const filmRouter: Router = Router();
