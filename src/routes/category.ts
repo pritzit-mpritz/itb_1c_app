@@ -11,6 +11,7 @@ import {
 
 import {getFilmById} from "../services/filmService";
 
+
 const categoryRouter: Router = Router();
 
 /**
@@ -251,7 +252,6 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
     }
 })
 
-export default categoryRouter;
 
 /**
  * @swagger
@@ -332,7 +332,7 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
     const film = await getFilmById(filmId);
     if (!film) {
         res.status(404).send({ error: "Film not found" });
-        return;
+        return
     }
 
     // 2. Check if category exists
@@ -341,16 +341,12 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
         res.status(404).send({ error: 'No category found' });
         return;
     }
-
     /* alternativ if blok aber wehlche ist no found?
     if (!film || !category) {
 
   return res.status(404).send({ error: "Film or Category not found" });
 }
 */
-
-
-
     try {
         await removeFilmFromCategory(categoryId, filmId);
         console.log(`Film ${filmId} removed from category ${categoryId}`);
@@ -361,3 +357,6 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
         res.status(400).send({ error: "Failed to remove film from category. " + error });
     }
 });
+
+
+export default categoryRouter;
