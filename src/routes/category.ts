@@ -342,6 +342,15 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
         return;
     }
 
+    /* alternativ if blok aber wehlche ist no found?
+    if (!film || !category) {
+
+  return res.status(404).send({ error: "Film or Category not found" });
+}
+*/
+     */
+
+
     try {
         await removeFilmFromCategory(categoryId, filmId);
         console.log(`Film ${filmId} removed from category ${categoryId}`);
