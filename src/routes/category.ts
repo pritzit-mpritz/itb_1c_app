@@ -286,7 +286,7 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
 
     try {
         const result = await removeFilmFromCategory(categoryId, filmId);
-        res.status(200).send(`Removed category ${categoryId} from film ${filmId}`);
+        res.status(200).send(`Removed film ${filmId} from category ${categoryId}`);
 
     } catch (error) {
         console.error("Error removing film from category: ", error);
