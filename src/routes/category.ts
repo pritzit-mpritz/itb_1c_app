@@ -238,9 +238,6 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
         return;
     }
 
-
-
-
     try {
         await addFilmToCategory(Number(filmId), (categoryId));
         console.log(`Film ${filmId} added to category ${categoryId}`);
@@ -251,50 +248,6 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
         res.status(400).send({ error: "Failed to add film to category. " + error });
     }
 })
-
-
-/**
- * @swagger
- * /category/{category_id}/film/{film_id}:
- *  delete:
- *    summary: Remove a film from a category
- *    tags: [Category]
- *    parameters:
- *    - in: path
- *      name: category_id
- *      required: true
- *      description: ID of the category
- *      schema:
- *        type: integer
- *        example: 1
- *    - in: path
- *      name: film_id
- *      required: true
- *      description: ID of the film
- *      schema:
- *        type: integer
- *        example: 1
- *    responses:
- *      200:
- *        description: Category removed successfully
- */
-
-
-categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: Response) => {
-    const categoryId = Number(req.params.category_id);
-    const filmId = Number(req.params.film_id);
-
-    try {
-        const result = await removeFilmFromCategory(categoryId, filmId);
-        res.status(200).send(`Removed film ${filmId} from category ${categoryId}`);
-
-    } catch (error) {
-        console.error("Error removing film from category: ", error);
-        res.status(400).send({ error: "Failed to remove film from category. " + error });
-    }
-});
-
-
 
 
 /**
@@ -325,30 +278,27 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
 
 // 7. Block remove film from category
 categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+    console.log("🚨 DELETE endpoint tetiklendi");
+
     const filmId = Number(req.params.film_id);
     const categoryId = Number(req.params.category_id);
 
-    // 1. Check if film exists
+
+    // 1.check film
     const film = await getFilmById(filmId);
     if (!film) {
         res.status(404).send({ error: "Film not found" });
         return
     }
-
-    // 2. Check if category exists
+    // 2.check category
     const category = await getCategoryById(categoryId);
     if (!category) {
         res.status(404).send({ error: 'No category found' });
         return;
     }
-    /* alternativ if blok aber wehlche ist no found?
-    if (!film || !category) {
 
-  return res.status(404).send({ error: "Film or Category not found" });
-}
-*/
     try {
-        await removeFilmFromCategory(categoryId, filmId);
+        await removeFilmFromCategory(Number(filmId), Number(categoryId));
         console.log(`Film ${filmId} removed from category ${categoryId}`);
 
         res.status(200).send(`Removed film ${filmId} from category ${categoryId}`);

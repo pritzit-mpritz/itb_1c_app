@@ -98,7 +98,7 @@ export async function addFilmToCategory(filmId: number, categoryId: number) {
  * @param filmId ID of the film
  * @param categoryId ID of the category
  */
-export async function removeFilmFromCategory(categoryId: number, filmId: number) {
+export async function removeFilmFromCategory(filmId: number, categoryId: number) {
     const connection = db();
     const deleteOperation = await connection("film_category")
         .where({
