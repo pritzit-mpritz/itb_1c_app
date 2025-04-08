@@ -348,7 +348,7 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
   return res.status(404).send({ error: "Film or Category not found" });
 }
 */
-     */
+
 
 
     try {
