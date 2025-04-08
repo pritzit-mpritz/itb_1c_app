@@ -278,7 +278,6 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
 
 // 7. Block remove film from category
 categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: Response) => {
-    console.log("🚨 DELETE endpoint tetiklendi");
 
     const filmId = Number(req.params.film_id);
     const categoryId = Number(req.params.category_id);
