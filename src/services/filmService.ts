@@ -18,3 +18,4 @@ export async function addFilmToCategory(categoryId: number, filmId: number) {
     console.log("Film-Kategorie-Verknüpfung eingefügt: ", insertOperation);
     return insertOperation;
 }
+
