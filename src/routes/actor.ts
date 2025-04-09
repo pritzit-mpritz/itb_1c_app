@@ -217,8 +217,7 @@ actorRouter.delete('/:id', async (req: Request, res: Response) => {
  *      schema:
  *        type: integer
  *        example: 1
- */
-actorRouter.post('/:actor_id/film/:film_id', async (req: Request, res: Response) => {
+ */actorRouter.post('/:actor_id/film/:film_id', async (req: Request, res: Response) => {
     const actorId = req.params.actor_id;
     const filmId = req.params.film_id;
 
