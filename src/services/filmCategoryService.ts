@@ -2,84 +2,64 @@
 import { db } from "../db";
 
 const FC_TABLE = 'film_category';
-const FILM_TABLE = 'film'; // Passe an, falls 'films'
-const CATEGORY_TABLE = 'category'; // Passe an, falls 'categories'
+const FILM_TABLE = 'film';
+const CATEGORY_TABLE = 'category';
 
 /**
- * Fügt eine Verknüpfung hinzu. Idempotent.
- * @returns True bei Erfolg, false bei FK-Constraint-Fehler.
- * @throws Wirft andere DB-Fehler.
+ * Fügt eine Film-Kategorie-Verknüpfung hinzu.
+ * @param {number} filmId Film ID
+ * @param {number} categoryId Kategorie ID
+ * @returns {Promise<any>} Das Ergebnis der Knex-Insert-Operation.
+ * @throws {Error} Datenbankfehler (z.B. FK nicht gefunden, Duplicate Key).
  */
-export async function addLink(filmId: number, categoryId: number): Promise<boolean> {
+export async function addFilmCategoryLink(filmId: number, categoryId: number) {
     const connection = db();
-    const linkData = { film_id: filmId, category_id: categoryId };
-    try {
-        const existingLink = await connection(FC_TABLE).where(linkData).first();
-        if (!existingLink) {
-            await connection(FC_TABLE).insert(linkData);
-            console.log(`Linked film ${filmId} and category ${categoryId}`);
-        } else {
-            console.log(`Link film ${filmId} <-> category ${categoryId} already exists.`);
-        }
-        return true;
-    } catch (error: any) {
-        if (error?.errno === 1452 || error?.code?.includes('FOREIGN KEY')) {
-            console.warn(`Cannot add link: Film ${filmId} or Category ${categoryId} does not exist.`);
-            return false;
-        }
-        console.error(`Error adding link film ${filmId} <-> category ${categoryId}:`, error);
-        throw error;
-    }
+    // Einfaches Insert. Fehler (FK, Duplicate) werden im Router gefangen.
+    return connection(FC_TABLE).insert({
+        film_id: filmId,
+        category_id: categoryId
+        // last_update wird von Sakila DB automatisch gesetzt
+    });
 }
 
 /**
- * Entfernt eine Verknüpfung.
- * @returns Anzahl der gelöschten Zeilen (0 oder 1).
+ * Entfernt eine Film-Kategorie-Verknüpfung.
+ * @param {number} filmId Film ID
+ * @param {number} categoryId Kategorie ID
+ * @returns {Promise<number>} Anzahl der gelöschten Zeilen (0 oder 1).
+ * @throws {Error} Datenbankfehler.
  */
-export async function removeLink(filmId: number, categoryId: number): Promise<number> {
+export async function removeFilmCategoryLink(filmId: number, categoryId: number): Promise<number> {
     const connection = db();
-    try {
-        const deleteCount = await connection(FC_TABLE)
-            .where({ film_id: filmId, category_id: categoryId })
-            .del();
-        console.log(`Attempted remove link film ${filmId} <-> category ${categoryId}. Removed: ${deleteCount}`);
-        return deleteCount;
-    } catch (error) {
-        console.error(`Error removing link film ${filmId} <-> category ${categoryId}:`, error);
-        throw error;
-    }
+    return connection(FC_TABLE)
+        .where({ film_id: filmId, category_id: categoryId })
+        .delete();
 }
 
 /**
- * Ruft alle Kategorien für einen Film ab.
- * @returns Array von Kategorie-Objekten.
+ * Holt alle Kategorien für einen bestimmten Film.
+ * @param {number} filmId Film ID
+ * @returns {Promise<any[]>} Array von Kategorie-Objekten.
+ * @throws DB-Fehler.
  */
 export async function getCategoriesForFilm(filmId: number): Promise<any[]> {
     const connection = db();
-    try {
-        return await connection(CATEGORY_TABLE)
-            .join(FC_TABLE, `${CATEGORY_TABLE}.category_id`, '=', `${FC_TABLE}.category_id`)
-            .where(`${FC_TABLE}.film_id`, filmId)
-            .select(`${CATEGORY_TABLE}.*`);
-    } catch(error) {
-        console.error(`Error fetching categories for film ${filmId}:`, error);
-        throw error;
-    }
+    return connection(CATEGORY_TABLE)
+        .join(FC_TABLE, `${CATEGORY_TABLE}.category_id`, '=', `${FC_TABLE}.category_id`)
+        .where(`${FC_TABLE}.film_id`, filmId)
+        .select(`${CATEGORY_TABLE}.*`);
 }
 
 /**
- * Ruft alle Filme für eine Kategorie ab.
- * @returns Array von Film-Objekten.
+ * Holt alle Filme für eine bestimmte Kategorie.
+ * @param {number} categoryId Kategorie ID
+ * @returns {Promise<any[]>} Array von Film-Objekten.
+ * @throws DB-Fehler.
  */
 export async function getFilmsForCategory(categoryId: number): Promise<any[]> {
     const connection = db();
-    try {
-        return await connection(FILM_TABLE)
-            .join(FC_TABLE, `${FILM_TABLE}.film_id`, '=', `${FC_TABLE}.film_id`)
-            .where(`${FC_TABLE}.category_id`, categoryId)
-            .select(`${FILM_TABLE}.*`);
-    } catch(error) {
-        console.error(`Error fetching films for category ${categoryId}:`, error);
-        throw error;
-    }
+    return connection(FILM_TABLE)
+        .join(FC_TABLE, `${FILM_TABLE}.film_id`, '=', `${FC_TABLE}.film_id`)
+        .where(`${FC_TABLE}.category_id`, categoryId)
+        .select(`${FILM_TABLE}.*`);
 }

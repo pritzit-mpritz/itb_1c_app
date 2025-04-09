@@ -4,12 +4,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Initialize knex connection
 let dbConnection: Knex | undefined = undefined;
 
+/**
+ * Stellt die Knex DB-Verbindung bereit (Singleton).
+ * @returns {Knex} Knex-Instanz.
+ * @throws {Error} Bei fehlenden kritischen ENV-Variablen oder ungültigem Port.
+ */
 export const db = () : Knex => {
     if (!dbConnection) {
-        // Verwende Defaults, falls Umgebungsvariablen fehlen, aber gib Warnungen aus
         const dbHost = process.env.DB_HOST || 'localhost';
         const dbPortStr = process.env.DB_PORT || '3306';
         const dbUser = process.env.DB_USER;
@@ -17,31 +20,27 @@ export const db = () : Knex => {
         const dbName = process.env.DB_NAME;
 
         if (!dbUser || !dbName) {
-            console.warn("WARN: DB_USER or DB_NAME environment variable is not set.");
-            // Entscheide, ob hier ein Fehler geworfen werden soll oder nicht
-            // throw new Error("DB_USER and DB_NAME environment variables are required!");
+            console.error("FATAL ERROR: DB_USER or DB_NAME missing in .env!");
+            throw new Error("DB_USER and DB_NAME environment variables are required!");
         }
-
         const dbPort = parseInt(dbPortStr, 10);
         if (isNaN(dbPort)) {
-            console.error(`ERROR: Invalid DB_PORT environment variable: ${dbPortStr}. Using default 3306.`);
-            // throw new Error("Invalid DB_PORT environment variable!"); // Oder Fallback
+            console.error(`FATAL ERROR: Invalid DB_PORT: ${dbPortStr}`);
+            throw new Error("Invalid DB_PORT environment variable!");
         }
 
-        console.log(`Initializing database connection to ${dbHost}:${dbPort || 3306}...`);
-
-        dbConnection = knex({
-            client: 'mysql2',
-            connection: {
-                host: dbHost,
-                port: dbPort || 3306, // Fallback falls NaN
-                user: dbUser,
-                password: dbPassword,
-                database: dbName,
-                charset: 'utf8mb4' // Empfohlen
-            },
-            pool: { min: 0, max: 7 } // Minimaler Pool
-        });
+        console.log(`Initializing DB connection to ${dbHost}:${dbPort}...`);
+        try {
+            dbConnection = knex({
+                client: 'mysql2',
+                connection: { host: dbHost, port: dbPort, user: dbUser, password: dbPassword, database: dbName, charset: 'utf8mb4' },
+                pool: { min: 0, max: 7 }
+            });
+            console.log("DB connection configured.");
+        } catch (error) {
+            console.error("FATAL ERROR during DB configuration:", error);
+            throw error;
+        }
     }
     return dbConnection;
-}; // Schließende Klammer für die Funktion
+};
