@@ -2,6 +2,8 @@ import { db } from "../db";
 
 /**
  * Gibt alle Filme zurück – optional nach Titel filterbar
+ *  @param titleFilter - Optionaler Filter für den Filmtitel (beginnend mit)
+ *  @returns Eine Liste aller gefundenen Filme
  */
 export async function getAllFilms(titleFilter?: string) {
     const connection = db();
@@ -21,6 +23,9 @@ export async function getAllFilms(titleFilter?: string) {
 
 /**
  * Gibt einen Film anhand seiner ID zurück
+ *  @param id - Die ID des Films
+ *  @returns Der gefundene Film
+ *  @throws Error - Wenn kein Film mit dieser ID gefunden wurde
  */
 export async function getFilmById(id: number) {
     const connection = db();
@@ -36,7 +41,9 @@ export async function getFilmById(id: number) {
 }
 
 /**
- * Erstellt einen neuen Film
+ * Erstellt einen neuen Film in der Datenbank.
+ *  @param data - Ein Objekt mit `title` und `description` des Films
+ *  @returns Die ID des neu erstellten Films
  */
 export async function createFilm(data: { title: string; description: string }) {
     const connection = db();
@@ -45,7 +52,11 @@ export async function createFilm(data: { title: string; description: string }) {
 }
 
 /**
- * Aktualisiert einen Film anhand der ID
+ * Aktualisiert einen bestehenden Film anhand seiner ID.
+ *  @param id - Die ID des zu aktualisierenden Films
+ *  @param data - Ein Objekt mit neuem `title` und `description`
+ *  @returns Die Anzahl der aktualisierten Datensätze (normalerweise 1)
+ *  @throws Error - Wenn der Film nicht gefunden wurde
  */
 export async function updateFilm(id: string, data: { title: string; description: string }) {
     const connection = db();
@@ -65,7 +76,10 @@ export async function updateFilm(id: string, data: { title: string; description:
 }
 
 /**
- * Löscht einen Film anhand der ID
+ * Löscht einen Film anhand seiner ID aus der Datenbank.
+ *
+ *  @param id - Die ID des zu löschenden Films
+ *  @returns Die Anzahl der gelöschten Datensätze (normalerweise 1)
  */
 export async function deleteFilm(id: string) {
     const connection = db();
@@ -77,8 +91,13 @@ export async function deleteFilm(id: string) {
 }
 
 /**
- * Verknüpft einen Film mit einer Kategorie (film_category)
- */
+ * Verknüpft einen Film mit einer Kategorie in der Tabelle `film_category`.
+ *
+ *  @param categoryId - Die ID der Kategorie
+ *  @param filmId - Die ID des Films
+ *  @returns Die ID des erstellten Verknüpfungseintrags
+ *  @throws Error - Wenn der Film oder die Kategorie nicht existiert oder die Verknüpfung schon vorhanden ist
+ *  */
 export async function addFilmToCategory(categoryId: number, filmId: number) {
     const connection = db();
 
@@ -104,7 +123,11 @@ export async function addFilmToCategory(categoryId: number, filmId: number) {
 }
 
 /**
- * Entfernt eine Verknüpfung zwischen Film und Kategorie
+ * Entfernt eine Verknüpfung zwischen einem Film und einer Kategorie.
+ *
+ * @param categoryId - Die ID der Kategorie
+ * @param filmId - Die ID des Films
+ * @returns Die Anzahl der gelöschten Verknüpfungen (normalerweise 1)
  */
 export async function removeFilmFromCategory(categoryId: number, filmId: number) {
     const connection = db();
