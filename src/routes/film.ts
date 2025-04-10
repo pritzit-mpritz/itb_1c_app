@@ -26,7 +26,7 @@ const filmRouter: Router = Router();
  *                     type: number
  *                   title:
  *                     type: string
- *                   description: Erfolgreiche Antwort mit einer Liste aller Filme
+ *                   description: erfolgreiche Antwort mit einer Liste aller Filme
  *                     type: string
  */
 
@@ -51,7 +51,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *     summary: Gibt einen bestimmten Film anhand der ID zurück
  *     description: Ruft einen einzelnen Film aus der Tabelle "film" anhand der ID ab.
  *     tags:
- *       - Film
+ *       - film
  *     parameters:
  *       - in: path
  *         name: id
@@ -59,7 +59,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *         schema:
  *           type: integer
  *         description: Die ID des Films
- *     responses:
+ *      responses:
  *       200:
  *         description: Erfolgreich – Film gefunden
  *       404:
@@ -188,7 +188,7 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
  *     summary: Löscht einen Film
  *     description: Entfernt einen Film aus der Datenbank anhand der ID.
  *     tags:
- *       - Film
+ *       - film
  *     parameters:
  *       - in: path
  *         name: id
@@ -222,7 +222,7 @@ filmRouter.delete('/:id', async (req: Request, res: Response) => {
  *     summary: Verknüpft einen Film mit einer Kategorie
  *     description: Fügt eine Beziehung zwischen Film und Kategorie in der Tabelle "film_category" hinzu.
  *     tags:
- *       - Film
+ *       - film
  *     parameters:
  *       - in: path
  *         name: film_id
@@ -261,7 +261,7 @@ filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Res
  *     summary: Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
  *     description: Löscht die Zuordnung aus der Tabelle "film_category".
  *     tags:
- *       - Film
+ *       - film
  *     parameters:
  *       - in: path
  *         name: film_id
