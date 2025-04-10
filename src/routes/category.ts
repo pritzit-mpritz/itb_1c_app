@@ -246,7 +246,8 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
  */
 
 
-categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+categoryRouter.post('/:category_id/film/:film_id',
+    async (req: Request, res: Response) => {
         const categoryId = req.params.category_id;
         const filmId = req.params.film_id;
 
@@ -254,10 +255,10 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
             await addFilmToCategory(Number(categoryId), Number(filmId));
             console.log(`category ${categoryId} added to film ${filmId}`);
 
-            res.status(201).send("category-Film created");
+            res.status(201).send("Category wurde dem Film hinzugefügt");
         } catch (error) {
-            console.error("Error adding category to film: ", error);
-            res.status(400).send({error: "Failed to add category to film. " + (error)});
+            console.error("Error adding Category to Film: ", error);
+            res.status(400).send({error: `Failed to add Category to Film. ${error}`});
         }
     });
 

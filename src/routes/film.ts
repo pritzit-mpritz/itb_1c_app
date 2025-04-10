@@ -287,17 +287,17 @@ filmRouter.post("/:film_id/category/:category_id", async (req: Request, res: Res
  *         description: Verknüpfung nicht gefunden
  */
 filmRouter.delete("/:film_id/category/:category_id", async (req: Request, res: Response) => {
-    const connection = db();
-    const { film_id, category_id } = req.params;
+    const categoryId = req.params.category_id;
+    const filmId = req.params.film_id;
 
     try {
-        const deleteOp = await connection("film_category")
-            .where({ film_id, category_id })
-            .delete();
+        await addFilmToCategory(Number(categoryId), Number(filmId));
+        console.log(`Film ${filmId} added to Category ${categoryId} `);
 
-        res.send("Verknüpfung gelöscht");
+        res.status(201).send("Film added to Category ${categoryId} ");
     } catch (error) {
-        res.status(404).send({ error: "Verknüpfung konnte nicht entfernt werden" });
+        console.error("Error adding Film to Category: ", error);
+        res.status(400).send({error: "Failed to add Film to Category. " + (error)});
     }
 });
 
