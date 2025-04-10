@@ -1,6 +1,7 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
 import {addFilmToCategory} from "../services/filmService";
+import {getAllCategories, getCategoryById, createFilmCategory, updateCategory, deleteCategory} from "../services/categoryService";
 
 
 
@@ -36,13 +37,11 @@ const categoryRouter: Router = Router();
 categoryRouter.get('/', async (req: Request, res: Response) => {
     const connection = db();
     try {
-        const categorys = await connection.select("*").from("film_category");
+        res.send(await  getAllCategories(req.query.NameFilter as string));
 
-        console.log("Selected category: ", categorys);
-
-        res.send(categorys);
+    }catch{
+        res.status(404).send({error: "Categories not found"});
     }
-    catch{}
 });
 
 
@@ -83,16 +82,11 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
     categoryRouter.get('/:id', async (req: Request, res: Response) => {
         const connection = db();
         try {
-            const category = await connection.select("*")
-                .from("category")
-                .where("category_id", req.params.id)
-                .first();
-
-            console.log("Selected category: ", category);
+            const category = await getCategoryById(Number(req.params.id))
             res.send(category);
         } catch {
             res.status(404).send({error: "Category not found"});
-            return;
+            return
         }
 
 
@@ -139,23 +133,17 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
  *       404:
  *         description: Kategorie oder Film wurde nicht gefunden
  *       500:
- *         description: Serverfehler beim*
+ *         description: Serverfehler beim
  *
  **/
-    categoryRouter.post('/', async (req: Request, res: Response) => {
-        console.log("Creating film_category: ", req.body);
-
-        const connection = db();
-        try {
-            const insertOperation = await connection.insert(req.body).into("film_category");
-
-            res.send({id: insertOperation[0]});
-        } catch (error) {
-            res.status(404).send({error: " Category not found"});
-        }
-
-
-    });
+categoryRouter.post('/', async (req: Request, res: Response) => {
+    try {
+        const id = await createFilmCategory(req.body);
+        res.send({ id });
+    } catch (error) {
+        res.status(404).send({ error: 'Category not found' });
+    }
+});
 /**
  * @swagger
  * /category/{id}:
@@ -192,24 +180,14 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
  *         description: Serverfehler beim Aktualisieren der Kategorie
  */
 
-    categoryRouter.put('/:id', async (req: Request, res: Response) => {
-        const connection = db();
-        try {
-            const category = await connection.select("*")
-                .from("category")
-                .where("category_id", req.params.id).first();
-            category.name = req.body.name;
-
-            const updateOperation = await connection("category").update(category)
-                .where("category_id", req.params.id);
-            res.send(`Updated ${updateOperation} category`);
-
-        } catch (error) {
-            res.status(404).send({error: " category not found"});
-        }
-
-
-    });
+categoryRouter.put('/:id', async (req: Request, res: Response) => {
+    try {
+        const result = await updateCategory(req.params.id, req.body.name);
+        res.send(`Updated ${result} category`);
+    } catch (error) {
+        res.status(404).send({ error: 'Category not found' });
+    }
+});
 /**
  * @swagger
  * /category/{id}:
@@ -234,18 +212,14 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
  *         description: Serverfehler beim Löschen der Kategorie
  */
 
-    categoryRouter.delete('/:id', async (req: Request, res: Response) => {
-        const connection = db();
-        try {
-            const deleteOperation = await connection("category")
-                .where("category_id", req.params.id).delete();
-            res.send(`Deleted ${deleteOperation} category`);
-        } catch (error) {
-            res.status(404).send({error: " not found"});
-        }
-
-
-    });
+categoryRouter.delete('/:id', async (req: Request, res: Response) => {
+    try {
+        const result = await deleteCategory(req.params.id);
+        res.send(`Deleted ${result} category`);
+    } catch (error) {
+        res.status(404).send({ error: 'Not found' });
+    }
+});
 /**
  * @swagger
  * /category/{category_id}/film/{film_id}:
@@ -291,7 +265,7 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
             console.error("Error adding category to film: ", error);
             res.status(400).send({error: "Failed to add category to film. " + (error)});
         }
-    })
+    });
 
     export default categoryRouter;
 
