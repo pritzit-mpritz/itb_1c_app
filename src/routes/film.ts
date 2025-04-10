@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { db } from "../db";
+
 import {addFilmToCategory, createFilm, deleteFilm, getAllFilms, getFilmById, updateFilm} from "../services/filmService";
 
 const filmRouter: Router = Router();
@@ -227,7 +227,7 @@ filmRouter.delete("/:id", async (req: Request, res: Response) => {
  *         required: true
  *         schema:
  *           type: integer
- *         description: Die ID des Films
+ *         description: Einen Film einer Category hinzufügen.
  *       - in: path
  *         name: category_id
  *         required: true
