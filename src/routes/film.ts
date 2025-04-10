@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { db } from "../db";
-import { addFilmToCategory, getAllFilms } from "../services/filmService";
+import {addFilmToCategory, createFilm, deleteFilm, getAllFilms, getFilmById, updateFilm} from "../services/filmService";
 
 const filmRouter: Router = Router();
 
@@ -82,7 +82,7 @@ filmRouter.get("/", async (req: Request, res: Response) => {
  */
 filmRouter.get("/:id", async (req: Request, res: Response) => {
     try {
-        const film = await db("film").where("film_id", req.params.id).first();
+        const film= await getFilmById(Number(req.params.id))
         res.send(film);
     } catch {
         res.status(404).send({ error: "Film konnte nicht geladen werden" });
@@ -130,9 +130,9 @@ filmRouter.get("/:id", async (req: Request, res: Response) => {
  */
 filmRouter.post("/", async (req: Request, res: Response) => {
     try {
-        const [id] = await db("film").insert(req.body);
-        res.status(201).send({ id });
-    } catch {
+        const id = await createFilm(req.body);
+        res.send({ id });
+    } catch (error) {
         res.status(404).send({ error: "Film konnte nicht erstellt werden" });
     }
 });
@@ -176,9 +176,9 @@ filmRouter.post("/", async (req: Request, res: Response) => {
  */
 filmRouter.put("/:id", async (req: Request, res: Response) => {
     try {
-        await db("film").update(req.body).where("film_id", req.params.id);
-        res.send({ message: "Film erfolgreich aktualisiert" });
-    } catch {
+        const result= await updateFilm (req.params.id, req.body.name);
+        res.send (`Updated ${result} film`);
+    } catch (error){
         res.status(404).send({ error: "Film konnte nicht aktualisiert werden" });
     }
 });
@@ -206,8 +206,8 @@ filmRouter.put("/:id", async (req: Request, res: Response) => {
  */
 filmRouter.delete("/:id", async (req: Request, res: Response) => {
     try {
-        const result = await db("film").where("film_id", req.params.id).delete();
-        res.send({ message: `Film gelöscht (${result} Eintrag)` });
+        const result = await deleteFilm (req.params.id);
+        res.send(`Deleted ${result} film`);
     } catch {
         res.status(404).send({ error: "Film konnte nicht gelöscht werden" });
     }
@@ -240,51 +240,18 @@ filmRouter.delete("/:id", async (req: Request, res: Response) => {
  *       400:
  *         description: Fehlerhafte Anfrage oder Verknüpfung fehlgeschlagen
  */
-filmRouter.post("/:film_id/category/:category_id", async (req: Request, res: Response) => {
-    try {
-        await addFilmToCategory(Number(req.params.category_id), Number(req.params.film_id));
-        res.status(201).send("Verknüpfung erstellt");
-    } catch {
-        res.status(400).send({ error: "Film konnte nicht zugeordnet werden" });
-    }
-});
+filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Response) => {
+    const filmId = req.params.film_id;
+    const categoryId = req.params.category_id;
 
-/**
- * @swagger
- * /film/{film_id}/category/{category_id}:
- *   delete:
- *     summary: Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
- *     description: Löscht die Zuordnung zwischen einem Film und einer Kategorie aus der Datenbank.
- *     tags:
- *       - Film
- *     parameters:
- *       - in: path
- *         name: film_id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Die ID des Films
- *       - in: path
- *         name: category_id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Die ID der Kategorie
- *     responses:
- *       200:
- *         description: Verknüpfung erfolgreich gelöscht
- *       404:
- *         description: Verknüpfung konnte nicht entfernt werden
- */
-filmRouter.delete("/:film_id/category/:category_id", async (req: Request, res: Response) => {
     try {
-        const result = await db("film_category")
-            .where({ film_id: req.params.film_id, category_id: req.params.category_id })
-            .delete();
+        await addFilmToCategory(Number(categoryId), Number(filmId));
+        console.log(`Film ${filmId} wurde mit Kategorie ${categoryId} verknüpft`);
 
-        res.send({ message: `Verknüpfung gelöscht (${result} Eintrag)` });
-    } catch {
-        res.status(404).send({ error: "Verknüpfung konnte nicht entfernt werden" });
+        res.status(201).send("Film wurde der Kategorie hinzugefügt");
+    } catch (error) {
+        console.error("Fehler beim Verknüpfen von Film und Kategorie:", error);
+        res.status(400).send({ error: `Verknüpfung fehlgeschlagen: ${error}` });
     }
 });
 
