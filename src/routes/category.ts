@@ -11,13 +11,19 @@ const categoryRouter: Router = Router();
  * @swagger
  * /category:
  *   get:
- *     summary: Gibt alle Filmkategorien zurück
- *     description: Ruft alle Einträge aus der Tabelle "film_category" ab und gibt sie als Liste zurück.
- *     tags:
- *       - Category
+ *     summary: Gibt alle Kategorien zurück
+ *     description: Gibt alle Kategorien zurück, optional gefiltert nach Namen.
+ *     tags: [Category]
+ *     parameters:
+ *       - in: query
+ *         name: NameFilter
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Optionaler Namensfilter für die Kategorien
  *     responses:
  *       200:
- *         description: Erfolgreiche Antwort mit einer Liste aller Filmkategorien
+ *         description: Liste aller gefundenen Kategorien
  *         content:
  *           application/json:
  *             schema:
@@ -25,15 +31,14 @@ const categoryRouter: Router = Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   film_id:
- *                     type: integer
- *                     description: ID des Films
  *                   category_id:
- *                     type: integer
- *                     description: ID der Kategorie
- *       500:
- *         description: Serverfehler beim Abrufen der Kategorien
+ *                     type: number
+ *                   name:
+ *                     type: string
+ *       404:
+ *         description: Kategorien nicht gefunden
  */
+
 categoryRouter.get('/', async (req: Request, res: Response) => {
 
     try {
@@ -45,41 +50,37 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
 });
 
 
-    /**
-     * @swagger
-     * /category/{id}:
-     *   get:
-     *     summary: Gibt eine bestimmte Kategorie anhand der ID zurück
-     *     description: Ruft eine einzelne Kategorie aus der Tabelle "category" basierend auf der übergebenen ID ab.
-     *     tags:
-     *       - Category
-     *     parameters:
-     *       - in: path
-     *         name: id
-     *         required: true
-     *         description: Die ID der Kategorie, die abgerufen werden soll
-     *         schema:
-     *           type: integer
-     *     responses:
-     *       200:
-     *         description: Erfolgreich – Kategorie gefunden
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 category_id:
-     *                   type: integer
-     *                   description: Die ID der Kategorie
-     *                 name:
-     *                   type: string
-     *                   description: Der Name der Kategorie
-     *       404:
-     *         description: Kategorie mit der angegebenen ID wurde nicht gefunden
-     *       500:
-     *         description: Serverfehler beim Abrufen der Kategorie
-     */
-    categoryRouter.get('/:id', async (req: Request, res: Response) => {
+/**
+ * @swagger
+ * /category/{id}:
+ *   get:
+ *     summary: Gibt eine bestimmte Kategorie anhand der ID zurück
+ *     description: Ruft eine einzelne Kategorie aus der Datenbank anhand der ID ab.
+ *     tags: [Category]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Die ID der Kategorie
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Kategorie erfolgreich gefunden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 category_id:
+ *                   type: number
+ *                 name:
+ *                   type: string
+ *       404:
+ *         description: Kategorie nicht gefunden
+ */
+
+categoryRouter.get('/:id', async (req: Request, res: Response) => {
 
         try {
             const category = await getCategoryById(Number(req.params.id))
@@ -92,50 +93,38 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
 
     });
 
-
 /**
  * @swagger
  * /category:
  *   post:
- *     summary: Erstellt eine neue Film-Kategorie-Zuordnung
- *     description: Fügt einen neuen Eintrag in die Tabelle "film_category" ein, um einen Film mit einer Kategorie zu verknüpfen.
- *     tags:
- *       - Category
+ *     summary: Erstellt eine neue Kategorie
+ *     description: Fügt eine neue Kategorie in die Datenbank ein.
+ *     tags: [Category]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - film_id
- *               - category_id
  *             properties:
- *               film_id:
- *                 type: integer
- *                 description: Die ID des Films
- *               category_id:
- *                 type: integer
- *                 description: Die ID der Kategorie
+ *               name:
+ *                 type: string
+ *                 example: Action
  *     responses:
- *       201:
- *         description: Erfolgreich erstellt
+ *       200:
+ *         description: Kategorie erfolgreich erstellt
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 id:
- *                   type: integer
- *                   description: Die ID des erstellten Eintrags
- *       400:
- *         description: Ungültige Anfrage
+ *                   type: number
  *       404:
- *         description: Kategorie oder Film wurde nicht gefunden
- *       500:
- *         description: Serverfehler beim
- *
- **/
+ *         description: Kategorie konnte nicht erstellt werden
+ */
+
+
 categoryRouter.post('/', async (req: Request, res: Response) => {
     try {
         const id = await createFilmCategory(req.body);
@@ -149,36 +138,37 @@ categoryRouter.post('/', async (req: Request, res: Response) => {
  * /category/{id}:
  *   put:
  *     summary: Aktualisiert eine bestehende Kategorie
- *     description: Aktualisiert den Namen einer Kategorie anhand der übergebenen ID.
- *     tags:
- *       - Category
+ *     description: Ändert den Namen einer Kategorie anhand der übergebenen ID.
+ *     tags: [Category]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Die ID der Kategorie, die aktualisiert werden soll
  *         schema:
  *           type: integer
- *         description: Die ID der Kategorie, die aktualisiert werden soll
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - name
  *             properties:
  *               name:
  *                 type: string
- *                 description: Neuer Name der Kategorie
+ *                 example: Drama
  *     responses:
  *       200:
  *         description: Kategorie erfolgreich aktualisiert
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: Updated 1 category
  *       404:
- *         description: Kategorie wurde nicht gefunden
- *       500:
- *         description: Serverfehler beim Aktualisieren der Kategorie
+ *         description: Kategorie nicht gefunden
  */
+
 
 categoryRouter.put('/:id', async (req: Request, res: Response) => {
     try {
@@ -193,24 +183,27 @@ categoryRouter.put('/:id', async (req: Request, res: Response) => {
  * /category/{id}:
  *   delete:
  *     summary: Löscht eine Kategorie
- *     description: Entfernt eine Kategorie anhand ihrer ID aus der Datenbank.
- *     tags:
- *       - Category
+ *     description: Entfernt eine Kategorie aus der Datenbank anhand der übergebenen ID.
+ *     tags: [Category]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Die ID der zu löschenden Kategorie
  *         schema:
  *           type: integer
- *         description: Die ID der Kategorie, die gelöscht werden soll
  *     responses:
  *       200:
  *         description: Kategorie erfolgreich gelöscht
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: Deleted 1 category
  *       404:
- *         description: Kategorie wurde nicht gefunden
- *       500:
- *         description: Serverfehler beim Löschen der Kategorie
+ *         description: Kategorie nicht gefunden
  */
+
 
 categoryRouter.delete('/:id', async (req: Request, res: Response) => {
     try {
@@ -224,36 +217,37 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /category/{category_id}/film/{film_id}:
  *   post:
- *     summary: Ordnet einen Film einer Kategorie zu
- *     description: Fügt eine Zuordnung zwischen einem Film und einer Kategorie in der Tabelle "film_category" hinzu, basierend auf den übergebenen IDs.
- *     tags:
- *       - Category
+ *     summary: Verknüpft eine Kategorie mit einem Film
+ *     description: Erstellt eine Beziehung zwischen einer Kategorie und einem Film, indem ein Eintrag in der Tabelle "film_category" erzeugt wird.
+ *     tags: [Category]
  *     parameters:
  *       - in: path
  *         name: category_id
  *         required: true
+ *         description: Die ID der Kategorie
  *         schema:
  *           type: integer
- *         description: Die ID der Kategorie, die dem Film zugeordnet werden soll
  *       - in: path
  *         name: film_id
  *         required: true
+ *         description: Die ID des Films
  *         schema:
  *           type: integer
- *         description: Die ID des Films, der der Kategorie zugeordnet werden soll
- *
  *     responses:
  *       201:
- *         description: Film erfolgreich der Kategorie zugeordnet
+ *         description: Kategorie erfolgreich mit dem Film verknüpft
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: category-Film created
  *       400:
- *         description: Fehlerhafte Anfrage oder fehlerhafte Zuordnung
- *       404:
- *         description: Film oder Kategorie wurden nicht gefunden
- *       500:
- *         description: Serverfehler beim Erstellen der Zuordnung
+ *         description: Fehler beim Verknüpfen von Kategorie und Film
  */
 
-categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+
+categoryRouter.post('/:category_id/film/:film_id',
+    async (req: Request, res: Response) => {
         const categoryId = req.params.category_id;
         const filmId = req.params.film_id;
 
@@ -261,10 +255,10 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
             await addFilmToCategory(Number(categoryId), Number(filmId));
             console.log(`category ${categoryId} added to film ${filmId}`);
 
-            res.status(201).send("category-Film created");
+            res.status(201).send("Category wurde dem Film hinzugefügt");
         } catch (error) {
-            console.error("Error adding category to film: ", error);
-            res.status(400).send({error: "Failed to add category to film. " + (error)});
+            console.error("Error adding Category to Film: ", error);
+            res.status(400).send({error: `Failed to add Category to Film. ${error}`});
         }
     });
 
