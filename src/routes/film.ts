@@ -39,7 +39,7 @@ const filmRouter: Router = Router();
  */
 filmRouter.get("/", async (req: Request, res: Response) => {
     try {
-        res.send(await getAllFilms(req.query.titelFilter as string));
+        res.send(await getAllFilms(req.query.titleFilter as string));
     } catch {
         res.status(404).send({ error: "Filme konnten nicht geladen werden" });
     }
