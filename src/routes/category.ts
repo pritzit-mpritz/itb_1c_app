@@ -1,5 +1,5 @@
 import {Request, Response, Router} from 'express';
-import {db} from '../db';
+
 import {addFilmToCategory} from "../services/filmService";
 import {getAllCategories, getCategoryById, createFilmCategory, updateCategory, deleteCategory} from "../services/categoryService";
 
@@ -35,7 +35,7 @@ const categoryRouter: Router = Router();
  *         description: Serverfehler beim Abrufen der Kategorien
  */
 categoryRouter.get('/', async (req: Request, res: Response) => {
-    const connection = db();
+
     try {
         res.send(await  getAllCategories(req.query.NameFilter as string));
 
@@ -80,7 +80,7 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
      *         description: Serverfehler beim Abrufen der Kategorie
      */
     categoryRouter.get('/:id', async (req: Request, res: Response) => {
-        const connection = db();
+
         try {
             const category = await getCategoryById(Number(req.params.id))
             res.send(category);
@@ -241,6 +241,7 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
  *         schema:
  *           type: integer
  *         description: Die ID des Films, der der Kategorie zugeordnet werden soll
+ *
  *     responses:
  *       201:
  *         description: Film erfolgreich der Kategorie zugeordnet
