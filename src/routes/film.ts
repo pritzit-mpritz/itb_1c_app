@@ -1,20 +1,19 @@
-import { Request, Response, Router } from 'express';
-import { db } from '../db';
-import { addFilmToCategory } from '../services/filmService';
+import { Request, Response, Router } from "express";
+import { db } from "../db";
+import { addFilmToCategory } from "../services/filmService";
 
 const filmRouter: Router = Router();
-
-// GET /film - Alle Filme holen
 
 /**
  * @swagger
  * /film:
  *   get:
  *     summary: Gibt alle Filme zurück
+ *     description: Ruft alle Einträge aus der Tabelle "film" ab und gibt sie als Liste zurück.
  *     tags: [film]
  *     responses:
  *       200:
- *         description: Ruft alle Einträge aus der Tabelle "film" ab und gibt sie als Liste zurück.
+ *         description: Erfolgreiche Antwort mit einer Liste aller Filme
  *         content:
  *           application/json:
  *             schema:
@@ -23,24 +22,20 @@ const filmRouter: Router = Router();
  *                 type: object
  *                 properties:
  *                   film_id:
- *                     type: number
+ *                     type: integer
  *                   title:
  *                     type: string
- *                   description: erfolgreiche Antwort mit einer Liste aller Filme
+ *                   description:
  *                     type: string
  */
-
-/**
- * GET - Retrieves all films from the database.
- */
-filmRouter.get('/', async (req: Request, res: Response) => {
+filmRouter.get("/", async (req: Request, res: Response) => {
     const connection = db();
     try {
-        const films = await connection.select('*').from('film');
+        const films = await connection.select("*").from("film");
         res.send(films);
     } catch (error) {
-        console.error('Fehler beim Abrufen der Filme:', error);
-        res.status(404).send({ error: 'Filme konnten nicht geladen werden' });
+        console.error("Fehler beim Abrufen der Filme:", error);
+        res.status(404).send({ error: "Filme konnten nicht geladen werden" });
     }
 });
 
@@ -50,8 +45,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *   get:
  *     summary: Gibt einen bestimmten Film anhand der ID zurück
  *     description: Ruft einen einzelnen Film aus der Tabelle "film" anhand der ID ab.
- *     tags:
- *       - film
+ *     tags: [film]
  *     parameters:
  *       - in: path
  *         name: id
@@ -59,27 +53,37 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *         schema:
  *           type: integer
  *         description: Die ID des Films
- *      responses:
+ *     responses:
  *       200:
  *         description: Erfolgreich – Film gefunden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 film_id:
+ *                   type: integer
+ *                 title:
+ *                   type: string
+ *                 description:
+ *                   type: string
  *       404:
  *         description: Film nicht gefunden
  */
-
-filmRouter.get('/:id', async (req: Request, res: Response) => {
+filmRouter.get("/:id", async (req: Request, res: Response) => {
     const connection = db();
     try {
-        const film = await connection('film').where('film_id', req.params.id).first();
+        const film = await connection("film").where("film_id", req.params.id).first();
 
         if (!film) {
-            res.status(404).send({ error: 'Film nicht gefunden' });
+            res.status(404).send({ error: "Film nicht gefunden" });
             return;
         }
 
         res.send(film);
     } catch (error) {
-        console.error('Fehler beim Abrufen des Films:', error);
-        res.status(404).send({ error: 'Film konnte nicht geladen werden' });
+        console.error("Fehler beim Abrufen des Films:", error);
+        res.status(404).send({ error: "Film konnte nicht geladen werden" });
     }
 });
 
@@ -96,27 +100,28 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - title
+ *               - description
  *             properties:
  *               title:
  *                 type: string
  *               description:
  *                 type: string
  *     responses:
- *       200:
+ *       201:
  *         description: Erfolgreich erstellt
  *       400:
- *        description: Fehler bei der Erstellung
+ *         description: Fehler bei der Erstellung
  */
-
-
-filmRouter.post('/', async (req: Request, res: Response) => {
+filmRouter.post("/", async (req: Request, res: Response) => {
     const connection = db();
     try {
-        const insertResult = await connection('film').insert(req.body);
+        const insertResult = await connection("film").insert(req.body);
         res.send({ success: true, id: insertResult[0] });
     } catch (error) {
-        console.error('Fehler beim Erstellen des Films:', error);
-        res.status(404).send({ error: 'Film konnte nicht erstellt werden' });
+        console.error("Fehler beim Erstellen des Films:", error);
+        res.status(404).send({ error: "Film konnte nicht erstellt werden" });
     }
 });
 
@@ -131,39 +136,40 @@ filmRouter.post('/', async (req: Request, res: Response) => {
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the film
  *         schema:
  *           type: integer
- *           description: Die ID des Films, der aktualisiert werden soll
+ *         description: Die ID des Films, der aktualisiert werden soll
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - title
+ *               - description
  *             properties:
  *               title:
  *                 type: string
  *                 example: Inception
  *               description:
  *                 type: string
- *      responses:
- *         200:
- *          description: Film erfolgreich aktualisiert
- *         404:
- *          description: Film wurde nicht gefunden
+ *                 example: Ein Film über Träume und Realität
+ *     responses:
+ *       200:
+ *         description: Film erfolgreich aktualisiert
+ *       404:
+ *         description: Film wurde nicht gefunden
  */
-
-filmRouter.put('/:id', async (req: Request, res: Response) => {
+filmRouter.put("/:id", async (req: Request, res: Response) => {
     const connection = db();
     try {
-        //get existing film
-        const film= await connection('film')
-            .select('*')
-            .where('film_id', req.params.id)
+        const film = await connection("film")
+            .select("*")
+            .where("film_id", req.params.id)
             .first();
         if (!film) {
-            res.status(404).send({ error: 'Film nicht gefunden' });
+            res.status(404).send({ error: "Film nicht gefunden" });
             return;
         }
 
@@ -176,8 +182,8 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
 
         res.send(`Film aktualisiert (${updateOperation} Eintrag)`);
     } catch (error) {
-        console.error('Fehler beim Aktualisieren des Films:', error);
-        res.status(404).send({ error: 'Film konnte nicht aktualisiert werden' });
+        console.error("Fehler beim Aktualisieren des Films:", error);
+        res.status(404).send({ error: "Film konnte nicht aktualisiert werden" });
     }
 });
 
@@ -187,22 +193,21 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
  *   delete:
  *     summary: Löscht einen Film
  *     description: Entfernt einen Film aus der Datenbank anhand der ID.
- *     tags:
- *       - film
+ *     tags: [film]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: Die ID des Films, der gelöscht werden soll
+ *         description: Die ID des Films
  *     responses:
  *       200:
  *         description: Film erfolgreich gelöscht
  *       404:
  *         description: Film nicht gefunden
  */
-filmRouter.delete('/:id', async (req: Request, res: Response) => {
+filmRouter.delete("/:id", async (req: Request, res: Response) => {
     const connection = db();
     try {
         const deleteOperation = await connection("film")
@@ -221,26 +226,27 @@ filmRouter.delete('/:id', async (req: Request, res: Response) => {
  *   post:
  *     summary: Verknüpft einen Film mit einer Kategorie
  *     description: Fügt eine Beziehung zwischen Film und Kategorie in der Tabelle "film_category" hinzu.
- *     tags:
- *       - film
+ *     tags: [film]
  *     parameters:
  *       - in: path
  *         name: film_id
  *         required: true
  *         schema:
  *           type: integer
+ *         description: Die ID des Films
  *       - in: path
  *         name: category_id
  *         required: true
  *         schema:
  *           type: integer
+ *         description: Die ID der Kategorie
  *     responses:
  *       201:
  *         description: Verknüpfung erfolgreich erstellt
  *       400:
  *         description: Fehler bei der Verknüpfung
  */
-filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Response) => {
+filmRouter.post("/:film_id/category/:category_id", async (req: Request, res: Response) => {
     const filmId = req.params.film_id;
     const categoryId = req.params.category_id;
 
@@ -260,41 +266,39 @@ filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Res
  *   delete:
  *     summary: Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
  *     description: Löscht die Zuordnung aus der Tabelle "film_category".
- *     tags:
- *       - film
+ *     tags: [film]
  *     parameters:
  *       - in: path
  *         name: film_id
  *         required: true
  *         schema:
  *           type: integer
+ *         description: Die ID des Films
  *       - in: path
  *         name: category_id
  *         required: true
  *         schema:
  *           type: integer
+ *         description: Die ID der Kategorie
  *     responses:
  *       200:
  *         description: Verknüpfung erfolgreich gelöscht
  *       404:
  *         description: Verknüpfung nicht gefunden
  */
-filmRouter.delete('/:film_id/category/:category_id', async (req: Request, res: Response) => {
-
-    const categoryId = req.params.category_id;
-    const filmId = req.params.film_id;
+filmRouter.delete("/:film_id/category/:category_id", async (req: Request, res: Response) => {
+    const connection = db();
+    const { film_id, category_id } = req.params;
 
     try {
-        await addFilmToCategory(Number(categoryId), Number(filmId));
-        console.log(`film ${filmId}added to category ${categoryId} `);
+        const deleteOp = await connection("film_category")
+            .where({ film_id, category_id })
+            .delete();
 
-        res.status(201).send("category-Film created");
+        res.send("Verknüpfung gelöscht");
     } catch (error) {
-        console.error("Error adding film to category: ", error);
-        res.status(400).send({error: "Failed to add film to category. " + (error)});
+        res.status(404).send({ error: "Verknüpfung konnte nicht entfernt werden" });
     }
 });
 
-
 export default filmRouter;
-
