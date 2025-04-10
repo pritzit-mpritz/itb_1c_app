@@ -47,7 +47,7 @@ export async function createFilm(data: { title: string; description: string }) {
 /**
  * Aktualisiert einen Film anhand der ID
  */
-export async function updateFilm(id: number, data: { title: string; description: string }) {
+export async function updateFilm(id: string, data: { title: string; description: string }) {
     const connection = db();
 
     const film = await connection("film")
@@ -67,7 +67,7 @@ export async function updateFilm(id: number, data: { title: string; description:
 /**
  * Löscht einen Film anhand der ID
  */
-export async function deleteFilm(id: number) {
+export async function deleteFilm(id: string) {
     const connection = db();
     const deleted = await connection("film")
         .where("film_id", id)
