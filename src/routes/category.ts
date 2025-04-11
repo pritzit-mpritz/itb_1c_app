@@ -1,6 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
-import {getAllCategories, getCategoryById, addCategoryToFilm} from "../services/categoryService";
+import {removeCategoryFromFilm, getAllCategories, getCategoryById, addCategoryToFilm} from "../services/categoryService";
 
 const categoryRouter: Router = Router();
 
@@ -192,7 +192,49 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /category/{category_id}/film/{film_id}:
  *  post:
- *    summary: Add a category to a film - the film should already exist
+ *    summary: Add a category to a film - film should already exist
+ *    tags: [Category]
+ *    parameters:
+ *    - in: path
+ *      name: category_id
+ *      required: true
+ *      description: ID of the category
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    - in: path
+ *      name: film_id
+ *      required: true
+ *      description: ID of the category
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *  responses:
+ *    201:
+ *      description: Category was successfully added to Film
+ *    400:
+ *      description: Bad request - film or category does not exist
+ */
+categoryRouter.post('/:category_id/:film/:film_id/', async (req: Request, res: Response) => {
+    const categoryId = req.params.category_id;
+    const filmId = req.params.film_id;
+
+    try {
+        await addCategoryToFilm(Number(categoryId), Number(filmId));
+        console.log(`Category ${categoryId} added to film ${filmId}`);
+
+        res.status(201).json("Film-Category created");
+    } catch (error) {
+        console.error("Error adding category to film: ", error);
+        res.status(400).json({error: "Failed to add category to film. " + (error)});
+    }
+});
+
+/**
+ * @swagger
+ * /category/{category_id}/film/{film_id}:
+ *  delete:
+ *    summary: Remove a category from a film
  *    tags: [Category]
  *    parameters:
  *    - in: path
@@ -209,20 +251,27 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
  *      schema:
  *        type: integer
  *        example: 1
+ *    responses:
+ *      200:
+ *        description: Category was successfully removed from film
+ *      404:
+ *        description: Relationship between category and film not found
  */
-categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Response) => {
-    const categoryId = req.params.category_id;
-    const filmId = req.params.film_id;
+categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+    const categoryId = Number(req.params.category_id);
+    const filmId = Number(req.params.film_id);
 
     try {
-        await addCategoryToFilm(Number(categoryId), Number(filmId));
-        console.log(`Category ${categoryId} added to film ${filmId}`);
-
-        res.status(201).send("Category-Film created");
+        const result = await removeCategoryFromFilm(categoryId, filmId);
+        if (result === 0) {
+            res.status(404).json({ error: "Category-film relationship not found" });
+            return;
+        }
+        res.status(200).json({ message: `Category ${categoryId} removed from film ${filmId}` });
     } catch (error) {
-        console.error("Error adding category to film: ", error);
-        res.status(400).send({error: "Failed to add category to film. " + (error)});
+        console.error("Error removing category from film: ", error);
+        res.status(500).json({ error: "Failed to remove category from film. " + error });
     }
-})
+});
 
 export default categoryRouter;

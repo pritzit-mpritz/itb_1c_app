@@ -3,11 +3,12 @@ import dotenv from 'dotenv';
 import randomRouter from "./routes/randoms";
 import actorRouter from "./routes/actor";
 import categoryRouter from "./routes/category";
+import filmRouter from "./routes/film";
+
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
 import {db} from "./db";
-import filmRouter from "./routes/film";
 
 // Initialize environment variables
 dotenv.config();

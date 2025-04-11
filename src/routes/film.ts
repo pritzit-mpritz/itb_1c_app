@@ -1,25 +1,23 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
-import {getAllFilms, getFilmById, addFilm, updateFilm, deleteFilm, getFilmsByCategory} from "../services/filmService";
-
+import {removeFilmFromCategory, addFilmToCategory, getFilmById, getAllFilm} from "../services/filmService";
+//
 const filmRouter: Router = Router();
-
-//Film CRUD-Funktionalität
 
 /**
  * @swagger
- * /film:
+ * /Film:
  *   get:
- *     summary: Retrieve a list of films
+ *     summary: Retrieve a list of film
  *     tags: [Film]
  *     parameters:
  *     - in: query
  *       name: title
  *       required: false
- *       description: Filter films by title
+ *       description: Filter Films by first name
  *       schema:
  *         type: string
- *         example: Avatar
+ *         example: Tom
  *     responses:
  *       200:
  *         description: A list of films
@@ -30,40 +28,23 @@ const filmRouter: Router = Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   film_id:
+ *                   Film_id:
  *                     type: number
- *                   title:
+ *                   first_name:
  *                     type: string
- *                   description:
- *                     type: string
- *                   release_year:
- *                     type: number
- *                   language_id:
- *                     type: number
- *                   rental_duration:
- *                     type: number
- *                   rental_rate:
- *                     type: number
- *                   length:
- *                     type: number
- *                   replacement_cost:
- *                     type: number
- *                   rating:
+ *                   last_name:
  *                     type: string
  *                   last_update:
  *                     type: string
- *                   special_features:
- *                     type: array
- *                     items:
- *                       type: string
  */
 filmRouter.get('/', async (req: Request, res: Response) => {
-    res.send(await getAllFilms(req.query.title as string));
+    res.send(await getAllFilm(req.query.first_name as string));
 });
+
 
 /**
  * @swagger
- * /film/{id}:
+ * /Film/{id}:
  *   get:
  *     summary: Retrieve a film
  *     tags: [Film]
@@ -71,12 +52,12 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the film
+ *         description: ID of the Film
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: A film
+ *         description: An Film
  *         content:
  *           application/json:
  *             schema:
@@ -84,45 +65,27 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *               properties:
  *                 film_id:
  *                   type: number
- *                 title:
+ *                 first_name:
  *                   type: string
- *                 description:
- *                   type: string
- *                 release_year:
- *                   type: number
- *                 language_id:
- *                   type: number
- *                 rental_duration:
- *                   type: number
- *                 rental_rate:
- *                   type: number
- *                 length:
- *                   type: number
- *                 replacement_cost:
- *                   type: number
- *                 rating:
+ *                 last_name:
  *                   type: string
  *                 last_update:
  *                   type: string
- *                 special_features:
- *                   type: array
- *                   items:
- *                     type: string
  */
 filmRouter.get('/:id', async (req: Request, res: Response) => {
-    const film = await getFilmById(Number(req.params.id))
+    const Film = await getFilmById(Number(req.params.id))
 
-    if (!film) {
-        res.status(404).send({error: "Film not found"});
+    if (!Film) {
+        res.status(404).send({error: "film not found"});
         return
     }
 
-    res.send(film);
+    res.send(Film);
 });
 
 /**
  * @swagger
- * /film:
+ * /Film:
  *   post:
  *     summary: Create a new film
  *     tags: [Film]
@@ -133,52 +96,23 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               first_name:
  *                 type: string
- *                 example: New Film
- *               description:
+ *                 example: Tom
+ *               last_name:
  *                 type: string
- *                 example: A description of the film
- *               release_year:
- *                 type: number
- *                 example: 2023
- *               language_id:
- *                 type: number
- *                 example: 1
- *               rental_duration:
- *                 type: number
- *                 example: 3
- *               rental_rate:
- *                 type: number
- *                 example: 4.99
- *               length:
- *                 type: number
- *                 example: 120
- *               replacement_cost:
- *                 type: number
- *                 example: 19.99
- *               rating:
- *                 type: string
- *                 example: PG-13
- *               special_features:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: ["Trailers", "Commentaries"]
+ *                 example: Hanks
  *     responses:
  *       200:
  *         description: Film created successfully
  */
 filmRouter.post('/', async (req: Request, res: Response) => {
-    console.log("Creating film: ", req.body);
+    console.log("Creating Film: ", req.body);
 
-    try {
-        const id = await addFilm(req.body);
-        res.send({id: id});
-    } catch (error) {
-        console.error("Error creating film: ", error);
-        res.status(400).send({error: "Failed to create film. " + (error)});
-    }
+    const connection = db();
+    const insertOperation = await connection.insert(req.body).into("Film");
+
+    res.send({id: insertOperation[0]});
 });
 
 /**
@@ -191,7 +125,7 @@ filmRouter.post('/', async (req: Request, res: Response) => {
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the film
+ *         description: ID of the Film
  *         schema:
  *           type: integer
  *     requestBody:
@@ -201,56 +135,34 @@ filmRouter.post('/', async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               first_name:
  *                 type: string
- *                 example: Updated Film Title
- *               description:
+ *                 example: Tom
+ *               last_name:
  *                 type: string
- *                 example: Updated description
- *               release_year:
- *                 type: number
- *                 example: 2023
- *               language_id:
- *                 type: number
- *                 example: 1
- *               rental_duration:
- *                 type: number
- *                 example: 3
- *               rental_rate:
- *                 type: number
- *                 example: 4.99
- *               length:
- *                 type: number
- *                 example: 120
- *               replacement_cost:
- *                 type: number
- *                 example: 19.99
- *               rating:
- *                 type: string
- *                 example: PG-13
- *               special_features:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: ["Trailers", "Commentaries"]
+ *                 example: Hanks
  *     responses:
  *       200:
  *         description: Film updated successfully
  */
 filmRouter.put('/:id', async (req: Request, res: Response) => {
-    try {
-        const updateCount = await updateFilm(Number(req.params.id), req.body);
+    const connection = db();
 
-        if (updateCount === 0) {
-            res.status(404).send({error: "Film not found"});
-            return;
-        }
+    const film = await connection.select("*")
+        .from("film")
+        .where("film_id", req.params.id).first();
 
-        res.send(`Updated ${updateCount} films`);
-    } catch (error) {
-        console.error("Error updating film: ", error);
-        res.status(400).send({error: "Failed to update film. " + (error)});
+    if (!film) {
+        res.status(404).send({error: "Film not found"});
+        return
     }
+
+    film.first_name = req.body.first_name;
+    film.last_name = req.body.last_name;
+
+    const updateOperation = await connection("film").update(film)
+        .where("film_id", req.params.id);
+    res.send(`Updated ${updateOperation} film`);
 });
 
 /**
@@ -265,68 +177,110 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
  *      required: true
  *      description: ID of the film
  *      schema:
- *        type: integer
+ *      type: integer
  *   responses:
  *     200:
  *       description: Film deleted successfully
- *     404:
- *       description: Film not found
+ *
  */
 filmRouter.delete('/:id', async (req: Request, res: Response) => {
+    const connection = db();
+    const deleteOperation = await connection("Film")
+        .where("Film_id", req.params.id).delete();
+
+    if (!deleteOperation) {
+        res.status(404).send({error: "Film not found"});
+        return
+    }
+
+    res.send(`Deleted ${deleteOperation} film`);
+});
+
+//Film zu Category Tabellenverbindung
+
+/**
+ * @swagger
+ * /film/{film_id}/category/{category_id}:
+ *  post:
+ *    summary: Add a film to a category - category should already exist
+ *    tags: [Film]
+ *    parameters:
+ *    - in: path
+ *      name: film_id
+ *      required: true
+ *      description: ID of the film
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    - in: path
+ *      name: category_id
+ *      required: true
+ *      description: ID of the category
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *  responses:
+ *    201:
+ *      description: Film was successfully added to category
+ *    400:
+ *      description: Bad request - film or category does not exist
+ */
+filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Response) => {
+    const filmId = req.params.film_id;
+    const categoryId = req.params.category_id;
+
     try {
-        const deleteCount = await deleteFilm(Number(req.params.id));
+        await addFilmToCategory(Number(filmId), Number(categoryId));
+        console.log(`Film ${filmId} added to category ${categoryId}`);
 
-        if (deleteCount === 0) {
-            res.status(404).send({error: "Film not found"});
-            return;
-        }
-
-        res.send(`Deleted ${deleteCount} films`);
+        res.status(201).json("Film-Category created");
     } catch (error) {
-        console.error("Error deleting film: ", error);
-        res.status(400).send({error: "Failed to delete film. " + (error)});
+        console.error("Error adding film to category: ", error);
+        res.status(400).json({error: "Failed to add film to category. " + (error)});
     }
 });
 
 /**
  * @swagger
- * /film/category/{category_id}:
- *   get:
- *     summary: Get all films by category
- *     tags: [Film]
- *     parameters:
- *       - in: path
- *         name: category_id
- *         required: true
- *         description: ID of the category
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: A list of films in the specified category
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   film_id:
- *                     type: number
- *                   title:
- *                     type: string
- *                   description:
- *                     type: string
- *                   release_year:
- *                     type: number
+ * /film/{film_id}/category/{category_id}:
+ *  delete:
+ *    summary: Remove a film from a category
+ *    tags: [Film]
+ *    parameters:
+ *    - in: path
+ *      name: film_id
+ *      required: true
+ *      description: ID of the film
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    - in: path
+ *      name: category_id
+ *      required: true
+ *      description: ID of the category
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    responses:
+ *      200:
+ *        description: Film was successfully removed from category
+ *      404:
+ *        description: Relationship between film and category not found
  */
-filmRouter.get('/category/:category_id', async (req: Request, res: Response) => {
+filmRouter.delete('/:film_id/category/:category_id', async (req: Request, res: Response) => {
+    const filmId = Number(req.params.film_id);
+    const categoryId = Number(req.params.category_id);
+
     try {
-        const films = await getFilmsByCategory(Number(req.params.category_id));
-        res.send(films);
+        const result = await removeFilmFromCategory(filmId, categoryId);
+        if (result === 0) {
+            res.status(404).json({ error: "Film-category relationship not found" });
+            return;
+        }
+        res.status(200).json({ message: `Film ${filmId} removed from category ${categoryId}` });
     } catch (error) {
-        console.error("Error getting films by category: ", error);
-        res.status(400).send({error: "Failed to get films by category. " + (error)});
+        console.error("Error removing film from category: ", error);
+        res.status(500).json({ error: "Failed to remove film from category. " + error });
     }
 });
 
