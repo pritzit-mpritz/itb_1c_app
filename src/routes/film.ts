@@ -1,6 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
-import {removeFilmFromCategory, addFilmToCategory, getFilmById, getAllFilm} from "../services/filmService";
+import {removeFilmFromCategory, addFilmToCategory, getFilmById, getAllFilms} from "../services/filmService";
 
 const filmRouter: Router = Router();
 
@@ -16,10 +16,10 @@ const filmRouter: Router = Router();
  *     - in: query
  *       name: title
  *       required: false
- *       description: Filter Films by first name
+ *       description: Filter Films by title
  *       schema:
  *         type: string
- *         example: Tom
+ *         example: Academy Dinosaur
  *     responses:
  *       200:
  *         description: A list of films
@@ -32,15 +32,13 @@ const filmRouter: Router = Router();
  *                 properties:
  *                   Film_id:
  *                     type: number
- *                   first_name:
- *                     type: string
- *                   last_name:
+ *                   title:
  *                     type: string
  *                   last_update:
  *                     type: string
  */
 filmRouter.get('/', async (req: Request, res: Response) => {
-    res.send(await getAllFilm(req.query.first_name as string));
+    res.send(await getAllFilms(req.query.title as string));
 });
 
 
@@ -48,7 +46,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  * @swagger
  * /Film/{id}:
  *   get:
- *     summary: Retrieve a film
+ *     summary: Retrieve a film by ID
  *     tags: [Film]
  *     parameters:
  *       - in: path
@@ -59,7 +57,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *           type: integer
  *     responses:
  *       200:
- *         description: An Film
+ *         description: A Film
  *         content:
  *           application/json:
  *             schema:
@@ -67,9 +65,7 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *               properties:
  *                 film_id:
  *                   type: number
- *                 first_name:
- *                   type: string
- *                 last_name:
+ *                 title:
  *                   type: string
  *                 last_update:
  *                   type: string
@@ -98,12 +94,9 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             properties:
- *               first_name:
+ *               title:
  *                 type: string
- *                 example: Tom
- *               last_name:
- *                 type: string
- *                 example: Hanks
+ *                 example: Academy Dinosaur
  *     responses:
  *       200:
  *         description: Film created successfully
@@ -119,7 +112,7 @@ filmRouter.post('/', async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /film/{id}:
+ * /Film/{id}:
  *   put:
  *     summary: Update a film
  *     tags: [Film]
@@ -137,12 +130,9 @@ filmRouter.post('/', async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             properties:
- *               first_name:
+ *               title:
  *                 type: string
- *                 example: Tom
- *               last_name:
- *                 type: string
- *                 example: Hanks
+ *                 example: Academy Dinosaur
  *     responses:
  *       200:
  *         description: Film updated successfully
@@ -159,8 +149,8 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
         return
     }
 
-    film.first_name = req.body.first_name;
-    film.last_name = req.body.last_name;
+    film.title = req.body.title;
+    film.title = req.body.title;
 
     const updateOperation = await connection("film").update(film)
         .where("film_id", req.params.id);
@@ -169,7 +159,7 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /film/{id}:
+ * /Film/{id}:
  *  delete:
  *   summary: Delete a film
  *   tags: [Film]

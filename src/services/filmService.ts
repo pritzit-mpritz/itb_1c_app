@@ -92,53 +92,24 @@ export async function addFilmToCategory(filmId: number, categoryId: number) {
 }
 
 /**
- * Delete a film from the database
- * @param id The ID of the film to delete
- * @returns The number of deleted rows
+ * Removes a film-category relation
+ * @param filmId the film to remove from a category
+ * @param categoryId the category the film is removed from
+ * @returns number of deleted records (0 if none found, 1 if successful)
  */
-export async function deleteFilm(id: number) {
+export async function removeFilmFromCategory(filmId: number, categoryId: number) {
     const connection = db();
 
-    // First check if the film exists
-    const film = await connection.select("*")
-        .from("film")
-        .where("film_id", id)
-        .first();
+    const tableName = "film_category";
 
-    if (!film) {
-        return 0;
-    }
-
-    // First delete any film_category entries
-    await connection("film_category")
-        .where("film_id", id)
+    const deleteOperation = await connection(tableName)
+        .where({
+            film_id: filmId,
+            category_id: categoryId
+        })
         .delete();
 
-    // Then delete the film
-    const deleteOperation = await connection("film")
-        .where("film_id", id)
-        .delete();
-
-    console.log(`Deleted film ${id}: ${deleteOperation} rows`);
+    console.log(`Removed film ${filmId} from category ${categoryId}. Rows affected: ${deleteOperation}`);
 
     return deleteOperation;
-}
-
-/**
- * Get all films in a specific category
- * @param categoryId The ID of the category to get films for
- * @returns An array of films in the specified category
- */
-export async function getFilmsByCategory(categoryId: number) {
-    const connection = db();
-
-    const films = await connection
-        .select("f.*")
-        .from("film as f")
-        .join("film_category as fc", "f.film_id", "fc.film_id")
-        .where("fc.category_id", categoryId);
-
-    console.log(`Selected ${films.length} films for category ${categoryId}`);
-
-    return films;
 }
