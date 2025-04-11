@@ -89,25 +89,22 @@ export async function addCategoryToFilm(categoryId: number, filmId: number) {
 }
 
 /**
- * Removes a film-category relation
- * @param filmId the film to remove from a category
- * @param categoryId the category the film is removed from
+ * Removes a category-film relation
+ * @param categoryId the category to remove from a film
+ * @param filmId the film the category is removed from
  * @returns number of deleted records (0 if none found, 1 if successful)
  */
-export async function removeFilmFromCategory(filmId: number, categoryId: number) {
+export async function removeCategoryFromFilm(categoryId: number, filmId: number) {
     const connection = db();
 
-    // The correct table name should be "film_category" in Sakila DB
-    const tableName = "film_category";
-
-    const deleteOperation = await connection(tableName)
+    const deleteOperation = await connection("film_category")
         .where({
-            film_id: filmId,
-            category_id: categoryId
+            category_id: categoryId,
+            film_id: filmId
         })
         .delete();
 
-    console.log(`Removed film ${filmId} from category ${categoryId}. Rows affected: ${deleteOperation}`);
+    console.log(`Removed category ${categoryId} from film ${filmId}. Rows affected: ${deleteOperation}`);
 
     return deleteOperation;
 }

@@ -1,6 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
-import {getAllCategories, getCategoryById, addCategoryToFilm} from "../services/categoryService";
+import {removeCategoryFromFilm, getAllCategories, getCategoryById, addCategoryToFilm} from "../services/categoryService";
 
 const categoryRouter: Router = Router();
 
@@ -229,4 +229,49 @@ categoryRouter.post('/:category_id/:film/:film_id/', async (req: Request, res: R
         res.status(400).json({error: "Failed to add category to film. " + (error)});
     }
 });
+
+/**
+ * @swagger
+ * /category/{category_id}/film/{film_id}:
+ *  delete:
+ *    summary: Remove a category from a film
+ *    tags: [Category]
+ *    parameters:
+ *    - in: path
+ *      name: category_id
+ *      required: true
+ *      description: ID of the category
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    - in: path
+ *      name: film_id
+ *      required: true
+ *      description: ID of the film
+ *      schema:
+ *        type: integer
+ *        example: 1
+ *    responses:
+ *      200:
+ *        description: Category was successfully removed from film
+ *      404:
+ *        description: Relationship between category and film not found
+ */
+categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+    const categoryId = Number(req.params.category_id);
+    const filmId = Number(req.params.film_id);
+
+    try {
+        const result = await removeCategoryFromFilm(categoryId, filmId);
+        if (result === 0) {
+            res.status(404).json({ error: "Category-film relationship not found" });
+            return;
+        }
+        res.status(200).json({ message: `Category ${categoryId} removed from film ${filmId}` });
+    } catch (error) {
+        console.error("Error removing category from film: ", error);
+        res.status(500).json({ error: "Failed to remove category from film. " + error });
+    }
+});
+
 export default categoryRouter;
