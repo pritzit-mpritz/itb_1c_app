@@ -1,5 +1,5 @@
 import {db} from "../db";
-
+//
 /**
  * Get all films from the database
  * @param titleFilter Optional filter for the title of the film

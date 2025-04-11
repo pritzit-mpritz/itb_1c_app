@@ -4,7 +4,7 @@ import {db} from "../db";
  * Get all categories from the database
  * @param nameFilter Optional filter for the name of the category
  */
-
+//*
 export async function getAllCategories(nameFilter?: string): Promise<any[]> {
     const connection = db();
 
