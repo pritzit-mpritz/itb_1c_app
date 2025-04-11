@@ -5,19 +5,19 @@ import {db} from "../db";
  * @param nameFilter Optional filter for the name of the category
  */
 
-export async function getAllCategories(nameFilter?: string) : Promise<any[]> {
+export async function getAllCategories(nameFilter?: string): Promise<any[]> {
     const connection = db();
-    // const category = await connection.select("*").from("category")
-    //     .whereLike("name", `%${nameFilter}%`);
 
-    const category:any[] = await connection
-        .select("*")
-        .from("category")
-        .whereLike("name", nameFilter ? `${nameFilter}%` : '%');
+    let query = connection.select("*").from("category");
 
-    console.log("Selected categories: ", category);
+    if (nameFilter) {
+        query = query.whereLike("name", `${nameFilter}%`);
+    }
 
-    return category;
+    const categories: any[] = await query;
+
+    console.log("Selected categories: ", categories);
+    return categories;
 }
 
 export async function getCategoryById(id: number) {
