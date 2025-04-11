@@ -13,6 +13,7 @@ export async function getAllFilms(titleFilter?: string) : Promise<any[]> {
         .whereLike("title", titleFilter ? `${titleFilter}%` : '%');
 
 
+
     console.log("Selected films: ", films.length);
 
     return films;
