@@ -192,7 +192,7 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /category/{category_id}/film/{film_id}:
  *  post:
- *    summary: Add a category to a film - the film should already exist
+ *    summary: Add a category to a film - film should already exist
  *    tags: [Category]
  *    parameters:
  *    - in: path
@@ -205,12 +205,17 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
  *    - in: path
  *      name: film_id
  *      required: true
- *      description: ID of the film
+ *      description: ID of the category
  *      schema:
  *        type: integer
  *        example: 1
+ *  responses:
+ *    201:
+ *      description: Category was successfully added to Film
+ *    400:
+ *      description: Bad request - film or category does not exist
  */
-categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+categoryRouter.post('/:category_id/:film/:film_id/', async (req: Request, res: Response) => {
     const categoryId = req.params.category_id;
     const filmId = req.params.film_id;
 
@@ -218,11 +223,10 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
         await addCategoryToFilm(Number(categoryId), Number(filmId));
         console.log(`Category ${categoryId} added to film ${filmId}`);
 
-        res.status(201).send("Category-Film created");
+        res.status(201).json("Film-Category created");
     } catch (error) {
         console.error("Error adding category to film: ", error);
-        res.status(400).send({error: "Failed to add category to film. " + (error)});
+        res.status(400).json({error: "Failed to add category to film. " + (error)});
     }
-})
-
+});
 export default categoryRouter;
