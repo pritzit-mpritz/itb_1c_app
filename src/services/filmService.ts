@@ -1,20 +1,20 @@
 import {db} from "../db";
-
+//
 /**
- * Get all film from the database
+ * Get all films from the database
  * @param titleFilter Optional filter for the title of the film
  */
-export async function getAllFilm(titleFilter?: string) {
+export async function getAllFilms(titleFilter?: string) : Promise<any[]> {
     const connection = db();
 
-    const query = connection.select("*").from("film");
+    const films: any[] = await connection
+        .select("*")
+        .from("film")
+        .whereLike("title", titleFilter ? `${titleFilter}%` : '%');
 
-    if (titleFilter) {
-        query.whereLike("title", `${titleFilter}%`);
-    }
 
-    const films = await query;
-    console.log("Selected films: ", films);
+
+    console.log("Selected films: ", films.length);
 
     return films;
 }
@@ -31,7 +31,7 @@ export async function getFilmById(id: number) {
         .where("film_id", id)
         .first();
 
-    console.log("Selected film: ", film);
+    console.log("Selected film: ", film?.title || "Not found");
 
     return film;
 }
@@ -51,68 +51,67 @@ export async function addFilmToCategory(filmId: number, categoryId: number) {
         .first();
 
     if (!film) {
-        throw new Error(`Film with ID ${filmId} not found`);
+        return 0;
     }
 
-    // Check if category exists
-    const category = await connection.select("*")
-        .from("category")
-        .where("category_id", categoryId)
-        .first();
+    // Update the film
+    const updateOperation = await connection("film")
+        .update(filmData)
+        .where("film_id", id);
 
-    if (!category) {
-        throw new Error(`Category with ID ${categoryId} not found`);
-    }
+    console.log(`Updated film ${id}: ${updateOperation} rows`);
 
-    // Check the correct table name - might be film_category in Sakila
-    const tableName = "film_category"; // Change this if your table is named differently
-
-    // Check if relationship already exists
-    const existing = await connection(tableName)
-        .where({
-            film_id: filmId,
-            category_id: categoryId
-        })
-        .first();
-
-    if (existing) {
-        throw new Error(`Film ${filmId} is already in category ${categoryId}`);
-    }
-
-    // Add relationship
-    const insertOperation = await connection(tableName)
-        .insert({
-            film_id: filmId,
-            category_id: categoryId,
-            last_update: new Date() // Sakila tables often have this field
-        });
-
-    console.log("Inserted film to category: ", insertOperation);
-
-    return insertOperation;
-
+    return updateOperation;
 }
 
 /**
- * Removes a film-category relation
- * @param filmId the film to remove from a category
- * @param categoryId the category the film is removed from
- * @returns number of deleted records (0 if none found, 1 if successful)
+ * Delete a film from the database
+ * @param id The ID of the film to delete
+ * @returns The number of deleted rows
  */
-export async function removeFilmFromCategory(filmId: number, categoryId: number) {
+export async function deleteFilm(id: number) {
     const connection = db();
 
-    // The correct table name should be "film_category" in Sakila DB
-    const tableName = "film_category";
+    // First check if the film exists
+    const film = await connection.select("*")
+        .from("film")
+        .where("film_id", id)
+        .first();
 
-    const deleteOperation = await connection(tableName)
-        .where({
-            film_id: filmId,
-            category_id: categoryId
-        })
+    if (!film) {
+        return 0;
+    }
+
+    // First delete any film_category entries
+    await connection("film_category")
+        .where("film_id", id)
         .delete();
 
-    console.log(`Removed film ${filmId} from category ${categoryId}. Rows affected: ${deleteOperation}`);
+    // Then delete the film
+    const deleteOperation = await connection("film")
+        .where("film_id", id)
+        .delete();
+
+    console.log(`Deleted film ${id}: ${deleteOperation} rows`);
 
     return deleteOperation;
+}
+
+/**
+ * Get all films in a specific category
+ * @param categoryId The ID of the category to get films for
+ * @returns An array of films in the specified category
+ */
+export async function getFilmsByCategory(categoryId: number) {
+    const connection = db();
+
+    const films = await connection
+        .select("f.*")
+        .from("film as f")
+        .join("film_category as fc", "f.film_id", "fc.film_id")
+        .where("fc.category_id", categoryId);
+
+    console.log(`Selected ${films.length} films for category ${categoryId}`);
+
+    return films;
 }
