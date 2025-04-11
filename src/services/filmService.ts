@@ -19,6 +19,11 @@ export async function getAllFilm(titleFilter?: string) {
     return films;
 }
 
+/**
+ * Get a specific film from the database by ID
+ * @param id The unique identifier of the film to retrieve
+ * @returns The film object if found, otherwise undefined
+ */
 export async function getFilmById(id: number) {
     const connection = db();
     const film = await connection.select("*")

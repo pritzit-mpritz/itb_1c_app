@@ -1,8 +1,10 @@
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
 import {removeFilmFromCategory, addFilmToCategory, getFilmById, getAllFilm} from "../services/filmService";
-//
+
 const filmRouter: Router = Router();
+
+// Film REST-conform operators
 
 /**
  * @swagger
