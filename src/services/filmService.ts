@@ -51,17 +51,44 @@ export async function addFilmToCategory(filmId: number, categoryId: number) {
         .first();
 
     if (!film) {
-        return 0;
+        throw new Error(`Film with ID ${filmId} not found`);
     }
 
-    // Update the film
-    const updateOperation = await connection("film")
-        .update(filmData)
-        .where("film_id", id);
+    // Check if category exists
+    const category = await connection.select("*")
+        .from("category")
+        .where("category_id", categoryId)
+        .first();
 
-    console.log(`Updated film ${id}: ${updateOperation} rows`);
+    if (!category) {
+        throw new Error(`Category with ID ${categoryId} not found`);
+    }
 
-    return updateOperation;
+    const tableName = "film_category";
+
+    // Check if relationship already exists
+    const existing = await connection(tableName)
+        .where({
+            film_id: filmId,
+            category_id: categoryId
+        })
+        .first();
+
+    if (existing) {
+        throw new Error(`Film ${filmId} is already in category ${categoryId}`);
+    }
+
+    // Add relationship
+    const insertOperation = await connection(tableName)
+        .insert({
+            film_id: filmId,
+            category_id: categoryId,
+            last_update: new Date() // Sakila tables often have this field
+        });
+
+    console.log("Inserted film to category: ", insertOperation);
+
+    return insertOperation;
 }
 
 /**
