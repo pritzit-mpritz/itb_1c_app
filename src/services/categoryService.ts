@@ -13,7 +13,7 @@ export async function getAllCategories(nameFilter?: string) : Promise<any[]> {
     const category:any[] = await connection
         .select("*")
         .from("category")
-        .whereLike("name", `${nameFilter}%`)
+        .whereLike("name", nameFilter ? `${nameFilter}%` : '%');
 
     console.log("Selected categories: ", category);
 

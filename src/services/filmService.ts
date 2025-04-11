@@ -10,7 +10,8 @@ export async function getAllFilms(titleFilter?: string) : Promise<any[]> {
     const films: any[] = await connection
         .select("*")
         .from("film")
-        .whereLike("title", `${titleFilter || ''}%`);
+        .whereLike("title", titleFilter ? `${titleFilter}%` : '%');
+
 
     console.log("Selected films: ", films.length);
 
