@@ -80,7 +80,7 @@ export async function deleteFilm(id: number) {
  * @param categoryId the category the film is added to
  * @returns ID of the inserted relation and adds relation to database.
  */
-export async function addFilmToCategory(filmId: number, categoryId: number) {
+export async function addCategoryToFilm(filmId: number, categoryId: number) {
     const connection = db();
     const insertOperation = await connection("film_category")
         .insert({
@@ -99,7 +99,7 @@ export async function addFilmToCategory(filmId: number, categoryId: number) {
  * @param categoryId the category to delete from relation
  * @returns number of deleted relations and deletes relation from database.
  */
-export async function deleteFilmCategoryRelation(filmId: number, categoryId: number) {
+export async function removeCategoryFromFilm(filmId: number, categoryId: number) {
     const connection = db();
     const deleteOperation = await connection("film_category")
         .where({ film_id: filmId, category_id: categoryId }).delete();

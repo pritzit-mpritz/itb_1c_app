@@ -1,5 +1,13 @@
 import {Request, Response, Router} from 'express';
-import {getAllFilms, getFilmById, createFilm, updateFilm, deleteFilm, addFilmToCategory, deleteFilmCategoryRelation} from '../services/filmService'
+import {
+    getAllFilms,
+    getFilmById,
+    createFilm,
+    updateFilm,
+    deleteFilm,
+    addCategoryToFilm,
+    removeCategoryFromFilm
+} from '../services/filmService'
 import {getCategoryById} from "../services/categoryService";
 
 const filmRouter: Router = Router();
@@ -219,7 +227,7 @@ filmRouter.post('/:film_id/category/:category_id/', async (req: Request, res: Re
     }
 
     try {
-        await addFilmToCategory(Number(filmId), Number(categoryId));
+        await addCategoryToFilm(Number(filmId), Number(categoryId));
         console.log(`Category ${categoryId} added to film ${filmId}`);
 
         res.status(201).send("Category added to film.");
@@ -272,7 +280,7 @@ filmRouter.delete('/:film_id/category/:category_id/', async (req: Request, res: 
     }
 
     try {
-        await deleteFilmCategoryRelation(Number(filmId), Number(categoryId));
+        await removeCategoryFromFilm(Number(filmId), Number(categoryId));
         console.log(`Category ${categoryId} deleted from film ${filmId}`);
 
         res.status(201).send("Category deleted from film.");
