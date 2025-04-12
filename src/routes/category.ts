@@ -68,6 +68,9 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
  *                   type: number
  *                 name:
  *                   type: string
+ *        404:
+ *         description: Category is not found.
+ *
  */
 
 //2.Block get by id
@@ -100,7 +103,9 @@ categoryRouter.get('/:id', async (req: Request, res: Response) => {
  *                 example: Action
  *     responses:
  *       200:
- *         description: Category created successfully
+ *         description: Category created successfully.
+ *       400:
+ *         description: Failed to create category.
  */
 
 
@@ -140,7 +145,9 @@ categoryRouter.post('/', async (req: Request, res: Response) => {
  *                 example: Adventure
  *     responses:
  *       200:
- *         description: Category updated successfully
+ *         description: Category updating is successfully.
+ *       404:
+ *         description: Category is not found.
  */
 
 //4. Block update, put
@@ -174,7 +181,9 @@ categoryRouter.put('/:id', async (req: Request, res: Response) => {
  *        type: integer
  *   responses:
  *     200:
- *       description: Category deleted successfully
+ *       description: Category deleted successfully.
+ *     404:
+ *       description: Category is not found.
  */
 
 
@@ -214,8 +223,12 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
  *        type: integer
  *        example: 1
  *    responses:
- *      200:
- *        description: Film added to category successfully
+ *      201:
+ *         description: Film added from category successfully.
+ *      400:
+ *         description: Failed to add film from category.
+ *      404:
+ *         description: Category or Film is not found.
  */
 
 //6.Block add film to category
@@ -227,14 +240,14 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
     // 1.check if film exists
     const film = await getFilmById(filmId);
     if (!film) {
-        res.status(404).send({ error: "Film not found" });
+        res.status(404).send({ error: "Film is not found" });
         return
     }
 
     // 2.check if category exists
     const category = await getCategoryById(categoryId);
     if (!category) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
@@ -273,7 +286,12 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
  *           example: 1
  *     responses:
  *       200:
- *         description: Film removed from category successfully
+ *         description: Film removed from category successfully.
+ *       400:
+ *         description: Failed to remove film from category.
+ *       404:
+ *         description: Category or Film is not found.
+ *
  */
 
 // 7. Block remove film from category
