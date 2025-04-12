@@ -63,6 +63,8 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  *                   type: number
  *                 title:
  *                   type: string
+ *       404:
+ *         description: Film not found
  */
 filmRouter.get('/:id', async (req: Request, res: Response) => {
     const film = await getFilmById(Number(req.params.id));
@@ -100,6 +102,8 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Film created successfully
+ *       400:
+ *         description: Failed to create film
  */
 filmRouter.post('/', async (req: Request, res: Response) => {
     try {
@@ -140,6 +144,8 @@ filmRouter.post('/', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Film updated successfully
+ *       404:
+ *         description: Film not found
  */
 filmRouter.put('/:id', async (req: Request, res: Response) => {
     const film = await getFilmById(Number(req.params.id));
@@ -169,6 +175,8 @@ filmRouter.put('/:id', async (req: Request, res: Response) => {
  *   responses:
  *     200:
  *       description: Film deleted successfully
+ *     404:
+ *       description: Film not found
  *
  */
 filmRouter.delete('/:id', async (req: Request, res: Response) => {
@@ -204,8 +212,12 @@ filmRouter.delete('/:id', async (req: Request, res: Response) => {
  *        type: integer
  *        example: 1
  *    responses:
- *      200:
- *        description: Film added successfully
+ *      201:
+ *        description: Category added to film
+ *      400:
+ *        description: Failed to add category to film
+ *      404:
+ *        description: Film or category not found
  */
 filmRouter.post('/:film_id/category/:category_id/', async (req: Request, res: Response) => {
     const filmId = Number(req.params.film_id);
@@ -257,8 +269,12 @@ filmRouter.post('/:film_id/category/:category_id/', async (req: Request, res: Re
  *        type: integer
  *        example: 1
  *    responses:
- *      200:
- *        description: Film-Category relation deleted
+ *      201:
+ *        description: Category deleted from film
+ *      400:
+ *        description: Failed to category from film
+ *      404:
+ *        description: Film or category not found
  */
 filmRouter.delete('/:film_id/category/:category_id/', async (req: Request, res: Response) => {
     const filmId = Number(req.params.film_id);
