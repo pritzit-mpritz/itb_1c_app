@@ -1,3 +1,9 @@
+/**
+ * @file src/routes/actor.ts
+ * @description Definiert die Express-Routen für die Verwaltung von Schauspielern in der Sakila-Datenbank.
+ * Beinhaltet CRUD-Operationen für Schauspieler und die Verknüpfung von Schauspielern mit Filmen.
+ */
+
 import {Request, Response, Router} from 'express';
 import {db} from '../db';
 import {addActorToFilm, getActorById, getAllActors} from "../services/actorService";
@@ -36,6 +42,16 @@ const actorRouter: Router = Router();
  *                     type: string
  *                   last_update:
  *                     type: string
+ */
+
+/**
+ * Verarbeitet GET-Anfragen zum Abrufen einer Liste von Schauspielern.
+ * Filtert optional nach dem Anfang des Vornamens über einen Query-Parameter.
+ * Verwendet den actorService zum Abrufen der Daten.
+ * @async
+ * @param {Request} req - Express Request-Objekt, enthält möglicherweise 'first_name' Query-Parameter.
+ * @param {Response} res - Express Response-Objekt.
+ * @returns {Promise<void>} Sendet eine Liste von Schauspielern oder eine Fehlerantwort (500).
  */
 actorRouter.get('/', async (req: Request, res: Response) => {
     res.send(await getAllActors(req.query.first_name as string));
