@@ -1,3 +1,5 @@
+// noinspection UnnecessaryLocalVariableJS
+
 import {db} from "../db";
 
 /**
@@ -52,6 +54,7 @@ export async function createFilm(body: string) {
 export async function updateFilm(body: any, id: number) {
     const connection = db();
 
+    // noinspection UnnecessaryLocalVariableJS
     const updateOperation = await connection("film").update({
         title: body.title,
         description: body.description
