@@ -92,7 +92,7 @@ export async function updateFilm(id: number, data: {
 
     if (!film) throw new Error("Film nicht gefunden");
 
-    const updated = await connection("film")
+    const updateOperation = await connection("film")
         .update({   title: data.title,
                     description: data.description,
                     release_year: data.release_year,
@@ -107,7 +107,9 @@ export async function updateFilm(id: number, data: {
                 })
         .where("film_id", id);
 
-    return updated;
+    console.log(updateOperation);
+
+    return updateOperation;
 }
 
 
@@ -119,11 +121,13 @@ export async function updateFilm(id: number, data: {
  */
 export async function deleteFilm(id: string) {
     const connection = db();
-    const deleted = await connection("film")
+    const deleteOperation = await connection("film")
         .where("film_id", id)
         .delete();
 
-    return deleted;
+    console.log(deleteOperation);
+
+    return deleteOperation;
 }
 
 /**

@@ -76,6 +76,8 @@ export const updateCategory = async (id: string, newName: string) => {
         .update(category)
         .where('category_id', id);
 
+    console.log(updateOperation);
+
     return updateOperation;
 };
 /**
@@ -90,6 +92,8 @@ export const deleteCategory = async (id: string) => {
     const deleteOperation = await connection('category')
         .where('category_id', id)
         .delete();
+
+    console.log(deleteOperation);
 
     return deleteOperation;
 };
