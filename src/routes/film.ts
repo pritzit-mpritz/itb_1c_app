@@ -194,7 +194,7 @@ filmRouter.delete('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /film/{film_id}/category/{category_id}:
  *  post:
- *    summary: Add a category to a film - the film should already exist
+ *    summary: Add a category to film - both must exist
  *    tags: [Films]
  *    parameters:
  *    - in: path
@@ -251,7 +251,7 @@ filmRouter.post('/:film_id/category/:category_id/', async (req: Request, res: Re
  * @swagger
  * /film/{film_id}/category/{category_id}:
  *  delete:
- *    summary: Delete category from film
+ *    summary: Remove a category from film - both must exist
  *    tags: [Films]
  *    parameters:
  *    - in: path
