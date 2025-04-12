@@ -78,7 +78,7 @@ categoryRouter.get('/:id', async (req: Request, res: Response) => {
     const category = await getCategoryById(Number(req.params.id));
 
     if (!category) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
@@ -155,7 +155,7 @@ categoryRouter.put('/:id', async (req: Request, res: Response) => {
     const category = await getCategoryById(Number(req.params.id));
 
     if (!category) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
@@ -192,7 +192,7 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
     const deleteOperation = await deleteCategory(Number(req.params.id));
 
     if (!deleteOperation) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
@@ -285,7 +285,7 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
  *           type: integer
  *           example: 1
  *     responses:
- *       200:
+ *       201:
  *         description: Film removed from category successfully.
  *       400:
  *         description: Failed to remove film from category.
@@ -304,13 +304,13 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
     // 1.check film
     const film = await getFilmById(filmId);
     if (!film) {
-        res.status(404).send({ error: "Film not found" });
+        res.status(404).send({ error: "Film is not found" });
         return
     }
     // 2.check category
     const category = await getCategoryById(categoryId);
     if (!category) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
@@ -318,7 +318,7 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
         await removeFilmFromCategory(Number(filmId), Number(categoryId));
         console.log(`Film ${filmId} removed from category ${categoryId}`);
 
-        res.status(200).send(`Removed film ${filmId} from category ${categoryId}`);
+        res.status(201).send(`Removed film ${filmId} from category ${categoryId}`);
     } catch (error) {
         console.error("Error removing film from category: ", error);
         res.status(400).send({ error: "Failed to remove film from category. " + error });
