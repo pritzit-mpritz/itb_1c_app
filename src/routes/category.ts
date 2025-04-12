@@ -304,13 +304,13 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
     // 1.check film
     const film = await getFilmById(filmId);
     if (!film) {
-        res.status(404).send({ error: "Film not found" });
+        res.status(404).send({ error: "Film is not found" });
         return
     }
     // 2.check category
     const category = await getCategoryById(categoryId);
     if (!category) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
