@@ -142,65 +142,51 @@ filmRouter.post("/", async (req: Request, res: Response) => {
  * /film/{id}:
  *   put:
  *     summary: Aktualisiert einen bestehenden Film
- *     description: Aktualisiert den Titel und die Beschreibung eines Films anhand der ID.
- *     tags:
- *       - Film
+ *     description: Aktualisiert die Informationen eines Films anhand der Film-ID.
+ *     tags: [film]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: Die ID des Films
  *         schema:
  *           type: integer
+ *         description: Die ID des Films, der aktualisiert werden soll
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - title
- *               - description
  *             properties:
  *               title:
  *                 type: string
- *                 example: Blade Runner
  *               description:
  *                 type: string
- *                 example: Ein Klassiker des Sci-Fi-Genres
  *               release_year:
- *                  type:string
- *                  example: 1997
+ *                 type: string
  *               language_id:
- *                  type: number
- *                  example: 9
+ *                 type: integer
  *               original_language_id:
- *                  type: number
- *                  example: 21
+ *                 type: integer
  *               rental_duration:
- *                  type:number
- *                  example: 12
+ *                 type: integer
  *               rental_rate:
- *                  type: number
- *                  example: 1.95
+ *                 type: number
  *               length:
- *                  type:number
- *                  example: 90
+ *                 type: integer
  *               replacement_cost:
- *                  type: number
- *                  example: 24.00
+ *                 type: number
  *               rating:
- *                  type:string
- *                  example: Spannender Action thriller, langweiliger Romance
+ *                 type: string
  *               special_features:
- *                  type:string
- *                  example: Gutaussehende Schauspieler
+ *                 type: string
  *     responses:
  *       200:
  *         description: Film erfolgreich aktualisiert
  *       404:
- *         description: Film konnte nicht aktualisiert werden
+ *         description: Film nicht gefunden
  */
+
 filmRouter.put("/:id", async (req: Request, res: Response) => {
     try {
         const result= await updateFilm (Number(req.params.id), req.body);
