@@ -1,26 +1,33 @@
-import {Request, Response, Router} from 'express';
-import {db} from '../db';
-import {addActorToFilm, getFilmById, getAllActors} from "../services/actorService";
+import { Request, Response, Router } from 'express';
+import {
+    getCatById,
+    getAllCat,
+    createCat,
+    updateCat,
+    deleteCat,
+    linkFilmToCatSafe,
+    unlinkFilmFromCat
+} from '../services/categoryService';
 
-const actorRouter: Router = Router();
+const categoryRouter: Router = Router();
 
 /**
  * @swagger
- * /actor:
+ * /category:
  *   get:
- *     summary: Retrieve a list of actors
- *     tags: [Actors]
+ *     summary: Retrieve a list of categories
+ *     tags: [Categories]
  *     parameters:
  *     - in: query
- *       name: first_name
+ *       name: name
  *       required: false
- *       description: Filter actors by first name
+ *       description: Filter categories by name
  *       schema:
  *         type: string
- *         example: Tom
+ *         example: Comedy
  *     responses:
  *       200:
- *         description: A list of actors
+ *         description: Succeeded in accessing and retrieving categories
  *         content:
  *           application/json:
  *             schema:
@@ -28,104 +35,157 @@ const actorRouter: Router = Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   actor_id:
+ *                   category_id:
  *                     type: number
- *                   first_name:
- *                     type: string
- *                   last_name:
+ *                   name:
  *                     type: string
  *                   last_update:
  *                     type: string
  */
-actorRouter.get('/', async (req: Request, res: Response) => {
-    res.send(await getAllActors(req.query.first_name as string));
-});
+categoryRouter.get('/', async (req: Request, res: Response) => {
+    const categories = await getAllCat(req.query.name as string);
 
+    res.status(200).send({
+        message: 'List of categories successfully retrieved',
+        data: categories
+    });
+});
 
 /**
  * @swagger
- * /actor/{id}:
+ * /category/{id}:
  *   get:
- *     summary: Retrieve an actor
- *     tags: [Actors]
+ *     summary: Get a single category by ID
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the actor
+ *         description: Numeric ID of the category to retrieve
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: An actor
+ *         description: Succeeded in accessing and retrieving category by ID
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 actor_id:
+ *                 category_id:
  *                   type: number
- *                 first_name:
+ *                   example: 5
+ *                 name:
  *                   type: string
- *                 last_name:
- *                   type: string
+ *                   example: Horror
  *                 last_update:
  *                   type: string
+ *                   example: 2025-01-01T12:33:15.000Z
+ *       404:
+ *         description: Category not found
  */
-actorRouter.get('/:id', async (req: Request, res: Response) => {
-    const actor = await getFilmById(Number(req.params.id))
+categoryRouter.get('/:id', async (req: Request, res: Response) => {
+    const category = await getCatById(Number(req.params.id));
 
-    if (!actor) {
-        res.status(404).send({error: "Actor not found"});
-        return
+    if (!category) {
+        res.status(404).send({ error: 'Category not found' });
+        return;
     }
 
-    res.send(actor);
+    res.status(200).send({
+        message: 'Category successfully retrieved by ID',
+        data: category
+    });
 });
 
 /**
  * @swagger
- * /actor:
+ * /category:
  *   post:
- *     summary: Create a new actor
- *     tags: [Actors]
+ *     summary: Create a new category
+ *     tags: [Categories]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
  *             properties:
- *               first_name:
+ *               name:
  *                 type: string
- *                 example: Tom
- *               last_name:
- *                 type: string
- *                 example: Hanks
+ *                 description: The name of the category
+ *                 example: Animation
  *     responses:
  *       200:
- *         description: Actor created successfully
+ *         description: Category created successfully 👍
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 category_id:
+ *                   type: integer
+ *                   example: 7
+ *                 name:
+ *                   type: string
+ *                   example: Animation
+ *                 last_update:
+ *                   type: string
+ *                   format: date-time
+ *                   example: 2025-04-08T14:30:00Z
+ *       400:
+ *         description: Invalid request body or missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing required field: name"
+ *       404:
+ *         description: Related resource not found (if applicable)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Parent category not found"
+ *       500:
+ *         description: Internal server error
  */
-actorRouter.post('/', async (req: Request, res: Response) => {
-    console.log("Creating actor: ", req.body);
+const handleCreateCat = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { name } = req.body;
 
-    const connection = db();
-    const insertOperation = await connection.insert(req.body).into("actor");
+        if (!name || typeof name !== 'string' || !name.trim()) {
+            res.status(400).send({ error: 'Missing or invalid field: name' });
+            return;
+        }
 
-    res.send({id: insertOperation[0]});
-});
+        const newCat = await createCat(name.trim());
+        res.status(200).send(newCat);
+    } catch (error) {
+        console.error('Error creating category:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+};
 
 /**
  * @swagger
- * /actor/{id}:
+ * /category/{id}:
  *   put:
- *     summary: Update an actor
- *     tags: [Actors]
+ *     summary: Update a category by ID
+ *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the actor
+ *         description: Numeric ID of the category to update
  *         schema:
  *           type: integer
  *     requestBody:
@@ -134,103 +194,192 @@ actorRouter.post('/', async (req: Request, res: Response) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
  *             properties:
- *               first_name:
+ *               name:
  *                 type: string
- *                 example: Tom
- *               last_name:
- *                 type: string
- *                 example: Hanks
+ *                 example: Adventure
  *     responses:
  *       200:
- *         description: Actor updated successfully
+ *         description: Category updated successfully 👍
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 category_id:
+ *                   type: integer
+ *                   example: 5
+ *                 name:
+ *                   type: string
+ *                   example: Adventure
+ *                 last_update:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Invalid request body
+ *       404:
+ *         description: Category not found
+ *       500:
+ *         description: Internal server error
  */
-actorRouter.put('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-
-    const actor = await connection.select("*")
-        .from("actor")
-        .where("actor_id", req.params.id).first();
-
-    if (!actor) {
-        res.status(404).send({error: "Actor not found"});
-        return
-    }
-
-    actor.first_name = req.body.first_name;
-    actor.last_name = req.body.last_name;
-
-    const updateOperation = await connection("actor").update(actor)
-        .where("actor_id", req.params.id);
-    res.send(`Updated ${updateOperation} actors`);
-});
-
-/**
- * @swagger
- * /actor/{id}:
- *  delete:
- *   summary: Delete an actor
- *   tags: [Actors]
- *   parameters:
- *    - in: path
- *      name: id
- *      required: true
- *      description: ID of the actor
- *      schema:
- *      type: integer
- *   responses:
- *     200:
- *       description: Actor deleted successfully
- *
- */
-actorRouter.delete('/:id', async (req: Request, res: Response) => {
-    const connection = db();
-    const deleteOperation = await connection("actor")
-        .where("actor_id", req.params.id).delete();
-
-    if (!deleteOperation) {
-        res.status(404).send({error: "Actor not found"});
-        return
-    }
-
-    res.send(`Deleted ${deleteOperation} actors`);
-});
-
-/**
- * @swagger
- * /actor/{actor_id}/film/{film_id}:
- *  post:
- *    summary: Add an actor to a film - the film should already exist
- *    tags: [Actors]
- *    parameters:
- *    - in: path
- *      name: actor_id
- *      required: true
- *      description: ID of the actor
- *      schema:
- *        type: integer
- *        example: 1
- *    - in: path
- *      name: film_id
- *      required: true
- *      description: ID of the film
- *      schema:
- *        type: integer
- *        example: 1
- */
-actorRouter.post('/:actor_id/film/:film_id', async (req: Request, res: Response) => {
-    const actorId = req.params.actor_id;
-    const filmId = req.params.film_id;
-
+const handleUpdateCat = async (req: Request, res: Response): Promise<void> => {
     try {
-        await addActorToFilm(Number(actorId), Number(filmId));
-        console.log(`Actor ${actorId} added to film ${filmId}`);
+        const { name } = req.body;
+        const id = Number(req.params.id);
 
-        res.status(201).send("Actor-Film created");
+        if (!name || typeof name !== 'string' || !name.trim()) {
+            res.status(400).send({ error: 'Missing or invalid field: name' });
+            return;
+        }
+
+        const updatedCat = await updateCat(id, name.trim());
+
+        if (!updatedCat) {
+            res.status(404).send({ error: 'Category not found' });
+            return;
+        }
+
+        res.status(200).send(updatedCat);
     } catch (error) {
-        console.error("Error adding actor to film: ", error);
-        res.status(400).send({error: "Failed to add actor to film. " + (error)});
+        console.error('Error updating category:', error);
+        res.status(500).send({ error: 'Internal server error' });
     }
-})
+};
 
-export default actorRouter;
+/**
+ * @swagger
+ * /category/{id}:
+ *   delete:
+ *     summary: Delete a category by ID
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Numeric ID of the category to delete
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Category deleted successfully 👍
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Category deleted successfully
+ *       404:
+ *         description: Category not found
+ *       500:
+ *         description: Internal server error
+ */
+const handleDeleteCat = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const id = Number(req.params.id);
+        const deleted = await deleteCat(id);
+
+        if (!deleted) {
+            res.status(404).send({ error: 'Category not found' });
+            return;
+        }
+
+        res.status(200).send({ message: 'Category deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting category:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+};
+
+/**
+ * @swagger
+ * /category/{categoryId}/film/{filmId}:
+ *   post:
+ *     summary: Link a film to a category
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: categoryId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the category
+ *       - in: path
+ *         name: filmId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the film
+ *     responses:
+ *       200:
+ *         description: Film linked to category successfully
+ *       500:
+ *         description: Internal server error
+ */
+const handleLinkFilmToCat = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const categoryId = Number(req.params.categoryId);
+        const filmId = Number(req.params.filmId);
+
+        const created = await linkFilmToCatSafe(filmId, categoryId);
+
+        if (!created) {
+            res.status(409).send({ message: 'Link already exists' });
+            return;
+        }
+
+        res.status(200).send({ message: 'Film linked to category successfully' });
+    } catch (error) {
+        console.error('Error linking film to category:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+};
+
+/**
+ * @swagger
+ * /category/{categoryId}/film/{filmId}:
+ *   delete:
+ *     summary: Unlink a film from a category
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: categoryId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the category
+ *       - in: path
+ *         name: filmId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the film
+ *     responses:
+ *       200:
+ *         description: Film unlinked from category successfully
+ *       500:
+ *         description: Internal server error
+ */
+const handleUnlinkFilmToCat = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const categoryId = Number(req.params.categoryId);
+        const filmId = Number(req.params.filmId);
+
+        await unlinkFilmFromCat(filmId, categoryId);
+        res.status(200).send({ message: 'Film unlinked from category successfully' });
+    } catch (error) {
+        console.error('Error unlinking film from category:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+};
+
+categoryRouter.post('/', handleCreateCat);
+categoryRouter.put('/:id', handleUpdateCat);
+categoryRouter.delete('/:id', handleDeleteCat);
+categoryRouter.post('/:categoryId/film/:filmId', handleLinkFilmToCat);
+categoryRouter.delete('/:categoryId/film/:filmId', handleUnlinkFilmToCat);
+
+export default categoryRouter;
