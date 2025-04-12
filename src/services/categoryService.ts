@@ -59,6 +59,7 @@ export async function createCat(name: string) {
         .where("category_id", insertId)
         .first();
 
+    console.log("Created:", newCategory)
     return newCategory;
 }
 
@@ -80,6 +81,8 @@ export async function updateCat(id: number, name: string) {
     const updatedCategory = await connection("category")
         .where("category_id", id)
         .first();
+
+    console.log("Updated:", updatedCategory)
 
     return updatedCategory;
 }
