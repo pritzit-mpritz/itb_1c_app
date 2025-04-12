@@ -78,7 +78,7 @@ categoryRouter.get('/:id', async (req: Request, res: Response) => {
     const category = await getCategoryById(Number(req.params.id));
 
     if (!category) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
@@ -155,7 +155,7 @@ categoryRouter.put('/:id', async (req: Request, res: Response) => {
     const category = await getCategoryById(Number(req.params.id));
 
     if (!category) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
@@ -192,7 +192,7 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
     const deleteOperation = await deleteCategory(Number(req.params.id));
 
     if (!deleteOperation) {
-        res.status(404).send({ error: 'No category found' });
+        res.status(404).send({ error: 'Category is not found' });
         return;
     }
 
