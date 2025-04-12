@@ -1,3 +1,4 @@
+// Import der Datenbankverbindung
 import { db } from "../db";
 
 /**
@@ -6,19 +7,19 @@ import { db } from "../db";
  *  @returns Eine Liste aller gefundenen Filme
  */
 export async function getAllFilms(titleFilter?: string): Promise<any[]> {
-    const connection = db();
+    const connection = db(); //Verbindung zur Datenbank aufbauen
 
     const films = await connection
-        .select("*")
-        .from("film")
-        .modify((query) => {
+        .select("*") // Alle Spalten auswählen
+        .from("film") // Aus Tabelle "film"
+        .modify((query) => { // Optionalen Filter anwenden
             if (titleFilter) {
-                query.whereLike("title", `${titleFilter}%`);
+                query.whereLike("title", `${titleFilter}%`); // Titel beginnt mit Filter
             }
         });
 
-    console.log("Gefundene Filme:", films);
-    return films;
+    console.log("Gefundene Filme:", films); // Für Debug-Zwecke
+    return films; // Gefundene Filme zurückgeben
 }
 
 /**
@@ -28,16 +29,16 @@ export async function getAllFilms(titleFilter?: string): Promise<any[]> {
  *  @throws Error - Wenn kein Film mit dieser ID gefunden wurde
  */
 export async function getFilmById(id: number) {
-    const connection = db();
-    const film = await connection("film")
-        .select("*")
-        .where("film_id", id)
-        .first();
+    const connection = db(); // DB-Verbindung
+    const film = await connection("film") // Tabelle "film"
+        .select("*")  // Alle Spalten
+        .where("film_id", id) // Wo ID übereinstimmt
+        .first(); // Nur den ersten Treffer holen
 
-    if (!film) throw new Error("Film nicht gefunden");
+    if (!film) throw new Error("Film nicht gefunden"); // Wenn kein Film gefunden → Fehler werfen
 
-    console.log("Gefundener Film:", film);
-    return film;
+    console.log("Gefundener Film:", film); // Debug-Ausgabe
+    return film; // Film zurückgeben
 }
 
 /**
@@ -46,9 +47,10 @@ export async function getFilmById(id: number) {
  *  @returns Die ID des neu erstellten Films
  */
 export async function createFilm(data: { title: string; description: string }) {
-    const connection = db();
-    const insertOperation = await connection("film").insert(data);
-    return insertOperation[0]; // Gibt die ID zurück
+    const connection = db(); // DB-Verbindung
+    const insertOperation = await connection("film")  // In Tabelle "film"
+        .insert(data); // Neuen Datensatz mit Titel + Beschreibung
+    return insertOperation[0]; // Rückgabe: ID des neu eingefügten Films
 }
 
 /**
@@ -88,12 +90,13 @@ export async function updateFilm(id: number, data: {
     const film = await connection("film")
         .select("*")
         .where("film_id", id)
-        .first();
+        .first(); // Prüfen ob Film existiert
 
-    if (!film) throw new Error("Film nicht gefunden");
+    if (!film) throw new Error("Film nicht gefunden"); // Wenn nicht: Fehler werfen
 
     const updateOperation = await connection("film")
-        .update({   title: data.title,
+        .update({                   // Aktualisierte Felder:
+                    title: data.title,
                     description: data.description,
                     release_year: data.release_year,
                     language_id: data.language_id,
@@ -105,9 +108,9 @@ export async function updateFilm(id: number, data: {
                     rating: data.rating,
                     special_features: data.special_features,
                 })
-        .where("film_id", id);
+        .where("film_id", id); // Nur der Film mit passender ID wird aktualisiert
 
-    console.log(updateOperation);
+    console.log(updateOperation); // Zeigt Anzahl geänderter Zeilen
 
     return updateOperation;
 }
@@ -120,14 +123,14 @@ export async function updateFilm(id: number, data: {
  *  @returns Die Anzahl der gelöschten Datensätze (normalerweise 1)
  */
 export async function deleteFilm(id: string) {
-    const connection = db();
+    const connection = db(); // DB-Verbindung
     const deleteOperation = await connection("film")
-        .where("film_id", id)
-        .delete();
+        .where("film_id", id) // Wo ID übereinstimmt
+        .delete(); // Datensatz löschen
 
-    console.log(deleteOperation);
+    console.log(deleteOperation); // Debug-Ausgabe
 
-    return deleteOperation;
+    return deleteOperation; // Anzahl gelöschter Zeilen
 }
 
 /**
@@ -139,13 +142,13 @@ export async function deleteFilm(id: string) {
  *  @throws Error - Wenn der Film oder die Kategorie nicht existiert oder die Verknüpfung schon vorhanden ist
  *  */
 export async function addFilmToCategory(categoryId: number, filmId: number) {
-    const connection = db();
+    const connection = db(); // DB-Verbindung
 
-    const film = await connection("film").where("film_id", filmId).first();
+    const film = await connection("film").where("film_id", filmId).first(); // Film prüfen
     if (!film) throw new Error(`Film mit ID ${filmId} existiert nicht`);
 
-    const category = await connection("category").where("category_id", categoryId).first();
-    if (!category) throw new Error(`Kategorie mit ID ${categoryId} existiert nicht`);
+    const category = await connection("category").where("category_id", categoryId).first(); // Kategorie prüfen
+    if (!category) throw new Error(`Kategorie mit ID ${categoryId} existiert nicht`); // Gibt es diese Verknüpfung schon?
 
     const existing = await connection("film_category")
         .where({ film_id: filmId, category_id: categoryId })
@@ -156,10 +159,10 @@ export async function addFilmToCategory(categoryId: number, filmId: number) {
     const insertOperation = await connection("film_category").insert({
         category_id: categoryId,
         film_id: filmId,
-    });
+    }); // Verknüpfung einfügen
 
-    console.log("Film-Kategorie-Verknüpfung eingefügt:", insertOperation);
-    return insertOperation[0];
+    console.log("Film-Kategorie-Verknüpfung eingefügt:", insertOperation); // Debug
+    return insertOperation[0]; // ID der neuen Verknüpfung zurückgeben
 }
 
 /**
@@ -168,20 +171,20 @@ export async function addFilmToCategory(categoryId: number, filmId: number) {
  * @param filmId ID des Films
  */
 export async function removeFilmFromCategory(categoryId: number, filmId: number) {
-    const connection = db();
+    const connection = db(); // DB-Verbindung
 
     const existing = await connection("film_category")
         .where({ film_id: filmId, category_id: categoryId })
-        .first();
+        .first(); // Prüfen, ob Verknüpfung existiert
 
-    if (!existing) throw new Error("Verknüpfung existiert nicht");
+    if (!existing) throw new Error("Verknüpfung existiert nicht"); // Wenn nicht: Fehler
 
     const deleteOperation = await connection("film_category")
         .where({ film_id: filmId, category_id: categoryId })
-        .delete();
+        .delete(); // Verknüpfung löschen
 
     console.log(`Verknüpfung Film ${filmId} - Kategorie ${categoryId} gelöscht:`, deleteOperation);
-    return deleteOperation;
+    return deleteOperation; // Anzahl gelöschter Zeilen
 }
 
 

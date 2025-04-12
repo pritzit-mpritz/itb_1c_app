@@ -1,7 +1,8 @@
+// Express: Router, Request und Response importieren
 import { Request, Response, Router } from "express";
-
+// Die Service-Funktionen importieren, die mit der Datenbank arbeiten
 import {addFilmToCategory, createFilm, deleteFilm, getAllFilms, getFilmById, updateFilm, removeFilmFromCategory} from "../services/filmService";
-
+// Express-Router für /film-Endpunkte anlegen
 const filmRouter: Router = Router();
 
 /**
@@ -38,9 +39,11 @@ const filmRouter: Router = Router();
  *         description: Filme konnten nicht geladen werden
  */
 filmRouter.get("/", async (req: Request, res: Response) => {
+    // Rufe alle Filme aus der Datenbank ab, optional gefiltert über ?titleFilter=
     try {
         res.send(await getAllFilms(req.query.titleFilter as string));
     } catch {
+        // Fehlerbehandlung: Wenn etwas schiefläuft, sende Status 404
         res.status(404).send({ error: "Filme konnten nicht geladen werden" });
     }
 });
@@ -81,9 +84,10 @@ filmRouter.get("/", async (req: Request, res: Response) => {
  *         description: Film konnte nicht geladen werden
  */
 filmRouter.get("/:id", async (req: Request, res: Response) => {
+    // Holt den Film mit passender ID aus der Datenbank
     try {
         const film= await getFilmById(Number(req.params.id))
-        res.send(film);
+        res.send(film); // Film erfolgreich zurückgeben
     } catch {
         res.status(404).send({ error: "Film konnte nicht geladen werden" });
     }
@@ -130,8 +134,9 @@ filmRouter.get("/:id", async (req: Request, res: Response) => {
  */
 filmRouter.post("/", async (req: Request, res: Response) => {
     try {
+        // Erstellt einen neuen Film mit den Daten aus dem Request-Body
         const id = await createFilm(req.body);
-        res.send({ id });
+        res.send({ id }); // Rückgabe der neuen Film-ID
     } catch (error) {
         res.status(404).send({ error: "Film konnte nicht erstellt werden" });
     }
@@ -203,8 +208,9 @@ filmRouter.post("/", async (req: Request, res: Response) => {
 
 filmRouter.put("/:id", async (req: Request, res: Response) => {
     try {
+        // Übergibt die Film-ID und die neuen Felder an die update-Funktion
         const result= await updateFilm (Number(req.params.id), req.body);
-        res.send (`Updated ${result} film`);
+        res.send (`Updated ${result} film`); // Bestätigung senden
     } catch (error){
         res.status(404).send({ error: "Film konnte nicht aktualisiert werden" });
     }
@@ -233,8 +239,9 @@ filmRouter.put("/:id", async (req: Request, res: Response) => {
  */
 filmRouter.delete("/:id", async (req: Request, res: Response) => {
     try {
+        // Löscht einen Film anhand seiner ID
         const result = await deleteFilm (req.params.id);
-        res.send(`Deleted ${result} film`);
+        res.send(`Deleted ${result} film`); // Rückmeldung über gelöschten Film
     } catch {
         res.status(404).send({ error: "Film konnte nicht gelöscht werden" });
     }
@@ -270,8 +277,8 @@ filmRouter.delete("/:id", async (req: Request, res: Response) => {
 filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Response) => {
     const filmId = req.params.film_id;
     const categoryId = req.params.category_id;
-
     try {
+        // Führt die Verknüpfung Film ↔ Kategorie aus (in film_category-Tabelle)
         await addFilmToCategory(Number(categoryId), Number(filmId));
         console.log(`Film ${filmId} wurde mit Kategorie ${categoryId} verknüpft`);
 
@@ -312,8 +319,8 @@ filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Res
 filmRouter.delete('/:film_id/category/:category_id', async (req: Request, res: Response) => {
     const filmId = Number(req.params.film_id);
     const categoryId = Number(req.params.category_id);
-
     try {
+        // Entfernt die Zuordnung zwischen einem Film und einer Kategorie
         await removeFilmFromCategory(categoryId, filmId);
         console.log(`Verknüpfung zwischen Film ${filmId} und Kategorie ${categoryId} wurde entfernt`);
 
@@ -325,4 +332,4 @@ filmRouter.delete('/:film_id/category/:category_id', async (req: Request, res: R
 });
 
 export default filmRouter;
-
+// Macht den Router nutzbar in der Haupt-App
