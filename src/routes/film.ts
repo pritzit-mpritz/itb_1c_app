@@ -143,7 +143,8 @@ filmRouter.post("/", async (req: Request, res: Response) => {
  *   put:
  *     summary: Aktualisiert einen bestehenden Film
  *     description: Aktualisiert die Informationen eines Films anhand der Film-ID.
- *     tags: [film]
+ *     tags:
+ *     - Film
  *     parameters:
  *       - in: path
  *         name: id

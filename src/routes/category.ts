@@ -1,7 +1,8 @@
 import {Request, Response, Router} from 'express';
 
-import {addFilmToCategory} from "../services/filmService";
+import {addFilmToCategory, removeFilmFromCategory} from "../services/filmService";
 import {getAllCategories, getCategoryById, createFilmCategory, updateCategory, deleteCategory} from "../services/categoryService";
+import filmRouter from "./film";
 
 
 
@@ -261,6 +262,21 @@ categoryRouter.post('/:category_id/film/:film_id',
             res.status(400).send({error: `Failed to add Category to Film. ${error}`});
         }
     });
+
+categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: Response) => {
+    const filmId = Number(req.params.film_id);
+    const categoryId = Number(req.params.category_id);
+
+    try {
+        await removeFilmFromCategory(categoryId, filmId);
+        console.log(`Verknüpfung zwischen Film ${filmId} und Kategorie ${categoryId} wurde entfernt`);
+
+        res.status(200).send("Verknüpfung erfolgreich entfernt");
+    } catch (error) {
+        console.error("Fehler beim Entfernen der Verknüpfung:", error);
+        res.status(400).send({ error: `Verknüpfung konnte nicht entfernt werden: ${error}` });
+    }
+});
 
     export default categoryRouter;
 
