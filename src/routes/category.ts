@@ -239,10 +239,10 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
     }
 
     try {
-        await addFilmToCategory(Number(filmId), (categoryId));
+        await addFilmToCategory(Number(filmId), Number(categoryId));
         console.log(`Film ${filmId} added to category ${categoryId}`);
 
-        res.status(201).send("Film-Category created");
+        res.status(201).send("Film added to category");
     } catch (error) {
         console.error("Error adding film to category: ", error);
         res.status(400).send({ error: "Failed to add film to category. " + error });
