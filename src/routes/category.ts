@@ -263,6 +263,37 @@ categoryRouter.post('/:category_id/film/:film_id',
         }
     });
 
+/**
+ * @swagger
+ * /category/{category_id}/film/{film_id}:
+ *   delete:
+ *     summary: Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
+ *     description: Löscht die Zuordnung aus der Tabelle "film_category", wodurch die Verknüpfung zwischen dem Film und der Kategorie entfernt wird.
+ *     tags:
+ *       - Category
+ *     parameters:
+ *       - name: category_id
+ *         in: path
+ *         required: true
+ *         description: Die ID der Kategorie, die mit dem Film verknüpft ist
+ *
+ *           type: integer
+ *       - name: film_id
+ *         in: path
+ *         required: true
+ *         description: Die ID des Films, der aus der Kategorie entfernt werden soll
+ *
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Verknüpfung zwischen Film und Kategorie erfolgreich entfernt
+ *       400:
+ *         description: Fehler beim Entfernen der Verknüpfung
+ *       404:
+ *         description: Film oder Kategorie nicht gefunden
+ */
+
+
 categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: Response) => {
     const filmId = Number(req.params.film_id);
     const categoryId = Number(req.params.category_id);
@@ -278,35 +309,6 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
     }
 });
 
-/**
- * @swagger
- * /category/{category_id}/film/{film_id}:
- *   delete:
- *     summary: Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
- *     description: Löscht die Zuordnung aus der Tabelle "film_category", wodurch die Verknüpfung zwischen dem Film und der Kategorie entfernt wird.
- *     tags:
- *       - Category
- *     parameters:
- *       - name: category_id
- *         in: path
- *         required: true
- *         description: Die ID der Kategorie, die mit dem Film verknüpft ist
- *         schema:
- *           type: integer
- *       - name: film_id
- *         in: path
- *         required: true
- *         description: Die ID des Films, der aus der Kategorie entfernt werden soll
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Verknüpfung zwischen Film und Kategorie erfolgreich entfernt
- *       400:
- *         description: Fehler beim Entfernen der Verknüpfung
- *       404:
- *         description: Film oder Kategorie nicht gefunden
- */
 
     export default categoryRouter;
 
