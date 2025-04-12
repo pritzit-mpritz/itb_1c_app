@@ -2,6 +2,7 @@ import { db } from "../db";
 
 /**
  * Retrieve a list of all categories from database.
+ * @returns Array of all categories.
  */
 export async function getAllCategory() {
     const connection = db();
@@ -17,6 +18,7 @@ export async function getAllCategory() {
 /**
  * Retrieve a category by ID.
  * @param id filter to find category by ID.
+ * @returns Category object if found, otherwise undefined.
  */
 export async function getCategoryById(id: number) {
     const connection = db();
@@ -34,6 +36,7 @@ export async function getCategoryById(id: number) {
 /**
  * Create a new category. Required value is name.
  * @param body takes in name to create a new category.
+ * @returns Array with ID of the created category.
  */
 export async function createCategory(body: string) {
     console.log("Creating category: ", body);
@@ -48,6 +51,7 @@ export async function createCategory(body: string) {
  * Update the name of a category.
  * @param id ID of the category to update.
  * @param body New data for the category.
+ * @returns Number of updated categories(0 if nothing updated, 1 if successful).
  */
 export async function updateCategory(id: number, body: { name: string }) {
     const connection = db();
@@ -62,6 +66,7 @@ export async function updateCategory(id: number, body: { name: string }) {
 /**
  * Delete a category by ID.
  * @param id filter to find category by ID to delete.
+ * @returns Number of deleted categories(0 if nothing deleted, 1 if successful).
  */
 export async function deleteCategory(id: number) {
     const connection = db();
@@ -77,6 +82,7 @@ export async function deleteCategory(id: number) {
  * Adds a film to a category (film_category relation)
  * @param filmId ID of the film
  * @param categoryId ID of the category
+ * @returns Array with ID of the inserted film-category entry.
  */
 export async function addFilmToCategory(filmId: number, categoryId: number) {
     const connection = db();
@@ -97,6 +103,7 @@ export async function addFilmToCategory(filmId: number, categoryId: number) {
  * Removes a film from a category (film_category relation)
  * @param filmId ID of the film
  * @param categoryId ID of the category
+ * @returns Number of deleted film-category entries (0 if nothing deleted, 1 if successful).
  */
 export async function removeFilmFromCategory(filmId: number, categoryId: number) {
     const connection = db();
@@ -112,6 +119,5 @@ export async function removeFilmFromCategory(filmId: number, categoryId: number)
 
     return deleteOperation;
 }
-
 
 
