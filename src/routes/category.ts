@@ -285,7 +285,7 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
  *           type: integer
  *           example: 1
  *     responses:
- *       200:
+ *       201:
  *         description: Film removed from category successfully.
  *       400:
  *         description: Failed to remove film from category.
@@ -318,7 +318,7 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
         await removeFilmFromCategory(Number(filmId), Number(categoryId));
         console.log(`Film ${filmId} removed from category ${categoryId}`);
 
-        res.status(200).send(`Removed film ${filmId} from category ${categoryId}`);
+        res.status(201).send(`Removed film ${filmId} from category ${categoryId}`);
     } catch (error) {
         console.error("Error removing film from category: ", error);
         res.status(400).send({ error: "Failed to remove film from category. " + error });
