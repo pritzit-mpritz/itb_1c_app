@@ -6,7 +6,7 @@
  * Includes optional Swagger configuration for API documentation.
  */
 
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
 import swaggerJsdoc from "swagger-jsdoc"; // Optional Swagger import
 import swaggerUi from "swagger-ui-express"; // Optional Swagger UI import
@@ -74,7 +74,7 @@ try {
 })(); // Immediately Invoked Function Expression (IIFE) to allow async/await
 
 // --- Express App Setup ---
-const app: Express = express(); // Create an Express application instance
+const app = express(); // Create an Express application instance
 const port = process.env.PORT || 3000; // Use port from .env or default to 3000
 
 // --- Middleware ---
