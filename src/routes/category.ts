@@ -12,8 +12,8 @@ const categoryRouter: Router = Router();
  * @swagger
  * /category:
  *   get:
- *     summary: Gibt alle Kategorien zurück
- *     description: Gibt alle Kategorien zurück, optional gefiltert nach Namen.
+ *     summary: Gibt alle Kategorien zurück mit optional gefiltert nach Namen.
+ *     description: Gibt alle Kategorien zurück mit optional gefiltert nach Namen.
  *     tags: [Category]
  *     parameters:
  *       - in: query
