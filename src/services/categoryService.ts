@@ -1,3 +1,5 @@
+// noinspection UnnecessaryLocalVariableJS
+
 import { db } from "../db";
 
 /**
