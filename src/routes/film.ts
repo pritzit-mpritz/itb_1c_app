@@ -180,7 +180,7 @@ filmRouter.delete('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /film/{film_id}/category/{category_id}:
  *  post:
- *    summary: Add a film to a category - the film should already exist
+ *    summary: Add a category to a film - the film should already exist
  *    tags: [Films]
  *    parameters:
  *    - in: path
@@ -220,12 +220,12 @@ filmRouter.post('/:film_id/category/:category_id/', async (req: Request, res: Re
 
     try {
         await addFilmToCategory(Number(filmId), Number(categoryId));
-        console.log(`Film ${filmId} added to category ${categoryId}`);
+        console.log(`Category ${categoryId} added to film ${filmId}`);
 
-        res.status(201).send("Film added to Category.");
+        res.status(201).send("Category added to film.");
     } catch (error) {
-        console.error("Error adding film to category: ", error);
-        res.status(400).send({error: "Failed to add film to category. " + (error)});
+        console.error("Error adding category to film: ", error);
+        res.status(400).send({error: "Failed to add category to film. " + (error)});
     }
 })
 
@@ -233,7 +233,7 @@ filmRouter.post('/:film_id/category/:category_id/', async (req: Request, res: Re
  * @swagger
  * /film/{film_id}/category/{category_id}:
  *  delete:
- *    summary: Delete a film-category relation
+ *    summary: Delete category from film
  *    tags: [Films]
  *    parameters:
  *    - in: path
@@ -273,12 +273,12 @@ filmRouter.delete('/:film_id/category/:category_id/', async (req: Request, res: 
 
     try {
         await deleteFilmCategoryRelation(Number(filmId), Number(categoryId));
-        console.log(`Film ${filmId} deleted from category ${categoryId}`);
+        console.log(`Category ${categoryId} deleted from film ${filmId}`);
 
-        res.status(201).send("Film deleted from Category.");
+        res.status(201).send("Category deleted from film.");
     } catch (error) {
-        console.error("Error deleting film from category: ", error);
-        res.status(400).send({error: "Failed to delete film from category. " + (error)});
+        console.error("Error deleting category from film: ", error);
+        res.status(400).send({error: "Failed to category from film. " + (error)});
     }
 })
 
