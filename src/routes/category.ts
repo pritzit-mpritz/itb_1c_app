@@ -269,20 +269,19 @@ categoryRouter.post('/:category_id/film/:film_id',
  *   delete:
  *     summary: Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
  *     description: Löscht die Zuordnung aus der Tabelle "film_category", wodurch die Verknüpfung zwischen dem Film und der Kategorie entfernt wird.
- *     tags:
- *       - Category
+ *     tags: [Category]
  *     parameters:
  *       - name: category_id
  *         in: path
  *         required: true
  *         description: Die ID der Kategorie, die mit dem Film verknüpft ist
- *
+ *         schema:
  *           type: integer
  *       - name: film_id
  *         in: path
  *         required: true
  *         description: Die ID des Films, der aus der Kategorie entfernt werden soll
- *
+ *         schema:
  *           type: integer
  *     responses:
  *       200:
@@ -292,6 +291,7 @@ categoryRouter.post('/:category_id/film/:film_id',
  *       404:
  *         description: Film oder Kategorie nicht gefunden
  */
+
 
 
 categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: Response) => {
