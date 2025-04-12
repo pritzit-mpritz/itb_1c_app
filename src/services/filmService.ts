@@ -54,6 +54,18 @@ export async function createFilm(data: { title: string; description: string }) {
 /**
  * Aktualisiert einen bestehenden Film anhand seiner ID.
  *  @param id - Die ID des zu aktualisierenden Films
+ *  @param {object} data - Die neuen Filmdaten.
+ *  @param {string} data.title - Titel des Films.
+ *  @param {string} data.description - Beschreibung des Films.
+ *  @param {string} [data.release_year] - Erscheinungsjahr.
+ *  @param {number} [data.language_id] - Sprache.
+ *  @param {number} [data.original_language_id] - Originalsprache.
+ *  @param {number} [data.rental_duration] - Mietdauer.
+ *  @param {number} [data.rental_rate] - Mietpreis.
+ *  @param {number} [data.length] - Länge des Films.
+ *  @param {number} [data.replacement_cost] - Ersatzkosten.
+ *  @param {string} [data.rating] - Bewertung.
+ *  @param {string} [data.special_features] - Spezialfunktionen.
  *  @param data - Ein Objekt mit neuen Datensätzen
  *  @returns Die Anzahl der aktualisierten Datensätze (normalerweise 1)
  *  @throws Error - Wenn der Film nicht gefunden wurde
