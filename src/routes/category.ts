@@ -37,6 +37,7 @@ const categoryRouter: Router = Router();
  */
 
 
+
 //1.Block get all
 categoryRouter.get('/', async (req: Request, res: Response) => {
     const categories = await getAllCategory();
@@ -68,10 +69,10 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
  *                   type: number
  *                 name:
  *                   type: string
- *        404:
+ *       404:
  *         description: Category is not found.
- *
  */
+
 
 //2.Block get by id
 categoryRouter.get('/:id', async (req: Request, res: Response) => {
@@ -107,6 +108,7 @@ categoryRouter.get('/:id', async (req: Request, res: Response) => {
  *       400:
  *         description: Failed to create category.
  */
+
 
 
 //3.Block post, create
@@ -164,26 +166,24 @@ categoryRouter.put('/:id', async (req: Request, res: Response) => {
 });
 
 
-
-
 /**
  * @swagger
  * /category/{id}:
- *  delete:
- *   summary: Delete a category
- *   tags: [Category]
- *   parameters:
- *    - in: path
- *      name: id
- *      required: true
- *      description: ID of the category
- *      schema:
- *        type: integer
- *   responses:
- *     200:
- *       description: Category deleted successfully.
- *     404:
- *       description: Category is not found.
+ *   delete:
+ *     summary: Delete a category
+ *     tags: [Category]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the category
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Category deleted successfully.
+ *       404:
+ *         description: Category is not found.
  */
 
 
@@ -200,34 +200,33 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
 });
 
 
-
 /**
  * @swagger
  * /category/{category_id}/film/{film_id}:
- *  post:
- *    summary: Add a film to category - both must exist
- *    tags: [Category]
- *    parameters:
- *    - in: path
- *      name: film_id
- *      required: true
- *      description: ID of the film
- *      schema:
- *        type: integer
- *        example: 1
- *    - in: path
- *      name: category_id
- *      required: true
- *      description: ID of the category
- *      schema:
- *        type: integer
- *        example: 1
- *    responses:
- *      201:
+ *   post:
+ *     summary: Add a film to category - both must exist
+ *     tags: [Category]
+ *     parameters:
+ *       - in: path
+ *         name: film_id
+ *         required: true
+ *         description: ID of the film
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - in: path
+ *         name: category_id
+ *         required: true
+ *         description: ID of the category
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       201:
  *         description: Film added from category successfully.
- *      400:
+ *       400:
  *         description: Failed to add film from category.
- *      404:
+ *       404:
  *         description: Category or Film is not found.
  */
 
@@ -291,7 +290,6 @@ categoryRouter.post('/:category_id/film/:film_id', async (req: Request, res: Res
  *         description: Failed to remove film from category.
  *       404:
  *         description: Category or Film is not found.
- *
  */
 
 // 7. Block remove film from category
