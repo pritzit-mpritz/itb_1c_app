@@ -37,7 +37,7 @@ const categoryRouter: Router = Router();
  *                   name:
  *                     type: string
  *       404:
- *         description: Kategorien nicht gefunden
+ *         description: Kategorien nicht gefunden!
  */
 
 categoryRouter.get('/', async (req: Request, res: Response) => {
@@ -46,7 +46,7 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
         res.send(await  getAllCategories(req.query.NameFilter as string));
 
     }catch{
-        res.status(404).send({error: "Categories not found"});
+        res.status(404).send({error: "Kategorien nicht gefunden!"});
     }
 });
 
@@ -87,7 +87,7 @@ categoryRouter.get('/:id', async (req: Request, res: Response) => {
             const category = await getCategoryById(Number(req.params.id))
             res.send(category);
         } catch {
-            res.status(404).send({error: "Category not found"});
+            res.status(404).send({error: "Kategorie nicht gefunden!"});
             return
         }
 
@@ -131,7 +131,7 @@ categoryRouter.post('/', async (req: Request, res: Response) => {
         const id = await createFilmCategory(req.body);
         res.send({ id });
     } catch (error) {
-        res.status(404).send({ error: 'Category not found' });
+        res.status(404).send({ error: 'Kategorie konnte nicht erstellt werden' });
     }
 });
 /**
@@ -167,7 +167,7 @@ categoryRouter.post('/', async (req: Request, res: Response) => {
  *               type: string
  *               example: Updated 1 category
  *       404:
- *         description: Kategorie nicht gefunden
+ *         description: Kategorie nicht aktualisiert werden
  */
 
 
@@ -176,7 +176,7 @@ categoryRouter.put('/:id', async (req: Request, res: Response) => {
         const result = await updateCategory(req.params.id, req.body.name);
         res.send(`Updated ${result} category`);
     } catch (error) {
-        res.status(404).send({ error: 'Category not found' });
+        res.status(404).send({ error: 'Kategorie nicht aktualisiert werden' });
     }
 });
 /**
@@ -202,7 +202,7 @@ categoryRouter.put('/:id', async (req: Request, res: Response) => {
  *               type: string
  *               example: Deleted 1 category
  *       404:
- *         description: Kategorie nicht gefunden
+ *         description: Category konnte nicht gelöscht werden
  */
 
 
@@ -256,10 +256,10 @@ categoryRouter.post('/:category_id/film/:film_id',
             await addFilmToCategory(Number(categoryId), Number(filmId));
             console.log(`category ${categoryId} added to film ${filmId}`);
 
-            res.status(201).send("Category wurde dem Film hinzugefügt");
+            res.status(201).send("Kategorie erfolgreich mit dem Film verknüpft");
         } catch (error) {
             console.error("Error adding Category to Film: ", error);
-            res.status(400).send({error: `Failed to add Category to Film. ${error}`});
+            res.status(400).send({error: `Fehler beim Verknüpfen von Kategorie und Film. ${error}`});
         }
     });
 
@@ -277,6 +277,36 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
         res.status(400).send({ error: `Verknüpfung konnte nicht entfernt werden: ${error}` });
     }
 });
+
+/**
+ * @swagger
+ * /category/{category_id}/film/{film_id}:
+ *   delete:
+ *     summary: Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
+ *     description: Löscht die Zuordnung aus der Tabelle "film_category", wodurch die Verknüpfung zwischen dem Film und der Kategorie entfernt wird.
+ *     tags:
+ *       - Category
+ *     parameters:
+ *       - name: category_id
+ *         in: path
+ *         required: true
+ *         description: Die ID der Kategorie, die mit dem Film verknüpft ist
+ *         schema:
+ *           type: integer
+ *       - name: film_id
+ *         in: path
+ *         required: true
+ *         description: Die ID des Films, der aus der Kategorie entfernt werden soll
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Verknüpfung zwischen Film und Kategorie erfolgreich entfernt
+ *       400:
+ *         description: Fehler beim Entfernen der Verknüpfung
+ *       404:
+ *         description: Film oder Kategorie nicht gefunden
+ */
 
     export default categoryRouter;
 
