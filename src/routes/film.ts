@@ -222,7 +222,7 @@ filmRouter.post('/:film_id/category/:category_id/', async (req: Request, res: Re
         await addFilmToCategory(Number(filmId), Number(categoryId));
         console.log(`Film ${filmId} added to category ${categoryId}`);
 
-        res.status(201).send("Film-Category created");
+        res.status(201).send("Film added to Category.");
     } catch (error) {
         console.error("Error adding film to category: ", error);
         res.status(400).send({error: "Failed to add film to category. " + (error)});
@@ -275,7 +275,7 @@ filmRouter.delete('/:film_id/category/:category_id/', async (req: Request, res: 
         await deleteFilmCategoryRelation(Number(filmId), Number(categoryId));
         console.log(`Film ${filmId} deleted from category ${categoryId}`);
 
-        res.status(201).send("Film-Category deleted");
+        res.status(201).send("Film deleted from Category.");
     } catch (error) {
         console.error("Error deleting film from category: ", error);
         res.status(400).send({error: "Failed to delete film from category. " + (error)});
