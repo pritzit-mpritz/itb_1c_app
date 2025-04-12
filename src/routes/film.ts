@@ -23,9 +23,9 @@ const filmRouter: Router = Router();
 
 /**
  * Holt eine Liste aller Filme, optional gefiltert nach dem Titel.
- *
+ */
 
-/**
+ /**
  * @swagger
  * /film:
  *   get:
@@ -69,9 +69,9 @@ filmRouter.get('/', async (req: Request, res: Response) => {
  * @param {Request} req - Die HTTP-Anfrage, welche die Film-ID als Pfadparameter enthält.
  * @param {Response} res - Die HTTP-Antwort, die den Film oder eine Fehlermeldung zurückgibt.
  * @returns {void}
- *
+ */
 
-/**
+ /**
  * @swagger
  * /film/{id}:
  *   get:
@@ -107,8 +107,8 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: "Fehler beim Abrufen des Films." });
+        console.error(error);
+        res.status(500).send({ error: "Fehler beim Abrufen des Films." });
     }
 });
 
@@ -119,10 +119,10 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  * @param {Request} req - Die HTTP-Anfrage, die im Body die Filmdaten als JSON enthält.
  * @param {Response} res - Die HTTP-Antwort, die die ID des neu erstellten Films oder eine Fehlermeldung zurückgibt.
  * @returns {void}
- *
+ */
 
 
-/**
+ /**
  * @swagger
  * /film:
  *   post:
@@ -206,9 +206,9 @@ filmRouter.post('/', async (req: Request, res: Response): Promise<void> => {
  * @param {Request} req - Die HTTP-Anfrage mit dem Pfadparameter `id` und den neuen Daten im Body.
  * @param {Response} res - Die HTTP-Antwort, welche die Anzahl der aktualisierten Datensätze oder eine Fehlermeldung enthält.
  * @returns {void}
- *
+ */
 
-/**
+ /**
  * @swagger
  * /film/{id}:
  *  put:
@@ -305,9 +305,9 @@ filmRouter.put('/:id', async (req: Request, res: Response): Promise<void> => {
  * @param {Request} req - Die HTTP-Anfrage, die den Pfadparameter `id` enthält.
  * @param {Response} res - Die HTTP-Antwort, welche eine Bestätigung oder eine Fehlermeldung zurückgibt.
  * @returns {void}
- *
+ */
 
-/**
+ /**
  * @swagger
  * /film/{id}:
  *  delete:
@@ -359,9 +359,9 @@ filmRouter.delete('/:id', async (req: Request, res: Response): Promise<void> => 
  * @param {Request} req - Die HTTP-Anfrage mit den Pfadparametern `film_id` und `category_id`.
  * @param {Response} res - Die HTTP-Antwort, welche den Erfolg oder Fehler der Operation zurückgibt.
  * @returns {void}
- *
+ */
 
-/**
+ /**
  * @swagger
  * /film/{film_id}/category/{category_id}:
  *   post:
@@ -416,9 +416,9 @@ filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Res
  * @param {Request} req - Die HTTP-Anfrage, die die Pfadparameter `film_id` und `category_id` enthält.
  * @param {Response} res - Die HTTP-Antwort, welche eine Bestätigung oder eine Fehlermeldung zurückgibt.
  * @returns {void}
- *
+ */
 
-/**
+ /**
  * @swagger
  * /film/{film_id}/category/{category_id}:
  *   delete:
