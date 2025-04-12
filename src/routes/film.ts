@@ -33,7 +33,7 @@ const filmRouter: Router = Router();
  *                   title:
  *                     type: string
  */
-filmRouter.get('/', async (req: Request, res: Response) => {
+filmRouter.get('/', async (_req: Request, res: Response) => {
     const films = await getAllFilms();
     res.send(films);
 });
