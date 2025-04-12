@@ -142,16 +142,15 @@ filmRouter.post("/", async (req: Request, res: Response) => {
  * /film/{id}:
  *   put:
  *     summary: Aktualisiert einen bestehenden Film
- *     description: Aktualisiert die Informationen eines Films anhand der Film-ID.
  *     tags:
- *     - Film
+ *       - Film
  *     parameters:
- *       - in: path
- *         name: id
+ *       - name: id
+ *         in: path
  *         required: true
+ *         description: Die ID des Films
  *         schema:
  *           type: integer
- *         description: Die ID des Films, der aktualisiert werden soll
  *     requestBody:
  *       required: true
  *       content:
@@ -161,32 +160,46 @@ filmRouter.post("/", async (req: Request, res: Response) => {
  *             properties:
  *               title:
  *                 type: string
+ *                 example: "Inception"
  *               description:
  *                 type: string
+ *                 example: "Ein Sci-Fi Thriller über Traumebenen"
  *               release_year:
  *                 type: string
+ *                 example: "2010"
  *               language_id:
  *                 type: integer
+ *                 example: 1
  *               original_language_id:
  *                 type: integer
+ *                 example: 2
  *               rental_duration:
  *                 type: integer
+ *                 example: 5
  *               rental_rate:
  *                 type: number
+ *                 format: float
+ *                 example: 2.99
  *               length:
  *                 type: integer
+ *                 example: 148
  *               replacement_cost:
  *                 type: number
+ *                 format: float
+ *                 example: 19.99
  *               rating:
  *                 type: string
+ *                 example: "PG-13"
  *               special_features:
  *                 type: string
+ *                 example: "Deleted Scenes,Behind the Scenes"
  *     responses:
  *       200:
- *         description: Film erfolgreich aktualisiert
+ *         description: Erfolgreich aktualisiert
  *       404:
  *         description: Film nicht gefunden
  */
+
 
 filmRouter.put("/:id", async (req: Request, res: Response) => {
     try {
