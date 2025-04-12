@@ -168,6 +168,33 @@ filmRouter.post("/", async (req: Request, res: Response) => {
  *               description:
  *                 type: string
  *                 example: Ein Klassiker des Sci-Fi-Genres
+ *               release_year:
+ *                  type:string
+ *                  example: 1997
+ *               language_id:
+ *                  type: number
+ *                  example: 9
+ *               original_language_id:
+ *                  type: number
+ *                  example: 21
+ *               rental_duration:
+ *                  type:number
+ *                  example: 12
+ *               rental_rate:
+ *                  type: number
+ *                  example: 1.95
+ *               length:
+ *                  type:number
+ *                  example: 90
+ *               replacement_cost:
+ *                  type: number
+ *                  example: 24.00
+ *               rating:
+ *                  type:string
+ *                  example: Spannender Action thriller, langweiliger Romance
+ *               special_features:
+ *                  type:string
+ *                  example: Gutaussehende Schauspieler
  *     responses:
  *       200:
  *         description: Film erfolgreich aktualisiert
