@@ -176,7 +176,7 @@ filmRouter.post("/", async (req: Request, res: Response) => {
  */
 filmRouter.put("/:id", async (req: Request, res: Response) => {
     try {
-        const result= await updateFilm (req.params.id, req.body.name);
+        const result= await updateFilm (Number(req.params.id), req.body);
         res.send (`Updated ${result} film`);
     } catch (error){
         res.status(404).send({ error: "Film konnte nicht aktualisiert werden" });

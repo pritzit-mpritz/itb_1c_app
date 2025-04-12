@@ -210,7 +210,7 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
         const result = await deleteCategory(req.params.id);
         res.send(`Deleted ${result} category`);
     } catch (error) {
-        res.status(404).send({ error: 'Not found' });
+        res.status(404).send({ error: 'Category konnte nicht gelöscht werden' });
     }
 });
 /**

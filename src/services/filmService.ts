@@ -5,7 +5,7 @@ import { db } from "../db";
  *  @param titleFilter - Optionaler Filter für den Filmtitel (beginnend mit)
  *  @returns Eine Liste aller gefundenen Filme
  */
-export async function getAllFilms(titleFilter?: string) {
+export async function getAllFilms(titleFilter?: string): Promise<any[]> {
     const connection = db();
 
     const films = await connection
@@ -54,11 +54,23 @@ export async function createFilm(data: { title: string; description: string }) {
 /**
  * Aktualisiert einen bestehenden Film anhand seiner ID.
  *  @param id - Die ID des zu aktualisierenden Films
- *  @param data - Ein Objekt mit neuem `title` und `description`
+ *  @param data - Ein Objekt mit neuen Datensätzen
  *  @returns Die Anzahl der aktualisierten Datensätze (normalerweise 1)
  *  @throws Error - Wenn der Film nicht gefunden wurde
  */
-export async function updateFilm(id: string, data: { title: string; description: string }) {
+export async function updateFilm(id: number, data: {
+    title: string;
+    description: string;
+    release_year?: string;
+    language_id?: number;
+    original_language_id?: number;
+    rental_duration?: number;
+    rental_rate?: number;
+    length?: number;
+    replacement_cost?: number;
+    rating?: string;
+    special_features?: string
+}) {
     const connection = db();
 
     const film = await connection("film")
@@ -69,11 +81,23 @@ export async function updateFilm(id: string, data: { title: string; description:
     if (!film) throw new Error("Film nicht gefunden");
 
     const updated = await connection("film")
-        .update(data)
+        .update({   title: data.title,
+                    description: data.description,
+                    release_year: data.release_year,
+                    language_id: data.language_id,
+                    original_language_id: data.original_language_id,
+                    rental_duration: data.rental_duration,
+                    rental_rate: data.rental_rate,
+                    length: data.length,
+                    replacement_cost: data.replacement_cost,
+                    rating: data.rating,
+                    special_features: data.special_features,
+                })
         .where("film_id", id);
 
     return updated;
 }
+
 
 /**
  * Löscht einen Film anhand seiner ID aus der Datenbank.
@@ -122,18 +146,4 @@ export async function addFilmToCategory(categoryId: number, filmId: number) {
     return insertOperation[0];
 }
 
-/**
- * Entfernt eine Verknüpfung zwischen einem Film und einer Kategorie.
- *
- * @param categoryId - Die ID der Kategorie
- * @param filmId - Die ID des Films
- * @returns Die Anzahl der gelöschten Verknüpfungen (normalerweise 1)
- */
-export async function removeFilmFromCategory(categoryId: number, filmId: number) {
-    const connection = db();
-    const deleted = await connection("film_category")
-        .where({ film_id: filmId, category_id: categoryId })
-        .delete();
 
-    return deleted;
-}
