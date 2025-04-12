@@ -39,7 +39,7 @@ const categoryRouter: Router = Router();
 
 
 //1.Block get all
-categoryRouter.get('/', async (req: Request, res: Response) => {
+categoryRouter.get('/', async (_req: Request, res: Response) => {
     const categories = await getAllCategory();
     res.send(categories);
 });
