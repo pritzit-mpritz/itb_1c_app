@@ -1,7 +1,7 @@
 import {Request, Response, Router} from 'express';
 
 import {addFilmToCategory, removeFilmFromCategory} from "../services/filmService";
-import {getAllCategories, getCategoryById, createFilmCategory, updateCategory, deleteCategory} from "../services/categoryService";
+import {getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory} from "../services/categoryService";
 
 
 
@@ -43,7 +43,7 @@ const categoryRouter: Router = Router();
 categoryRouter.get('/', async (req: Request, res: Response) => {
 
     try {
-        res.send(await  getAllCategories(req.query.NameFilter as string));
+        res.send(await  getAllCategories(req.query.NameFilter as string));              //Rüft die Funktion auf die eine Liste aller Funktionen ausgibt
 
     }catch{
         res.status(404).send({error: "Kategorien nicht gefunden!"});
@@ -84,7 +84,7 @@ categoryRouter.get('/', async (req: Request, res: Response) => {
 categoryRouter.get('/:id', async (req: Request, res: Response) => {
 
         try {
-            const category = await getCategoryById(Number(req.params.id))
+            const category = await getCategoryById(Number(req.params.id))               //Rüft Funktion auf, die eine Kategorie anzeigt, anhand der ausgewählten ID
             res.send(category);
         } catch {
             res.status(404).send({error: "Kategorie nicht gefunden!"});
@@ -128,7 +128,7 @@ categoryRouter.get('/:id', async (req: Request, res: Response) => {
 
 categoryRouter.post('/', async (req: Request, res: Response) => {
     try {
-        const id = await createFilmCategory(req.body);
+        const id = await createCategory(req.body);                                  //Aufruf der Funktion zum Erstellen einer Kategorie
         res.send({ id });
     } catch (error) {
         res.status(404).send({ error: 'Kategorie konnte nicht erstellt werden' });
@@ -173,8 +173,8 @@ categoryRouter.post('/', async (req: Request, res: Response) => {
 
 categoryRouter.put('/:id', async (req: Request, res: Response) => {
     try {
-        const result = await updateCategory(req.params.id, req.body.name);
-        res.send(`Updated ${result} category`);
+        const result = await updateCategory(req.params.id, req.body.name);          //Rüft die Aktualisierung- Funktion auf
+        res.send(`Updated ${result} category`);                                             //Zeig die aktualisierten Daten an.
     } catch (error) {
         res.status(404).send({ error: 'Kategorie nicht aktualisiert werden' });
     }
@@ -208,7 +208,7 @@ categoryRouter.put('/:id', async (req: Request, res: Response) => {
 
 categoryRouter.delete('/:id', async (req: Request, res: Response) => {
     try {
-        const result = await deleteCategory(req.params.id);
+        const result = await deleteCategory(req.params.id);                     //Rüft Delete-Funktion auf mit der ID im Parameter
         res.send(`Deleted ${result} category`);
     } catch (error) {
         res.status(404).send({ error: 'Category konnte nicht gelöscht werden' });
@@ -249,16 +249,16 @@ categoryRouter.delete('/:id', async (req: Request, res: Response) => {
 
 categoryRouter.post('/:category_id/film/:film_id',
     async (req: Request, res: Response) => {
-        const categoryId = req.params.category_id;
+        const categoryId = req.params.category_id;                                //Konstanten-Variablen werden initialisiert für die ID's die übergeben werden.
         const filmId = req.params.film_id;
 
         try {
-            await addFilmToCategory(Number(categoryId), Number(filmId));
-            console.log(`category ${categoryId} added to film ${filmId}`);
+            await addFilmToCategory(Number(categoryId), Number(filmId));                //Funktion um Verknüpfung mit einem Film aufzubauen wir aufgerufen
+            console.log(`category ${categoryId} added to film ${filmId}`);              // Ausgabe der erstellten Verknüpfung in der Console
 
             res.status(201).send("Kategorie erfolgreich mit dem Film verknüpft");
         } catch (error) {
-            console.error("Error adding Category to Film: ", error);
+            console.error("Error adding Category to Film: ", error);                    //Fehlermeldung
             res.status(400).send({error: `Fehler beim Verknüpfen von Kategorie und Film. ${error}`});
         }
     });
@@ -299,11 +299,11 @@ categoryRouter.delete('/:category_id/film/:film_id', async (req: Request, res: R
     const categoryId = Number(req.params.category_id);
 
     try {
-        await removeFilmFromCategory(categoryId, filmId);
-        console.log(`Verknüpfung zwischen Film ${filmId} und Kategorie ${categoryId} wurde entfernt`);
+        await removeFilmFromCategory(categoryId, filmId);                                               //Rüft die Delete Funktion auf um die eine Verknüpfung mit Film zu entfernen
+        console.log(`Verknüpfung zwischen Film ${filmId} und Kategorie ${categoryId} wurde entfernt`);  //Aufgelöste Verknüpfung wird in der Console ausgegeben
 
         res.status(200).send("Verknüpfung erfolgreich entfernt");
-    } catch (error) {
+    } catch (error) {                                                                                   //Fehlermeldung
         console.error("Fehler beim Entfernen der Verknüpfung:", error);
         res.status(400).send({ error: `Verknüpfung konnte nicht entfernt werden: ${error}` });
     }

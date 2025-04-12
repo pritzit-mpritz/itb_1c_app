@@ -11,8 +11,8 @@ const connection = db();
 
     const categories = await connection
         .select("*")
-        .from("category")
-        .whereLike("name", `${NameFilter}%`)
+        .from("category")                           //Rüft die Tabelle 'category' auf
+        .whereLike("name", `${NameFilter}%`)        //Rüft in der Tabelle 'category' die Spalte 'name' auf und vergleicht ihn mit dem Filter
 
     console.log("Selected category: ", categories);
 
@@ -29,26 +29,27 @@ const connection = db();
 
 export async function getCategoryById(id: number) {
     const connection = db();
-    const category = await connection.select("*")
+    const category = await connection
+        .select("*")
         .from("category")
         .where("category_id", id)
         .first();
 
-    if (!category) throw new Error("Category not found");
+    if (!category) throw new Error("Kategorie konnte nicht gefunden werden!");
 
     console.log("Selected category: ", category);
     return category;
 }
 
 /**
- * Create a new film-category association in the database
+ * Create a new category association in the database
  * @param data The data to insert into the 'film_category' table
  * @returns The ID of the newly created association
  */
 
-export const createFilmCategory = async (data: any) => {
-    const connection = db();
-    const insertOperation = await connection.insert(data).into('film_category');
+export const createCategory = async (data: any) => {
+    const connection = db();                                                                    //Verbindung mit der Datenbank wird hergestellt
+    const insertOperation = await connection.insert(data).into('category');            //Fügt die neue Kategorie in der Datenbank zu der Tabelle Category hinzu
     return insertOperation[0];
 };
 
@@ -68,7 +69,7 @@ export const updateCategory = async (id: string, newName: string) => {
         .where('category_id', id)
         .first();
 
-    if (!category) throw new Error('Category not found');
+    if (!category) throw new Error('Kategorie konnte nicht aktualisiert werden');
 
     category.name = newName;
 
