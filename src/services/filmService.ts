@@ -99,7 +99,7 @@ export async function deleteFilm(id: number): Promise<number> {
  * Aktualisiert einen Film in der Datenbank anhand der Film-ID.
  *
  * @param {number} id - Die ID des Films, der aktualisiert werden soll.
- * @param {any} filmData - Ein Objekt mit den neuen Feldern des Films.
+ * @param {any} data - Ein Objekt mit den neuen Feldern des Films.
  * @returns {Promise<number>} - Die Anzahl der aktualisierten Zeilen (in der Regel 1, wenn der Film gefunden wurde).
  *
  * @example
