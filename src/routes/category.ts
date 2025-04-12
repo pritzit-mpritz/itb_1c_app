@@ -2,7 +2,7 @@ import {Request, Response, Router} from 'express';
 
 import {addFilmToCategory, removeFilmFromCategory} from "../services/filmService";
 import {getAllCategories, getCategoryById, createFilmCategory, updateCategory, deleteCategory} from "../services/categoryService";
-import filmRouter from "./film";
+
 
 
 
