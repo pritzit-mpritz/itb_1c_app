@@ -102,8 +102,6 @@ filmRouter.get('/:id', async (req: Request, res: Response) => {
  *         description: Film created successfully
  */
 filmRouter.post('/', async (req: Request, res: Response) => {
-    /** If the function is successful, the following try and catch responds with the id of the created film.
-     *  If an error occurs it responds with the error message. */
     try {
         const insertOperation = await createFilm(req.body);
         res.send({id: insertOperation[0]});
