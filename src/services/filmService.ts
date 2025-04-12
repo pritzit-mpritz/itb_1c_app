@@ -158,4 +158,26 @@ export async function addFilmToCategory(categoryId: number, filmId: number) {
     return insertOperation[0];
 }
 
+/**
+ * Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
+ * @param categoryId ID der Kategorie
+ * @param filmId ID des Films
+ */
+export async function removeFilmFromCategory(categoryId: number, filmId: number) {
+    const connection = db();
+
+    const existing = await connection("film_category")
+        .where({ film_id: filmId, category_id: categoryId })
+        .first();
+
+    if (!existing) throw new Error("Verknüpfung existiert nicht");
+
+    const deleteOperation = await connection("film_category")
+        .where({ film_id: filmId, category_id: categoryId })
+        .delete();
+
+    console.log(`Verknüpfung Film ${filmId} - Kategorie ${categoryId} gelöscht:`, deleteOperation);
+    return deleteOperation;
+}
+
 

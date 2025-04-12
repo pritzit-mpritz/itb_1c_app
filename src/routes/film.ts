@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import {addFilmToCategory, createFilm, deleteFilm, getAllFilms, getFilmById, updateFilm} from "../services/filmService";
+import {addFilmToCategory, createFilm, deleteFilm, getAllFilms, getFilmById, updateFilm, removeFilmFromCategory} from "../services/filmService";
 
 const filmRouter: Router = Router();
 
@@ -279,6 +279,48 @@ filmRouter.post('/:film_id/category/:category_id', async (req: Request, res: Res
     } catch (error) {
         console.error("Fehler beim Verknüpfen von Film und Kategorie:", error);
         res.status(400).send({ error: `Verknüpfung fehlgeschlagen: ${error}` });
+    }
+});
+
+/**
+ * @swagger
+ * /film/{film_id}/category/{category_id}:
+ *   delete:
+ *     summary: Entfernt die Verknüpfung zwischen einem Film und einer Kategorie
+ *     description: Löscht die Zuordnung eines Films zu einer Kategorie aus der "film_category"-Tabelle.
+ *     tags:
+ *       - Film
+ *     parameters:
+ *       - in: path
+ *         name: film_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Die ID des Films
+ *       - in: path
+ *         name: category_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Die ID der Kategorie
+ *     responses:
+ *       200:
+ *         description: Verknüpfung erfolgreich entfernt
+ *       400:
+ *         description: Fehler beim Entfernen der Verknüpfung
+ */
+filmRouter.delete('/:film_id/category/:category_id', async (req: Request, res: Response) => {
+    const filmId = Number(req.params.film_id);
+    const categoryId = Number(req.params.category_id);
+
+    try {
+        await removeFilmFromCategory(categoryId, filmId);
+        console.log(`Verknüpfung zwischen Film ${filmId} und Kategorie ${categoryId} wurde entfernt`);
+
+        res.status(200).send("Verknüpfung erfolgreich entfernt");
+    } catch (error) {
+        console.error("Fehler beim Entfernen der Verknüpfung:", error);
+        res.status(400).send({ error: `Verknüpfung konnte nicht entfernt werden: ${error}` });
     }
 });
 
