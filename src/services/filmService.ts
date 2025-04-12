@@ -2,7 +2,7 @@ import {db} from "../db";
 
 /**
  * Retrieve a list of all films from database.
- * @returns a list of all films from database with all details.
+ * @returns a list of all films with all details from database.
  */
 export async function getAllFilms() {
     const connection = db();
@@ -16,7 +16,7 @@ export async function getAllFilms() {
 /**
  * Retrieve a film by ID.
  * @param id filter to find film by ID.
- * @returns one film that matches the provided ID.
+ * @returns one film with all details that matches the provided ID.
  */
 export async function getFilmById(id: number) {
     const connection = db();
