@@ -3,6 +3,7 @@ import App from "../App.tsx";
 import FilmPage from "../pages/FilmPage.tsx";
 import ActorPage from "../pages/ActorPage.tsx";
 import NotFoundPage from "../pages/NotFoundPage.tsx";
+import CategoryPage from "../pages/CategoryPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
             {
                 path: "actor",
                 element: <ActorPage />
+            },
+            {
+                path: "category",
+                element: <CategoryPage />
             },
             {
                 path: "*",
