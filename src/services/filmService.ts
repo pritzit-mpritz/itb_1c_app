@@ -10,8 +10,8 @@ export async function getAllFilms(titleFilter?: string): Promise<any[]> {
     const connection = db(); //Verbindung zur Datenbank aufbauen
 
     const films = await connection
-        .select("*") // Alle Spalten auswählen
-        .from("film") // Aus Tabelle "film"
+        .select("*")                        // Alle Spalten auswählen
+        .from("film")                       // Aus Tabelle "film"
         .modify((query) => { // Optionalen Filter anwenden
             if (titleFilter) {
                 query.whereLike("title", `${titleFilter}%`); // Titel beginnt mit Filter
@@ -84,7 +84,7 @@ export async function updateFilm(id: number, data: {
     replacement_cost?: number;
     rating?: string;
     special_features?: string
-}) {
+} ) {
     const connection = db();
 
     const film = await connection("film")
