@@ -1,9 +1,10 @@
-import React from 'react';
+import DataTable from "../components/DataTable.tsx";
 
 const ActorPage = () => {
     return (
         <div>
             Actor Page
+            <DataTable />
         </div>
     );
 };
