@@ -1,11 +1,14 @@
-import React from 'react';
+import ListDividers from '../components/layout/List.tsx';
+
 
 const FilmPage = () => {
     return (
         <div>
-            Film Page
+            <ListDividers />
+
         </div>
     );
 };
 
 export default FilmPage;
+
