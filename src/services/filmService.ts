@@ -7,16 +7,16 @@ import {db} from "../db";
  * @returns {Promise<any[]>} - Eine Liste aller Filme, gefiltert oder vollständig.
  * @throws {Error} - Bei Datenbankfehlern.
  */
-export async function getAllFilms(title?: string) {
-    const connection = db();
+export async function getAllFilms(title?: string): Promise<any[]> {
+    const connection = db();    //stellt eine Verbindung zur Datenbank her
 
-    if (title) {
-        return connection
-            .select("*")
-            .from("film")
-            .whereLike("title", `${title}%`);
+    if (title) {                //wenn ein Titel übergeben wurde, Filter
+        return connection       //führt eine Datenbankabfrage aus
+            .select("*")        //wählt alle Spalten aus
+            .from("film")       //aus der Tabelle Film
+            .whereLike("title", `${title}%`); //filter die Filme, die wie angegeben beginnen
     } else {
-        return connection
+        return connection       //wenn kein Titel übergeben wurde
         .select("*")
         .from("film");
     }
@@ -29,15 +29,16 @@ export async function getAllFilms(title?: string) {
  * @returns {Promise<any>} - Das Filmobjekt oder undefined, wenn nicht gefunden.
  * @throws {Error} - Bei Datenbankfehlern.
  */
-export async function getFilmById(id: number) {
+export async function getFilmById(id: number): Promise<any> {
     const connection = db();
-    const film = await connection
+    const film= await connection
         .select("*")
         .from("film")
-        .where("film_id", id)
-        .first();
+        .where("film_id", id)       //filtert nach der übergebenen film_id
+        .first();                   //gibt nur das erste Ergebnis zurück
 
-    return film;
+    console.log(film);              //gibt das abgerufene Filmobjekt in der Konsole aus
+    return film;                    //gibt das abgerufene Filmobjekt zurück
 }
 
 /**
@@ -47,10 +48,11 @@ export async function getFilmById(id: number) {
  * @returns {Promise<number>} - Die ID des neu eingefügten Films.
  * @throws {Error} - Bei Datenbankfehlern.
  */
-export const postNewFilm = async (filmData: any): Promise<number> => {
+export const postNewFilm= async (filmData: any): Promise<number> => {
+
     const connection = db();
-    const insertOperation = await connection.insert(filmData).into("film");
-    return insertOperation[0];
+    const insertOperation = await connection.insert(filmData).into("film"); //fügt die Filmdaten in die Filmtabelle
+    return insertOperation[0];      // Gibt die ID des neu eingefügten Films zurück
 };
 
 /**
@@ -87,20 +89,20 @@ export async function updateFilm(
         rating?: string,
         special_features?: string
     }
-) {
+): Promise<number | null> {
     const connection = db();
 
     const film = await connection("film")
         .where("film_id", id)
         .first();
 
-    if (!film) {
-        return null;
+    if (!film) {        //wenn kein Film mit der ID gefunden
+        return null;    //wird null zurückgegeben, da kein film aktualisiert
     }
 
-    const updateOperation = await connection("film")
+    const updateOperation = await connection("film")    // wenn der Film gefunden wurde, wird er aktualisiert
         .where("film_id", id)
-        .update({
+        .update({       //aktualisiert die Filmdaten mit den neuen Werten
             title: updateData.title,
             description: updateData.description,
             release_year: updateData.release_year,
@@ -114,7 +116,8 @@ export async function updateFilm(
             special_features: updateData.special_features,
         });
 
-    return updateOperation;
+    console.log(updateOperation);   //gibt die Ergebnisse der Update-Operation in der Konsole aus
+    return updateOperation;         //gibt die Anzahl der aktualisierten Datensätze zurück
 }
 
 
@@ -128,10 +131,12 @@ export async function updateFilm(
  */
 export async function deleteFilm(id: number): Promise<number> {
     const connection = db();
-    const deleteCount = await connection("film")
+    const deleteOperation = await connection("film")    // führt ene Löschoperation in der Filmtabelle aus
         .where("film_id", id)
-        .delete();
-    return deleteCount;
+        .delete();                  //löscht den Film, der der gegebenen ID entspricht
+    console.log(deleteOperation);   //gibt die Ergebnisse der Löschoperation in der Konsole aus
+
+    return deleteOperation;         //gibt die Anzahl der gelöschten Datensätze zurück (0 oder 1)
 }
 
 /**
@@ -142,10 +147,10 @@ export async function deleteFilm(id: number): Promise<number> {
  * @returns {Promise<any>} - Das Ergebnis der Insert-Operation.
  * @throws {Error} - Bei Datenbankfehlern.
  */
-export async function addFilmtoCategory(categoryId: number, filmId: number) {
+export async function addFilmToCategory(categoryId: number, filmId: number): Promise<any> {
     const connection = db();
-    const insertOperation = await connection("film_category")
-        .insert({
+    const insertOperation = await connection("film_category")   //führt eine Insert-Operation
+        .insert({       //fügt die Kategorie-ID und Film-ID in die film_category Tabelle ein
             category_id: categoryId,
             film_id: filmId
         });
@@ -163,12 +168,12 @@ export async function addFilmtoCategory(categoryId: number, filmId: number) {
  * @returns {Promise<number>} - Anzahl der gelöschten Verknüpfungen.
  * @throws {Error} - Bei Datenbankfehlern.
  */
-export async function deleteFilmFromCategory(categoryId: number, filmId: number) {
+export async function deleteFilmFromCategory(categoryId: number, filmId: number): Promise<number> {
     const connection = db();
     const deleteOperation = await connection("film_category")
         .where("category_id", categoryId)
         .andWhere("film_id", filmId)
-        .delete();
+        .delete();      //löscht die Verknüpfung des Films mit der Kategorie
 
     console.log("Deleted film form category: ", deleteOperation);
     return deleteOperation;
