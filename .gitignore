@@ -141,3 +141,7 @@ dist
 .pnp.js
 
 .vscode/*
+/.idea/.gitignore
+/.idea/itb_1c_app.iml
+/.idea/modules.xml
+/.idea/vcs.xml
