@@ -19,18 +19,17 @@ export interface InputType {
 }
 
 const defaultInput: InputType = {
-    film_id: "",
+    film_id: "0",
     title: "",
     description: "",
-    release_year: "",
-    rental_duration: "3 Wochen",
-    rental_rate: "5.69 CHF",
-    length: "",
-    replacement_cost: "70 CHF",
-    rating: "",
-    special_features: "",
+    release_year: "2015",
+    rental_duration: "5",
+    rental_rate: "0",
+    length: "120",
+    replacement_cost: "0",
+    rating: "0",
+    special_features: "0",
 }
-
 
 const FilmPage = () => {
     const [input, setInput] = React.useState<InputType>(defaultInput)
@@ -55,14 +54,17 @@ const FilmPage = () => {
 
     return (
         <div>
-            FilmPage
+            Film Page
             <Stack spacing={2} direction={"row"}>
                 <Stack spacing={2} justifyContent="flex-start" direction="column" alignItems="flex-start">
+
                     <TextField
                         label="Film ID"
                         variant="standard"
                         value={input.film_id}
-                        onChange={(e) => handleInputChanged("film_id", e.target.value)}
+                        onChange={(e) =>
+                            handleInputChanged("film_id", e.target.value)
+                        }
                     />
 
                     <TextField
@@ -78,7 +80,36 @@ const FilmPage = () => {
                         label="Beschreibung"
                         variant="standard"
                         value={input.description}
-                        onChange={(e) => handleInputChanged("description", e.target.value)}
+                        onChange={(e) =>
+                            handleInputChanged("description", e.target.value)
+                        }
+                    />
+
+                    <TextField
+                        label="Erscheinungsjahr"
+                        variant="standard"
+                        value={input.release_year}
+                        onChange={(e) =>
+                            handleInputChanged("release_year", e.target.value)
+                        }
+                    />
+
+                    <TextField
+                        label="Mietdauer"
+                        variant="standard"
+                        value={input.rental_duration}
+                        onChange={(e) =>
+                            handleInputChanged("rental_duration", e.target.value)
+                        }
+                    />
+
+                    <TextField
+                        label="Mietpreis"
+                        variant="standard"
+                        value={input.rental_rate}
+                        onChange={(e) =>
+                            handleInputChanged("rental_rate", e.target.value)
+                        }
                     />
 
                     <TextField
@@ -89,50 +120,36 @@ const FilmPage = () => {
                             if(!isNaN(Number(e.target.value)))
                                 handleInputChanged("length", e.target.value)
                         }}
+
                     />
 
+                    <TextField
+                        label="Ersatzkosten"
+                        variant="standard"
+                        value={input.replacement_cost}
+                        onChange={(e) =>
+                            handleInputChanged("replacement_cost", e.target.value)
+                        }
+                    />
 
-                <TextField
-                    label="Release Jahr"
-                    variant="standard"
-                    value={input.release_year}
-                    onChange={(e) => handleInputChanged("release_year", e.target.value)}
-                />
+                    <TextField
+                        label="Bewertung"
+                        variant="standard"
+                        value={input.rating}
+                        onChange={(e) =>
+                            handleInputChanged("rating", e.target.value)
+                        }
+                    />
 
-                <TextField
-                    label="Rental Duration"
-                    variant="standard"
-                    value={input.rental_duration}
-                    onChange={(e) => handleInputChanged("rental_duration", e.target.value)}
-                />
+                    <TextField
+                        label="Besondere Merkmale"
+                        variant="standard"
+                        value={input.special_features}
+                        onChange={(e) =>
+                            handleInputChanged("special_features", e.target.value)
+                        }
+                    />
 
-                <TextField
-                    label="Rental Rate"
-                    variant="standard"
-                    value={input.rental_rate}
-                    onChange={(e) => handleInputChanged("rental_rate", e.target.value)}
-                />
-
-                <TextField
-                    label="Replacement Cost"
-                    variant="standard"
-                    value={input.replacement_cost}
-                    onChange={(e) => handleInputChanged("replacement_cost", e.target.value)}
-                />
-
-                <TextField
-                    label="Rating"
-                    variant="standard"
-                    value={input.rating}
-                    onChange={(e) => handleInputChanged("rating", e.target.value)}
-                />
-
-                <TextField
-                    label="Special Features"
-                    variant="standard"
-                    value={input.special_features}
-                    onChange={(e) => handleInputChanged("special_features", e.target.value)}
-                />
 
                     <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
                 </Stack>
