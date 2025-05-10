@@ -5,7 +5,7 @@ const CategoryPage = () => {
     return (
         <div>
             Category Page
-            <DataTable />
+
         </div>
     );
 };
