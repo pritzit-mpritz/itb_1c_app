@@ -19,16 +19,16 @@ export interface InputType {
 }
 
 const defaultInput: InputType = {
-    film_id: "0",
+    film_id: "",
     title: "",
     description: "",
-    release_year: "2015",
-    rental_duration: "5",
-    rental_rate: "0",
-    length: "120",
-    replacement_cost: "0",
-    rating: "0",
-    special_features: "0",
+    release_year: "",
+    rental_duration: "3 weeks",
+    rental_rate: "5.96 CHF",
+    length: "",
+    replacement_cost: "70 CHF",
+    rating: "",
+    special_features: "",
 }
 
 const FilmPage = () => {
