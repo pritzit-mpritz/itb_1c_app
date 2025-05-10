@@ -15,9 +15,16 @@ export enum FilmRating {
 }
 
 export interface InputType {
+    film_id: string;
     title: string;
+    description: string;
+    release_year: string;
+    rental_duration: string;
+    rental_rate: string;
     length: string;
+    replacement_cost: string;
     rating: FilmRating | "";
+    special_features:string;
 }
 
 export type ValidationFieldset = {
@@ -34,9 +41,16 @@ export type ValidationFieldset = {
 };
 
 const defaultInput: InputType = {
+    film_id: "",
     title: "",
+    description: "",
+    release_year: "",
+    rental_duration: "1", //Minimaldauer
+    rental_rate: "0.99",  //Durchschnitt
     length: "",
-    rating: FilmRating.G
+    replacement_cost: "20",
+    rating: FilmRating.G,
+    special_features: "",
 }
 
 const defaultValidation: ValidationFieldset = {
@@ -153,6 +167,16 @@ const FilmPage = () => {
             <Stack spacing={2} direction={"row"}>
                 <Stack spacing={2} justifyContent="flex-start" direction="column" alignItems="flex-start">
                     <TextField
+                        label="Film ID"
+                        variant="standard"
+                        value={input.film_id}
+                        onChange={(e) =>
+                            handleInputChanged("film_id", e.target.value)
+                        }
+                    />
+
+
+                    <TextField
                         label="Titel"
                         variant="standard"
                         value={input.title}
@@ -162,6 +186,44 @@ const FilmPage = () => {
                             handleInputChanged("title", e.target.value)
                         }
                     />
+
+                    <TextField
+                        label="Beschreibung"
+                        variant="standard"
+                        value={input.description}
+                        onChange={(e) =>
+                            handleInputChanged("description", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Erscheinungsjahr"
+                        variant="standard"
+                        value={input.release_year}
+                        onChange={(e) =>
+                            handleInputChanged("release_year", e.target.value)
+                        }
+                    />
+
+                    <TextField
+                        label="Mietdauer in Tagen"
+                        variant="standard"
+                        value={input.rental_duration}
+                        onChange={(e) =>
+                            handleInputChanged("rental_duration", e.target.value)
+                        }
+                    />
+
+                    <TextField
+                        label="Mietpreis"
+                        variant="standard"
+                        value={input.rental_rate}
+                        onChange={(e) =>{
+                            if(!isNaN(Number(e.target.value))) {
+                                handleInputChanged("rental_rate", e.target.value)
+                            }
+                        }}
+                    />
+
 
                     <TextField
                         label={"Länge (in Minuten)"}
@@ -174,6 +236,16 @@ const FilmPage = () => {
                                 handleInputChanged("length", e.target.value)
                         }}
                     />
+
+                    <TextField
+                        label="Wiederbeschaffungskosten"
+                        variant="standard"
+                        value={input.replacement_cost}
+                        onChange={(e) =>
+                            handleInputChanged("replacement_cost", e.target.value)
+                        }
+                    />
+
 
                     <FormControl fullWidth>
                         <InputLabel id="rating-select-label">Rating</InputLabel>
@@ -192,6 +264,15 @@ const FilmPage = () => {
                                 ))
                             }
                         </Select>
+                        <TextField
+                            label="besondere Merkmale"
+                            variant="standard"
+                            value={input.special_features}
+                            onChange={(e) =>
+                                handleInputChanged("special_features", e.target.value)
+                            }
+                        />
+
                     </FormControl>
 
                     <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
