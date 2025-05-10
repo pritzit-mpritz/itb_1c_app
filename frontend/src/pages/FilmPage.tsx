@@ -14,6 +14,7 @@ export enum FilmRating {
     NC17 = "NC-17"
 }
 
+
 export interface InputType {
     film_id: string;
     title: string;
@@ -47,11 +48,9 @@ const defaultInput: InputType = {
     rating: FilmRating.G,
     description: "",
     release_year: "",
-    rental_duration: "3 weeks",
-    rental_rate: "5.96 CHF",
-    length: "",
-    replacement_cost: "70 CHF",
-    rating: "",
+    rental_duration: "3",
+    rental_rate: "5.96",
+    replacement_cost: "70",
     special_features: "",
 }
 
@@ -189,7 +188,7 @@ const FilmPage = () => {
                             if (!isNaN(Number(e.target.value)))
                                 handleInputChanged("length", e.target.value)
                             }
-                        }}
+                        }
                     />
                     <TextField
                         label="Release Jahr"
@@ -260,5 +259,11 @@ const FilmPage = () => {
     )
         ;
 };
+
+
+
+
+
+
 
 export default FilmPage;
