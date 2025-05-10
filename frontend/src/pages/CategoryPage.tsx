@@ -1,4 +1,4 @@
-import DataTable from "../components/DataTable.tsx";
+
 
 
 const CategoryPage = () => {
