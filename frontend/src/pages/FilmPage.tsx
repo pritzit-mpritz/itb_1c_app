@@ -15,8 +15,15 @@ export enum FilmRating {
 }
 
 export interface InputType {
+    film_id: string;
     title: string;
+    description: string;
+    release_year: string;
+    rental_duration: string;
+    rental_rate: string;
     length: string;
+    replacement_cost: string;
+    special_features: string;
     rating: FilmRating | "";
 }
 
@@ -34,8 +41,15 @@ export type ValidationFieldset = {
 };
 
 const defaultInput: InputType = {
+    film_id: "",
     title: "",
+    description: "",
+    release_year: "",
+    rental_duration: "",
+    rental_rate: "",
     length: "",
+    replacement_cost: "",
+    special_features: "",
     rating: FilmRating.G
 }
 
@@ -136,12 +150,19 @@ const FilmPage = () => {
     function handleSaveClicked(): void {
         console.log("Save clicked", input);
 
+
         if (!validateForm()) {
             console.log("Validation failed");
             return;
         }
 
-        const parsedInput = {...input, length: Number(input.length)};
+        const parsedInput = {...input,
+            length: Number(input.length),
+            release_year: Number(input.release_year),
+            rental_duration: Number(input.rental_duration),
+            rental_rate: Number(input.rental_rate),
+            replacement_cost: Number(input.replacement_cost),
+        };
         console.log("Parsed input", parsedInput);
 
         setValidation(defaultValidation);
@@ -152,6 +173,16 @@ const FilmPage = () => {
             Film Page
             <Stack spacing={2} direction={"row"}>
                 <Stack spacing={2} justifyContent="flex-start" direction="column" alignItems="flex-start">
+
+                    <TextField
+                        label="Film ID"
+                        variant="standard"
+                        value={input.film_id}
+                        onChange={(e) =>
+                            handleInputChanged("film_id", e.target.value)
+                        }
+                    />
+
                     <TextField
                         label="Titel"
                         variant="standard"
@@ -164,7 +195,46 @@ const FilmPage = () => {
                     />
 
                     <TextField
-                        label={"Länge (in Minuten)"}
+                        label="Beschreibung"
+                        variant="standard"
+                        value={input.description}
+                        onChange={(e) =>
+                            handleInputChanged("description", e.target.value)
+                        }
+                    />
+
+                    <TextField
+                        label="Erscheinungsjahr"
+                        variant="standard"
+                        value={input.release_year}
+                        onChange={(e) => {
+                            if(!isNaN(Number(e.target.value)))
+                                handleInputChanged("release_year", e.target.value)
+                        }}
+                    />
+
+                    <TextField
+                        label="Mietdauer"
+                        variant="standard"
+                        value={input.rental_duration}
+                        onChange={(e) => {
+                            if(!isNaN(Number(e.target.value)))
+                                handleInputChanged("rental_duration", e.target.value)
+                        }}
+                    />
+
+                    <TextField
+                        label="Rate (in CHF)"
+                        variant="standard"
+                        value={input.rental_rate}
+                        onChange={(e) => {
+                            if(!isNaN(Number(e.target.value)))
+                                handleInputChanged("rental_rate", e.target.value)
+                        }}
+                    />
+
+                    <TextField
+                        label="Länge (in Minuten)"
                         variant="standard"
                         value={input.length}
                         error={!validation.length?.valid}
@@ -194,14 +264,33 @@ const FilmPage = () => {
                         </Select>
                     </FormControl>
 
+
+                    <TextField
+                        label="Ersatzkosten (in CHF)"
+                        variant="standard"
+                        value={input.replacement_cost}
+                        onChange={(e) => {
+                            if(!isNaN(Number(e.target.value)))
+                                handleInputChanged("replacement_cost", e.target.value)
+                        }}
+                    />
+
+                    <TextField
+                        label="Eigenschaften"
+                        variant="standard"
+                        value={input.special_features}
+                        onChange={(e) =>
+                            handleInputChanged("special_features", e.target.value)
+                        }
+                    />
+
                     <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
                 </Stack>
                 <JsonView value={input}/>
                 <JsonView value={validation}/>
             </Stack>
         </div>
-    )
-        ;
+    );
 };
 
 export default FilmPage;
