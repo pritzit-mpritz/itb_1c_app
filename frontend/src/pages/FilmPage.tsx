@@ -69,8 +69,9 @@ const defaultValidation: ValidationFieldset = {
             required: true,
             minLength: 1,
             maxLength: 3,
+            pattern: /^[0-9]+$/,
         },
-        message: "Bitte eine gültige Länge angeben.",
+        message: "Bitte eine gültige Länge angeben.(z.B. 120)",
         valid: true
     },
     rating: {
@@ -78,8 +79,65 @@ const defaultValidation: ValidationFieldset = {
             required: false,
         },
         valid: true
-    }
-}
+    },
+    release_year: {
+        validation: {
+            required: true,
+            minLength: 4,
+            maxLength: 4,
+            pattern: /^[0-9]{4}$/,
+        },
+        message: "Bitte ein gültiges ErscheinungsJahr angeben. (z.B. 2021)",
+        valid: true
+    },
+    rental_duration: {
+        validation:{
+            required: true,
+            minLength: 1,
+            maxLength: 1,
+            pattern: /^[0-9]$/,
+        },
+        message: "Bitte eine gültige Mietdauer angeben.(z.B. 7)",
+        valid: true
+    },
+    rental_rate: {
+        validation:{
+            required: true,
+            pattern: /^[0-9]+(\.[0-9]{1,2})?$/, //das habe ich einfach kopiert. ich bin nicht sicher.
+        },
+        message: "Bitte eine gültige Rate angeben.(z.B. 3.50)",
+        valid: true
+    },
+    replacement_cost: {
+        validation:{
+            required: true,
+            pattern: /^[0-9]+(\.[0-9]{1,2})?$/ //auch kopiert.
+
+        },
+        message: "Bitte eine gültige Ersatzkosten angeben.(z.B. 10.00)",
+        valid: true
+    },
+    description: {
+        validation: {
+            required: true,
+            minLength: 10,
+            maxLength: 500,
+            pattern: /^[a-zA-Z0-9\s]+$/,
+        },
+        message: "Beschreibung muss zwischen 10 und 500 Zeichen lang sein.",
+        valid: true
+    },
+    special_features: {
+        validation: {
+            required: false,
+            minLength: 10,
+            maxLength: 100,
+        },
+        message: "Eigenschaften dürfen zwischen 10 und 100 Zeichen lang sein.",
+        valid: true
+    },
+
+};
 
 const FilmPage = () => {
     const [input, setInput] = React.useState<InputType>(defaultInput)
