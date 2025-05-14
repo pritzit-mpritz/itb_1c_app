@@ -103,7 +103,7 @@ const defaultValidation: ValidationFieldset = {
     rental_rate: {
         validation:{
             required: true,
-            pattern: /^[0-9]+(\.[0-9]{1,2})?$/, //das habe ich einfach kopiert. ich bin nicht sicher.
+            pattern: /^[0-9]+(\.[0-9]{1,2})?$/, //das habe ich einfach kopiert. ich bin nicht sicher..
         },
         message: "Bitte eine gültige Rate angeben.(z.B. 3.50)",
         valid: true
