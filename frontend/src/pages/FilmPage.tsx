@@ -32,7 +32,7 @@ import MenuItem from "@mui/material/MenuItem";
 
 export enum FilmRating {
     G = "G",
-    PG = "PG",
+    PF = "PG",
     PG13 = "PG-13",
     R = "R",
     NC17 = "NC-17"
@@ -220,6 +220,26 @@ const FilmPage = () => {
                         value={input.release_year}
                         onChange={(e) => handleInputChanged("release_year", e.target.value)}
                     />
+
+                    <FormControl fullWidth>
+                        <InputLabel id="rating-select-label">Rating</InputLabel>
+                        <Select
+                            labelId={"rating-select-label"}
+                            id={"rating-select"}
+                            value={input.rating}
+                            label="Rating"
+                            fullWidth
+                            onChange={(e) => handleInputChanged("rating", e.target.value as FilmRating)}
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            {
+                                Object.values(FilmRating).map((rating) => (
+                                    <MenuItem value={rating}>{rating}</MenuItem>
+                                ))
+                            }
+                        </Select>
+                    </FormControl>
+
                 </Stack>
 
                 {/* Second column */}
@@ -242,37 +262,13 @@ const FilmPage = () => {
                         value={input.replacement_cost}
                         onChange={(e) => handleInputChanged("replacement_cost", e.target.value)}
                     />
-                    <TextField
-                        label="Rating"
-                        variant="standard"
-                        value={input.rating}
-                        onChange={(e) => handleInputChanged("rating", e.target.value)}
-                    />
+
                     <TextField
                         label="Special Features"
                         variant="standard"
                         value={input.special_features}
                         onChange={(e) => handleInputChanged("special_features", e.target.value)}
                     />
-
-                    <FormControl fullWidth>
-                        <InputLabel id="rating-select-label">Rating</InputLabel>
-                        <Select
-                            labelId={"rating-select-label"}
-                            id={"rating-select"}
-                            value={input.rating}
-                            label="Rating"
-                            fullWidth
-                            onChange={(e) => handleInputChanged("rating", e.target.value as FilmRating)}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {
-                                Object.values(FilmRating).map((rating) => (
-                                    <MenuItem value={rating}>{rating}</MenuItem>
-                                ))
-                            }
-                        </Select>
-                    </FormControl>
 
                     <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
                 </Stack>
