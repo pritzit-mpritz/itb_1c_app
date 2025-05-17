@@ -1,7 +1,4 @@
 // noinspection JSUnusedLocalSymbols
-
-
-
 import axios from "axios";
 import { Film } from "../interfaces/film";
 
