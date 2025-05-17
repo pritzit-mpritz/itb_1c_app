@@ -80,7 +80,51 @@ const defaultValidation: ValidationFieldset = {
         message: "Bitte eine gültige Länge angeben.",
         valid: true
     },
+
+    release_year: {
+        validation: {
+            required: true,
+            minLength: 4,
+            maxLength: 4,
+        },
+        message: "Eingabe muss 4 Zeichen lang sein",
+        valid: true
+    },
+    rental_duration:{
+        validation: {
+            required: true,
+            minLength: 1,
+            maxLength: 4,
+        },
+        message: "Eingabe muss zwischen 1 und 4 Zeichen lang sein",
+        valid: true
+    },
+    rental_rate:  {
+    validation: {
+    required: true,
+        minLength: 1,
+        maxLength: 5,
+},
+message: "Eingabe muss zwischen 1 und 5 Zeichen lang sein",
+    valid: true
+},
+    replacement_cost: {
+        validation: {
+    required: true,
+        minLength: 1,
+        maxLength: 3,
+},
+message: "Eingabe muss zwischen 1 und 3 Zeichen lang sein",
+    valid: true
+},
+
     rating: {
+        validation: {
+            required: false,
+        },
+        valid: true
+    },
+    special_features: {
         validation: {
             required: false,
         },
