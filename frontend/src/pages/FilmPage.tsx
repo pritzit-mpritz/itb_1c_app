@@ -1,6 +1,20 @@
 // noinspection JSUnusedLocalSymbols
 import axios from "axios";
 import { Film } from "../interfaces/film";
+import React from "react";
+import FilmForm from "../components/film/FilmForm";
+import FilmList from "../components/film/FilmList";
+
+const FilmPage = () => (
+    <div>
+        <h2>Filme verwalten</h2>
+        <FilmForm />
+        <FilmList />
+    </div>
+);
+
+export default FilmPage;
+
 /**
  * Erstellt einen neuen Film.
  */
