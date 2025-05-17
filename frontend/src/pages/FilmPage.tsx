@@ -1,4 +1,4 @@
-// noinspection JSUnusedLocalSymbols
+// noinspection JSUnusedLocalSymbolss
 
 import React, {useEffect} from 'react';
 import {Stack, TextField} from "@mui/material";
