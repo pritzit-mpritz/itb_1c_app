@@ -1,10 +1,9 @@
 // noinspection JSUnusedLocalSymbols
 
 import React, {useEffect} from 'react';
-import {FormControl, InputLabel, Select, Stack, TextField} from "@mui/material";
+import {Stack, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import JsonView from "@uiw/react-json-view";
-import MenuItem from "@mui/material/MenuItem";
 
 
 export interface InputType {
