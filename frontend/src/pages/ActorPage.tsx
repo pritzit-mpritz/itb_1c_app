@@ -1,8 +1,7 @@
-import { Stack, TextField} from "@mui/material";
+import {Stack, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 
 import React, {useEffect} from "react";
-
 
 
 export interface InputType {
@@ -29,9 +28,9 @@ export type ValidationFieldset = {
 const defaultInput: InputType = {
 
 
-    id:"",
-    first_name:"",
-    last_name:"",
+    id: "",
+    first_name: "",
+    last_name: "",
 
 
 }
@@ -62,7 +61,6 @@ const defaultValidation: ValidationFieldset = {
         valid: true
     }
 }
-
 
 
 const ActorPage = () => {
@@ -145,46 +143,45 @@ const ActorPage = () => {
         console.log("Parsed input", parsedInput);
 
         setValidation(defaultValidation);
-    }
-
          */
-        return (
-            <div>
-
-                Actor Page
-                <Stack spacing={2} direction={"row"}>
-                    <Stack spacing={2} justifyContent="flex-start" direction="column" alignItems="flex-start">
-                        <TextField
-                            label="Actor ID"
-                            variant="standard"
-                            value={input.id}
-                            onChange={(e) =>
-                                handleInputChanged("id", e.target.value)
-                            }
-                        />
-                        <TextField
-                            label="Vorname"
-                            variant="standard"
-                            value={input.first_name}
-                            onChange={(e) =>
-                                handleInputChanged("first_name", e.target.value)
-                            }
-                        />
-                        <TextField
-                            label="Nachname"
-                            variant="standard"
-                            value={input.last_name}
-                            onChange={(e) =>
-                                handleInputChanged("last_name", e.target.value)
-                            }
-                        />
-                        <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
-                    </Stack>
-
-                </Stack>
-            </div>
-        );
     }
+
+    return (
+        <div>
+
+            Actor Page
+            <Stack spacing={2} direction={"row"}>
+                <Stack spacing={2} justifyContent="flex-start" direction="column" alignItems="flex-start">
+                    <TextField
+                        label="Actor ID"
+                        variant="standard"
+                        value={input.id}
+                        onChange={(e) =>
+                            handleInputChanged("id", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Vorname"
+                        variant="standard"
+                        value={input.first_name}
+                        onChange={(e) =>
+                            handleInputChanged("first_name", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Nachname"
+                        variant="standard"
+                        value={input.last_name}
+                        onChange={(e) =>
+                            handleInputChanged("last_name", e.target.value)
+                        }
+                    />
+                    <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
+                </Stack>
+
+            </Stack>
+        </div>
+    );
 };
 
 
