@@ -36,7 +36,7 @@ export async function getActorById(id: string) {
     }
 
     const result = await response.json();
-    console.log("Successfully getActorById", result);
+    console.log ("Successfully getActorById", result);
     return result;
 }
 

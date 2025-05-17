@@ -51,6 +51,8 @@ export async function getFilmById(id: string): Promise<Film | undefined> {
     }
 
     const result = await response.json();
+    console.log("Successfully getFilmById", result);
+
     return result;
 }
 
@@ -91,6 +93,7 @@ export async function updateFilm(id: string, film: Partial<Film>): Promise<Film 
     }
 
     const result = await response.json();
+    console.log("Successfully updateFilm", result);
     return result;
 }
 
