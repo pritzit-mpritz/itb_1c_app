@@ -17,5 +17,8 @@ function App() {
     </>
   )
 }
+import FilmPage from "./pages/FilmPage";
 
+// Dann in den Routes:
+<Route path="/film" element={<FilmPage />} />
 export default App

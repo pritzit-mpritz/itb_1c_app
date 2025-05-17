@@ -1,5 +1,33 @@
 // noinspection JSUnusedLocalSymbols
 
+
+
+import axios from "axios";
+import { Film } from "../interfaces/film";
+
+/**
+ * Erstellt einen neuen Film.
+ */
+export async function createFilm(film: Omit<Film, "film_id">): Promise<Film> {
+    const res = await axios.post("http://localhost:3000/film", film);
+    return res.data;
+}
+
+import React from "react";
+import FilmForm from "../components/film/FilmForm";
+// import FilmList usw. später für Übersicht
+
+const FilmPage = () => (
+    <div>
+        <h2>Filme verwalten</h2>
+        <FilmForm />
+        {/* Später: <FilmList /> */}
+    </div>
+);
+
+export default FilmPage;
+// Später kannst du hier auch updateFilm, getAllFilms usw. ergänzen!
+import { createFilm } from "../services/filmService";
 import React, {useEffect} from 'react';
 import {FormControl, InputLabel, Select, Stack, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
