@@ -1,78 +1,106 @@
-/**
- * @file filmService.ts
- * @description Enthält Service-Funktionen für den Zugriff auf Filmdaten in der Datenbank.
- * Die Funktionen unterstützen das Abrufen von Filmen, das Abrufen eines einzelnen Films
- * und das Erstellen der Verknüpfung zwischen Film und Kategorie.
- */
-
 import {db} from "../db";
+import {Actor} from "./actorService";
 
-/**
- * Holt alle Filme aus der Datenbank. Optional kann ein Titel-Filter übergeben werden.
- *
- * @param {string} [titleFilter] - Optionaler Filter für den Filmtitel.
- * @returns {Promise<any[]>} Eine Liste von Filmen.
- *
- * @example
- * const films = await getAllFilms("The");
- */
+export interface Film {
+    film_id?: number,
+    title: string,
+    description: string,
+    release_year: number,
+    rental_duration: number,
+    rental_rate: number,
+    length: number,
+    replacement_cost: number,
+    rating: string,
+    special_features: string,
+    actors?: Actor[]
+}
 
 export async function getAllFilms(titleFilter?: string) {
     const connection = db();
 
-    const films = await connection
-        .select("*")
-        .from("film")
-        .whereLike("title", `${titleFilter}%`);
+    const query = connection
+        .select([
+            'film.*',
+            'actor.*',
+        ])
+        .from('film')
+        .leftJoin('film_actor', 'film.film_id', 'film_actor.film_id')
+        .leftJoin('actor', 'film_actor.actor_id', 'actor.actor_id')
+        .orderBy("film.film_id")
+
+    if (titleFilter) {
+        query.whereLike("film.title", `${titleFilter}%`);
+    }
+
+    let films = await query;
+    films = getFilmObjects(films);
+
 
     console.log("Selected films: ", films);
-
     return films;
 }
 
-/**
- * Holt einen einzelnen Film anhand seiner ID.
- *
- * @param {number} id - Die ID des Films.
- * @returns {Promise<any>} Der Film als Objekt oder `undefined`, wenn nicht gefunden.
- *
- * @example
- * const film = await getFilmById(1);
- */
 
+function getFilmObjects(films: any[]): Film[] {
+    const filmMap: Map<number, Film> = new Map();
+    films.forEach(film => {
+        let parsedFilm: Film;
+        if (filmMap.has(film.film_id)) {
+            parsedFilm = filmMap.get(film.film_id) as Film;
+        } else {
+            parsedFilm = {
+                film_id: film.film_id,
+                description: film.description,
+                length: film.length,
+                rating: film.rating,
+                release_year: film.release_year,
+                rental_duration: film.rental_duration,
+                rental_rate: film.rental_rate,
+                replacement_cost: film.replacement_cost,
+                special_features: film.special_features,
+                title: film.title,
+                actors: []
+            };
+            filmMap.set(film.film_id, parsedFilm);
+        }
+
+        if (film.film_id) {
+            const actor: Actor = {
+                actor_id: film.actor_id,
+                first_name: film.first_name,
+                last_name: film.last_name
+            }
+            parsedFilm.actors?.push(actor)
+        }
+    });
+
+    return Array.from(filmMap.values());
+}
 
 export async function getFilmById(id: number) {
     const connection = db();
-    const film = await connection.select("*")
+
+    const film = await connection
+        .select("film.*")
         .from("film")
-        .where("film_id", id)
+        .where("film.film_id", id)
+        .leftJoin('film_actor', 'film.film_id', 'film_actor.film_id')
+        .leftJoin('actor', 'film_actor.actor_id', 'actor.actor_id')
         .first();
 
-    console.log("Selected film: ", film);
+    if (film) {
+        // Zugehörige Schauspieler laden
+        film.actors = await connection
+            .select("actor.*")
+            .from("actor")
+            .join("film_actor", "actor.actor_id", "film_actor.actor_id")
+            .where("film_actor.film_id", id);
+    }
 
+    console.log("Selected film with actors: ", film);
     return film;
 }
 
-/**
- * Erstellt einen neuen Film in der Datenbank.
- *
- * @param {any} filmData - Ein Objekt, das die Daten des neuen Films enthält.
- * @returns {Promise<number>} - Die ID des neu erstellten Films.
- *
- * @example
- * const newFilmId = await createFilm({
- *   title: "The Matrix",
- *   description: "A thrilling sci-fi movie.",
- *   release_year: 1999,
- *   language_id: 1,
- *   rental_duration: 3,
- *   rental_rate: 4.99,
- *   length: 120,
- *   replacement_cost: 19.99,
- *   rating: "PG",
- *   special_features: "Commentaries,Deleted Scenes,Behind the Scenes"
- * });
- */
 
 export async function createFilm(filmData: any): Promise<number> {
     const connection = db();
@@ -82,12 +110,6 @@ export async function createFilm(filmData: any): Promise<number> {
     return result[0];
 }
 
-
-/**
- * Löscht einen Film anhand der Film-ID.
- * @param {number} id - Die ID des Films.
- * @returns {Promise<number>} Die Anzahl der gelöschten Datensätze.
- */
 export async function deleteFilm(id: number): Promise<number> {
     const connection = db();
     return connection("film")
@@ -95,28 +117,6 @@ export async function deleteFilm(id: number): Promise<number> {
         .delete();
 }
 
-/**
- * Aktualisiert einen Film in der Datenbank anhand der Film-ID.
- *
- * @param {number} id - Die ID des Films, der aktualisiert werden soll.
- * @param {any} data - Ein Objekt mit den neuen Feldern des Films.
- * @returns {Promise<number>} - Die Anzahl der aktualisierten Zeilen (in der Regel 1, wenn der Film gefunden wurde).
- *
- * @example
- * const updatedRows = await updateFilm(1, {
- *   title: "The Matrix Reloaded",
- *   description: "A thrilling sequel.",
- *   release_year: 2003,
- *   language_id: 1,
- *   original_language_id: null,
- *   rental_duration: 3,
- *   rental_rate: 4.99,
- *   length: 138,
- *   replacement_cost: 19.99,
- *   rating: "PG-13",
- *   special_features: "Trailers,Deleted Scenes"
- * });
- */
 export async function updateFilm(id: string, data: any): Promise<number> {
     const connection = db();
 
@@ -131,7 +131,7 @@ export async function updateFilm(id: string, data: any): Promise<number> {
     }
 
     // Film aktualisieren
-    const updatedCount = await connection("film")
+    return connection("film")
         .update({
             title: data.title,
             description: data.description,
@@ -146,47 +146,25 @@ export async function updateFilm(id: string, data: any): Promise<number> {
             special_features: data.special_features
         })
         .where("film_id", id);
-
-    return updatedCount;
 }
 
-/**
- * Erstellt eine Verknüpfung zwischen einem Film und einer Kategorie in der Zwischentabelle.
- *
- * @param {number} filmId - Die ID des Films.
- * @param {number} categoryId - Die ID der Kategorie.
- * @returns {Promise<number[]>} Das Ergebnis der Insert-Operation.
- *
- * @example
- * const result = await addFilmToCategory(1, 2);
- */
-
-export async function addFilmToCategory(filmId: number, categoryId: number) {
+export async function addActorToFilm(filmId: number, actorId: number) {
     const connection = db();
-    const insertOperation = await connection("film_category")
+    const insertOperation = await connection("film_actor")
         .insert({
             film_id: filmId,
-            category_id: categoryId
+            actor_id: actorId
         });
 
-    console.log("Inserted film to category: ", insertOperation);
+    console.log("Linked actor and film: ", insertOperation);
 
     return insertOperation;
 }
 
-/**
- * Entfernt die Verknüpfung zwischen einem Film und einer Kategorie.
- *
- * @param {number} filmId - Die ID des Films.
- * @param {number} categoryId - Die ID der Kategorie.
- * @returns {Promise<number>} - Anzahl der gelöschten Zeilen (0 = nichts gefunden, 1 = erfolgreich entfernt).
- */
-export async function deleteFilmCategory(filmId: number, categoryId: number): Promise<number> {
+export async function deleteFilmActor(filmId: number, actorId: number): Promise<number> {
     const connection = db();
 
-    const deletedCount = await connection("film_category")
-        .where({ film_id: filmId, category_id: categoryId })
+    return connection("film_actor")
+        .where({film_id: filmId, actor_id: actorId})
         .delete();
-
-    return deletedCount;
 }
