@@ -15,6 +15,13 @@ export enum FilmRating {
 }
 
 export interface InputType {
+    film_id: number;
+    description: string;
+    release_year: number;
+    rental_duration: number;
+    rental_rate: number;
+    replacement_cost: number;
+    special_features: string;
     title: string;
     length: string;
     rating: FilmRating | "";
@@ -34,9 +41,16 @@ export type ValidationFieldset = {
 };
 
 const defaultInput: InputType = {
-    title: "",
-    length: "",
-    rating: FilmRating.G
+    film_id: "0",
+    title: "0",
+    length: "0",
+    description: "0",
+    release_year: 0,
+    rental_duration: 0,
+    rental_rate: 0,
+    replacement_cost: 0,
+    rating: FilmRating.G,
+    special_features: "Commentaries,Deleted Scenes,Behind the Scenes"
 }
 
 const defaultValidation: ValidationFieldset = {
@@ -156,8 +170,6 @@ const FilmPage = () => {
                         label="Titel"
                         variant="standard"
                         value={input.title}
-                        error={!validation.title?.valid}
-                        helperText={!validation.title?.valid && validation.title?.message}
                         onChange={(e) =>
                             handleInputChanged("title", e.target.value)
                         }
@@ -167,11 +179,57 @@ const FilmPage = () => {
                         label={"Länge (in Minuten)"}
                         variant="standard"
                         value={input.length}
-                        error={!validation.length?.valid}
-                        helperText={!validation.length?.valid && validation.length?.message}
                         onChange={(e) => {
-                            if (!isNaN(Number(e.target.value)))
+                            if(!isNaN(Number(e.target.value)))
                                 handleInputChanged("length", e.target.value)
+                        }}
+                    />
+
+                    <TextField
+                        label="Beschreibung"
+                        variant="standard"
+                        value={input.description}
+                        onChange={(e) =>
+                            handleInputChanged("description", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Erscheinungsjahr"
+                        variant="standard"
+                        value={input.release_year}
+                        onChange={(e) =>{
+                            if(!isNaN(Number(e.target.value)))
+                                handleInputChanged("release_year", e.target.value)
+                        }}
+                    />
+
+                    <TextField
+                        label="Mietdauer"
+                        variant="standard"
+                        value={input.rental_duration}
+                        onChange={(e) =>{
+                            if(!isNaN(Number(e.target.value)))
+                                handleInputChanged("rental_duration", e.target.value)
+                        }}
+                    />
+
+                    <TextField
+                        label="Mietrate"
+                        variant="standard"
+                        value={input.rental_rate}
+                        onChange={(e) =>{
+                            if(!isNaN(Number(e.target.value)))
+                                handleInputChanged("rental_rate", e.target.value)
+                        }}
+                    />
+
+                    <TextField
+                        label="Wiederbeschaffungskosten"
+                        variant="standard"
+                        value={input.replacement_cost}
+                        onChange={(e) =>{
+                            if(!isNaN(Number(e.target.value)))
+                                handleInputChanged("replacement_cost", e.target.value)
                         }}
                     />
 
@@ -181,7 +239,7 @@ const FilmPage = () => {
                             labelId={"rating-select-label"}
                             id={"rating-select"}
                             value={input.rating}
-                            label="Rating"
+                            label="Altersfreigabe"
                             fullWidth
                             onChange={(e) => handleInputChanged("rating", e.target.value as FilmRating)}
                         >
@@ -193,7 +251,14 @@ const FilmPage = () => {
                             }
                         </Select>
                     </FormControl>
-
+                    <TextField
+                        label="Aussergewöhnlliche Merkmale"
+                        variant="standard"
+                        value={input.special_features}
+                        onChange={(e) =>
+                            handleInputChanged("special_features", e.target.value)
+                        }
+                    />
                     <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
                 </Stack>
                 <JsonView value={input}/>
