@@ -59,6 +59,12 @@ const defaultInput: InputType = {
 
 const defaultValidation: ValidationFieldset = {
 
+    id: {validation: {
+            required: false,
+        },
+        valid: true
+    },
+
 
     title: {
         validation: {
@@ -309,10 +315,6 @@ const FilmPage = () => {
                             handleInputChanged("special_features", e.target.value)
                         }
                     />
-
-
-
-
                     <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
                 </Stack>
                 <JsonView value={input}/>
