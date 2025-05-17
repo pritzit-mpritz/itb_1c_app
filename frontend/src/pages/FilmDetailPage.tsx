@@ -1,5 +1,5 @@
 // src/pages/FilmDetailPage.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Film } from "../types/types";
 import { getFilmById, deleteFilm } from "../services/FilmService";
@@ -7,19 +7,19 @@ import JsonView from "@uiw/react-json-view";
 import { Button, Paper } from "@mui/material";
 
 const FilmDetailPage = () => {
-    const { film_id } = useParams<{ film_id: string }>();
+    const { id } = useParams<{ id: string }>();
     const [film, setFilm] = useState<Film | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (film_id) {
-            getFilmById(Number(film_id)).then(setFilm);
+        if (id) {
+            getFilmById(Number(id)).then(setFilm);
         }
-    }, [film_id]);
+    }, [id]);
 
     const handleDelete = async () => {
-        if (film_id) {
-            await deleteFilm(Number(film_id));
+        if (id) {
+            await deleteFilm(Number(id));
             navigate("/film");
         }
     };
@@ -33,7 +33,7 @@ const FilmDetailPage = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => navigate(`/film/${film_id}/edit`)}
+                        onClick={() => navigate(`/film/${id}/edit`)}
                         sx={{ mt: 2, mr: 2 }}
                     >
                         Bearbeiten

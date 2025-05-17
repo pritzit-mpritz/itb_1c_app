@@ -17,6 +17,7 @@ export async function getAllFilms(): Promise<Film[]> {
 
 export async function getFilmById(id: number): Promise<Film | null> {
     try {
+        console.log("Fetching film with id", id);
         const response = await fetch(`${baseUrl}/${id}`);
         if (!response.ok) throw new Error("Film nicht gefunden");
         const data = await response.json();

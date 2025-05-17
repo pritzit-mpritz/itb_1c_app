@@ -7,7 +7,7 @@ import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
     Button, Stack, Typography
 } from "@mui/material";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router";
 
 /**
  * FilmListPage – Zeigt eine übersichtliche Liste aller Filme mit Aktionen (Details, Bearbeiten).
