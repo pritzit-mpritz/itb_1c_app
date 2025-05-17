@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import {useParams, useNavigate} from 'react-router';
 import { getActorById } from '../service/ActorService';
 import { deleteActor } from "../service/ActorService";
 import { Actor } from '../types/types';
@@ -14,7 +14,7 @@ import {
     Table,
     TableBody,
     TableRow,
-    TableCell
+    TableCell, TableHead
 } from '@mui/material';
 
 const ActorDetailsPage = () => {
@@ -66,17 +66,17 @@ const ActorDetailsPage = () => {
 
             <TableContainer component={Paper} sx={{ maxWidth: 500 }}>
                 <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>ID</TableCell>
+                            <TableCell>Vorname</TableCell>
+                            <TableCell>Nachname</TableCell>
+                        </TableRow>
+                    </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell><strong>ID</strong></TableCell>
                             <TableCell>{actor.actor_id}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell><strong>Vorname</strong></TableCell>
                             <TableCell>{actor.first_name}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell><strong>Nachname</strong></TableCell>
                             <TableCell>{actor.last_name}</TableCell>
                         </TableRow>
                     </TableBody>
