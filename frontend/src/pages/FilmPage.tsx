@@ -1,207 +1,63 @@
 // noinspection JSUnusedLocalSymbols
 
 import React, {useEffect} from 'react';
-import {FormControl, InputLabel, Select, Stack, TextField} from "@mui/material";
-import Button from "@mui/material/Button";
-import JsonView from "@uiw/react-json-view";
-import MenuItem from "@mui/material/MenuItem";
-
-export enum FilmRating {
-    G = "G",
-    PG = "PG",
-    PG13 = "PG-13",
-    R = "R",
-    NC17 = "NC-17"
-}
-
-export interface InputType {
-    title: string;
-    length: string;
-    rating: FilmRating | "";
-}
-
-export type ValidationFieldset = {
-    [key in keyof Partial<InputType>]: {
-        validation?: {
-            required?: boolean,
-            minLength?: number,
-            maxLength?: number,
-            pattern?: RegExp,
-        },
-        message?: string,
-        valid: boolean,
-    };
-};
-
-const defaultInput: InputType = {
-    title: "",
-    length: "",
-    rating: FilmRating.G
-}
-
-const defaultValidation: ValidationFieldset = {
-    title: {
-        validation: {
-            required: true,
-            minLength: 3,
-            maxLength: 100,
-            pattern: /^[a-zA-Z0-9\s]+$/
-        },
-        message: "Titel muss zwischen 3 und 100 Zeichen lang sein.",
-        valid: true
-    },
-    length: {
-        validation: {
-            required: true,
-            minLength: 1,
-            maxLength: 3,
-        },
-        message: "Bitte eine gültige Länge angeben.",
-        valid: true
-    },
-    rating: {
-        validation: {
-            required: false,
-        },
-        valid: true
-    }
-}
+import {getAllFilms} from "../service/FilmService.ts";
+import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import {Film} from "../types/types.ts";
+import {NavLink} from "react-router";
 
 const FilmPage = () => {
-    const [input, setInput] = React.useState<InputType>(defaultInput)
-    const [validation, setValidation] = React.useState<ValidationFieldset>(defaultValidation)
+    const [films, setFilms] = React.useState<Film[] | undefined>();
 
     useEffect(() => {
-        console.log("Film Page mounted")
+        getFilms();
     }, [])
 
-    function handleInputChanged(key: keyof InputType, value: unknown) {
-        setInput({
-                ...input,
-                [key]: value
-            }
-        );
+    async function getFilms() {
+        const tempFilms = await getAllFilms();
+        console.log("Got films from server: ", tempFilms);
+        setFilms(tempFilms);
+        console.log("Ending GetFilms")
     }
 
-    /**
-     * Validates the input form based on the specified validation rules for each field.
-     * Updates the validation state with validation messages and status for each field.
-     *
-     * @return {boolean} Returns true if the form is valid, otherwise returns false.
-     */
-    function validateForm(): boolean {
-        let formIsValid = true;
-
-        Object.entries(input).forEach(([key, value]) => {
-            const keyField = key as keyof InputType;
-            const validationOptions: ValidationFieldset[keyof InputType] = validation[keyField];
-
-            if (validationOptions?.validation) {
-                if (validationOptions.validation.required && !value) {
-                    validationOptions.valid = false;
-                    validationOptions.message = "Bitte einen Wert angeben.";
-                    formIsValid = false;
-                } else if (validationOptions.validation.minLength && value && (value as string).length < validationOptions.validation.minLength) {
-                    validationOptions.valid = false;
-                    validationOptions.message = `Bitte einen Wert mit mindestens ${validationOptions.validation.minLength} Zeichen angeben.`;
-                    formIsValid = false;
-                } else if (validationOptions.validation.maxLength && value && (value as string).length > validationOptions.validation.maxLength) {
-                    validationOptions.valid = false;
-                    validationOptions.message = `Bitte einen Wert mit maximal ${validationOptions.validation.maxLength} Zeichen angeben.`;
-                    formIsValid = false;
-                } else if (validationOptions.validation.pattern && value && !(validationOptions.validation.pattern).test(value as string)) {
-                    validationOptions.valid = false;
-                    validationOptions.message = `Bitte einen Wert mit dem Muster ${validationOptions.validation.pattern} angeben.`;
-                    formIsValid = false;
-                }
-                else {
-                    validationOptions.valid = true;
-                    validationOptions.message = "";
-                }
-            }
-
-            setValidation((prevState) => ({
-                ...prevState,
-                [keyField]: {
-                    ...validationOptions,
-                    message: validationOptions?.message ?? "",
-                    valid: validationOptions?.valid ?? false,
-                }
-            }));
-        })
-
-        return formIsValid;
-    }
-
-    function handleSaveClicked(): void {
-        console.log("Save clicked", input);
-
-        if (!validateForm()) {
-            console.log("Validation failed");
-            return;
-        }
-
-        const parsedInput = {...input, length: Number(input.length)};
-        console.log("Parsed input", parsedInput);
-
-        setValidation(defaultValidation);
-    }
 
     return (
         <div>
             Film Page
-            <Stack spacing={2} direction={"row"}>
-                <Stack spacing={2} justifyContent="flex-start" direction="column" alignItems="flex-start">
-                    <TextField
-                        label="Titel"
-                        variant="standard"
-                        value={input.title}
-                        error={!validation.title?.valid}
-                        helperText={!validation.title?.valid && validation.title?.message}
-                        onChange={(e) =>
-                            handleInputChanged("title", e.target.value)
-                        }
-                    />
-
-                    <TextField
-                        label={"Länge (in Minuten)"}
-                        variant="standard"
-                        value={input.length}
-                        error={!validation.length?.valid}
-                        helperText={!validation.length?.valid && validation.length?.message}
-                        onChange={(e) => {
-                            if (!isNaN(Number(e.target.value)))
-                                handleInputChanged("length", e.target.value)
-                        }}
-                    />
-
-                    <FormControl fullWidth>
-                        <InputLabel id="rating-select-label">Rating</InputLabel>
-                        <Select
-                            labelId={"rating-select-label"}
-                            id={"rating-select"}
-                            value={input.rating}
-                            label="Rating"
-                            fullWidth
-                            onChange={(e) => handleInputChanged("rating", e.target.value as FilmRating)}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {
-                                Object.values(FilmRating).map((rating) => (
-                                    <MenuItem value={rating}>{rating}</MenuItem>
+            <TableContainer component={Paper}>
+                <Table sx={{minWidth: 650}} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>ID</TableCell>
+                            <TableCell>Titel</TableCell>
+                            <TableCell>Preis</TableCell>
+                            <TableCell>Dauer</TableCell>
+                            <TableCell>Aktionen</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {films ? (
+                                films.map((row) => (
+                                    <TableRow
+                                        key={row.film_id}
+                                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                                    >
+                                        <TableCell component="th" scope="row">{row.film_id}</TableCell>
+                                        <TableCell component="th" scope="row">{row.title}</TableCell>
+                                        <TableCell>{row.rental_rate}</TableCell>
+                                        <TableCell>{row.rental_duration}</TableCell>
+                                        <TableCell align="right"><NavLink to={"/film/"+row.film_id}>Details</NavLink></TableCell>
+                                    </TableRow>
                                 ))
-                            }
-                        </Select>
-                    </FormControl>
-
-                    <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
-                </Stack>
-                <JsonView value={input}/>
-                <JsonView value={validation}/>
-            </Stack>
+                            )
+                            : <TableRow>
+                                <TableCell>Keine Filme vorhanden</TableCell>
+                            </TableRow>}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
-    )
-        ;
+    );
 };
 
 export default FilmPage;
