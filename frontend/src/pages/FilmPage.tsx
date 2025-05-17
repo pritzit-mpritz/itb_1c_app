@@ -54,6 +54,15 @@ const defaultInput: InputType = {
 }
 
 const defaultValidation: ValidationFieldset = {
+    film_id: {
+        validation: {
+            required: true,
+            minLength: 1,
+            maxLength: 20,
+        },
+        message: "ID muss zwischen 1 und 20 Zeichen lang sein.",
+        valid: true
+    },
     title: {
         validation: {
             required: true,
@@ -62,59 +71,6 @@ const defaultValidation: ValidationFieldset = {
             pattern: /^[a-zA-Z0-9\s]+$/
         },
         message: "Titel muss zwischen 3 und 100 Zeichen lang sein.",
-        valid: true
-    },
-    length: {
-        validation: {
-            required: true,
-            minLength: 1,
-            maxLength: 3,
-            pattern: /^[0-9]+$/,
-        },
-        message: "Bitte eine gültige Länge angeben.(z.B. 120)",
-        valid: true
-    },
-    rating: {
-        validation: {
-            required: false,
-        },
-        valid: true
-    },
-    release_year: {
-        validation: {
-            required: true,
-            minLength: 4,
-            maxLength: 4,
-            pattern: /^[0-9]{4}$/,
-        },
-        message: "Bitte ein gültiges ErscheinungsJahr angeben. (z.B. 2021)",
-        valid: true
-    },
-    rental_duration: {
-        validation:{
-            required: true,
-            minLength: 1,
-            maxLength: 1,
-            pattern: /^[0-9]$/,
-        },
-        message: "Bitte eine gültige Mietdauer angeben.(z.B. 7)",
-        valid: true
-    },
-    rental_rate: {
-        validation:{
-            required: true,
-            pattern: /^[0-9]+(\.[0-9]{1,2})?$/, //das habe ich einfach kopiert. ich bin nicht sicher..
-        },
-        message: "Bitte eine gültige Rate angeben.(z.B. 3.50)",
-        valid: true
-    },
-    replacement_cost: {
-        validation:{
-            required: true,
-            pattern: /^[0-9]+(\.[0-9]{1,2})?$/ //auch kopiert.
-
-        },
-        message: "Bitte eine gültige Ersatzkosten angeben.(z.B. 10.00)",
         valid: true
     },
     description: {
@@ -127,13 +83,66 @@ const defaultValidation: ValidationFieldset = {
         message: "Beschreibung muss zwischen 10 und 500 Zeichen lang sein.",
         valid: true
     },
+    release_year: {
+        validation: {
+            required: false,
+            minLength: 4,
+            maxLength: 4,
+            pattern: /^[0-9]{4}$/,
+        },
+        message: "Bitte ein gültiges ErscheinungsJahr angeben. (z.B. 2021)",
+        valid: true
+    },
+    rental_duration: {
+        validation:{
+            required: false,
+            minLength: 1,
+            maxLength: 1,
+            pattern: /^[0-9]$/,
+        },
+        message: "Bitte eine gültige Mietdauer angeben. (z.B. 7)",
+        valid: true
+    },
+    rental_rate: {
+        validation:{
+            required: false,
+            pattern: /^[0-9]+(\.[0-9]{1,2})?$/, //das habe ich einfach kopiert. ich bin nicht sicher..
+        },
+        message: "Bitte eine gültige Rate angeben. (z.B. 3.50)",
+        valid: true
+    },
+    length: {
+        validation: {
+            required: true,
+            minLength: 1,
+            maxLength: 3,
+            pattern: /^[0-9]+$/,
+        },
+        message: "Bitte eine gültige Länge angeben. (z.B. 120)",
+        valid: true
+    },
+    rating: {
+        validation: {
+            required: false,
+        },
+        valid: true
+    },
+    replacement_cost: {
+        validation:{
+            required: false,
+            pattern: /^[0-9]+(\.[0-9]{1,2})?$/ //auch kopiert.
+
+        },
+        message: "Bitte gültige Ersatzkosten angeben. (z.B. 10.00)",
+        valid: true
+    },
     special_features: {
         validation: {
             required: false,
             minLength: 10,
             maxLength: 100,
         },
-        message: "Eigenschaften dürfen zwischen 10 und 100 Zeichen lang sein.",
+        message: "Eigenschaften müssen zwischen 10 und 100 Zeichen lang sein.",
         valid: true
     },
 
@@ -236,6 +245,8 @@ const FilmPage = () => {
                         label="Film ID"
                         variant="standard"
                         value={input.film_id}
+                        error={!validation.film_id?.valid}
+                        helperText={!validation.film_id?.valid && validation.film_id?.message}
                         onChange={(e) =>
                             handleInputChanged("film_id", e.target.value)
                         }
@@ -256,6 +267,8 @@ const FilmPage = () => {
                         label="Beschreibung"
                         variant="standard"
                         value={input.description}
+                        error={!validation.description?.valid}
+                        helperText={!validation.description?.valid && validation.description?.message}
                         onChange={(e) =>
                             handleInputChanged("description", e.target.value)
                         }
@@ -265,6 +278,8 @@ const FilmPage = () => {
                         label="Erscheinungsjahr"
                         variant="standard"
                         value={input.release_year}
+                        error={!validation.release_year?.valid}
+                        helperText={!validation.release_year?.valid && validation.release_year?.message}
                         onChange={(e) => {
                             if(!isNaN(Number(e.target.value)))
                                 handleInputChanged("release_year", e.target.value)
@@ -275,6 +290,8 @@ const FilmPage = () => {
                         label="Mietdauer"
                         variant="standard"
                         value={input.rental_duration}
+                        error={!validation.rental_duration?.valid}
+                        helperText={!validation.rental_duration?.valid && validation.rental_duration?.message}
                         onChange={(e) => {
                             if(!isNaN(Number(e.target.value)))
                                 handleInputChanged("rental_duration", e.target.value)
@@ -285,6 +302,8 @@ const FilmPage = () => {
                         label="Rate (in CHF)"
                         variant="standard"
                         value={input.rental_rate}
+                        error={!validation.rental_rate?.valid}
+                        helperText={!validation.rental_rate?.valid && validation.rental_rate?.message}
                         onChange={(e) => {
                             if(!isNaN(Number(e.target.value)))
                                 handleInputChanged("rental_rate", e.target.value)
@@ -327,6 +346,8 @@ const FilmPage = () => {
                         label="Ersatzkosten (in CHF)"
                         variant="standard"
                         value={input.replacement_cost}
+                        error={!validation.replacement_cost?.valid}
+                        helperText={!validation.replacement_cost?.valid && validation.replacement_cost?.message}
                         onChange={(e) => {
                             if(!isNaN(Number(e.target.value)))
                                 handleInputChanged("replacement_cost", e.target.value)
@@ -337,6 +358,8 @@ const FilmPage = () => {
                         label="Eigenschaften"
                         variant="standard"
                         value={input.special_features}
+                        error={!validation.special_features?.valid}
+                        helperText={!validation.special_features?.valid && validation.special_features?.message}
                         onChange={(e) =>
                             handleInputChanged("special_features", e.target.value)
                         }
