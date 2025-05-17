@@ -2,10 +2,12 @@
 
 // @ts-ignore
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { getActorById } from '../service/ActorService';
+import { deleteActor } from "../service/ActorService";
 import { Actor } from '../types/types';
 import {
+    Button,
     Typography,
     TableContainer,
     Paper,
@@ -18,6 +20,7 @@ import {
 const ActorDetailsPage = () => {
     const { id } = useParams();
     const [actor, setActor] = useState<Actor | null>(null);
+    const navigate = useNavigate();
     console.log("Param actorId:", id);
 
     useEffect(() => {
@@ -29,6 +32,27 @@ const ActorDetailsPage = () => {
             });
         }
     }, [id]);
+
+    const handleEdit = () => {
+        navigate(`/actor/edit/${actor?.actor_id}`);
+    };
+    console.log(actor)
+    const handleDelete = async () => {
+        const confirmDelete = window.confirm("Willst du diesen Schauspieler wirklich löschen?");
+        if (confirmDelete && actor) {
+            const success = await deleteActor(actor.actor_id.toString());
+            if (success) {
+                navigate("/actor");
+            } else {
+                alert("Löschen fehlgeschlagen.");
+            }
+        }
+    };
+
+    const handleNew = () => {
+        navigate("/actor/new");
+    };
+
 
     if (!actor) {
         return <div>Schauspieler wird geladen...</div>;
@@ -58,6 +82,18 @@ const ActorDetailsPage = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+                <Button variant="contained" color="primary" onClick={handleEdit}>
+                    Bearbeiten
+                </Button>
+                <Button variant="contained" color="error" onClick={handleDelete}>
+                    Löschen
+                </Button>
+                <Button variant="outlined" onClick={handleNew}>
+                    Neuer Schauspieler
+                </Button>
+            </div>
         </div>
     );
 };

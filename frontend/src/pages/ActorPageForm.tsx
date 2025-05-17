@@ -11,7 +11,6 @@ export interface InputType {
     actor_id: string;
     first_name: string;
     last_name: string;
-    last_update: string;
 }
 
 export type ValidationFieldset = {
@@ -30,8 +29,7 @@ export type ValidationFieldset = {
 const defaultInput: InputType = {
     actor_id: "",
     first_name: "",
-    last_name: "",
-    last_update: ""
+    last_name: ""
 };
 
 const defaultValidation: ValidationFieldset = {
@@ -62,16 +60,6 @@ const defaultValidation: ValidationFieldset = {
             pattern: /^[a-zA-Z0-9\s]+$/,
         },
         message: "Nachname muss zwischen 2 und 25 Zeichen lang sein.",
-        valid: true
-    },
-    last_update: {
-        validation: {
-            required: false,
-            minLength: 8,
-            maxLength: 10,
-            pattern: /^\d{1,2}\.\d{1,2}\.\d{4}$/,
-        },
-        message: "Bitte ein gültiges Datum angeben. (z.B. 01.01.2021)",
         valid: true
     }
 };
@@ -213,17 +201,6 @@ const ActorPageForm = () => {
                         onChange={(e) =>
                             handleInputChanged("last_name", e.target.value)
                         }
-                    />
-
-                    <TextField
-                        label="Letzte Änderung"
-                        variant="standard"
-                        value={input.last_update}
-                        error={!validation.last_update?.valid}
-                        helperText={!validation.last_update?.valid && validation.last_update?.message}
-                        onChange={(e) => {
-                            handleInputChanged("last_update", e.target.value)
-                        }}
                     />
 
                     <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
