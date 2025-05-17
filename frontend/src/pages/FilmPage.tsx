@@ -4,6 +4,10 @@ import { Film } from "../interfaces/film";
 import React from "react";
 import FilmForm from "../components/film/FilmForm";
 import FilmList from "../components/film/FilmList";
+import FilmDetail from "../components/film/FilmDetail";
+
+// ... bei deinen Routes
+<Route path="/film/:id" element={<FilmDetail />} />
 
 const FilmPage = () => (
     <div>
