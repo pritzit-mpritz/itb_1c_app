@@ -113,7 +113,7 @@ filmRouter.post('/:film_id/actor/:actor_id', async (req: Request, res: Response)
         res.status(201).send({
             message: "Actor erfolgreich zu Film hinzugefügt.",
             filmId: filmId,
-            categoryId: actorId
+            actorId: actorId
         });
 
     } catch (error) {
