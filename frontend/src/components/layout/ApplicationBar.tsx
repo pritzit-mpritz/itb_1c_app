@@ -22,7 +22,8 @@ export interface MenuRouteItem {
 const pages: MenuRouteItem[] = [
     {label: 'Home', path: "/"},
     {label: 'Films', path: "/film"},
-    {label: 'Actors', path: "/actor"}
+    {label: 'Actors', path: "/actor"},
+    {label: 'Categories', path: "/category"}
 ];
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];

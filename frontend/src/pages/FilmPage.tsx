@@ -15,10 +15,20 @@ export enum FilmRating {
 }
 
 export interface InputType {
+    id: string;
     title: string;
+    description: string;
+    release_year: string;
+    rental_duration: string;
+    rental_rate: string;
     length: string;
+    replacement_cost: string;
+
     rating: FilmRating | "";
+    special_features: string;
 }
+
+
 
 export type ValidationFieldset = {
     [key in keyof Partial<InputType>]: {
@@ -34,18 +44,35 @@ export type ValidationFieldset = {
 };
 
 const defaultInput: InputType = {
+    id: "",
     title: "",
-    length: "",
-    rating: FilmRating.G
+    description: "",
+    release_year: "",
+    rental_duration: "",
+    rental_rate: "0.99",
+    length: "0",
+    replacement_cost: "20",
+    rating: FilmRating.G,
+    special_features: "",
+
 }
 
 const defaultValidation: ValidationFieldset = {
+
+    id: {validation: {
+            required: false,
+        },
+        valid: true
+    },
+
+
     title: {
         validation: {
             required: true,
             minLength: 3,
             maxLength: 100,
             pattern: /^[a-zA-Z0-9\s]+$/
+
         },
         message: "Titel muss zwischen 3 und 100 Zeichen lang sein.",
         valid: true
@@ -59,7 +86,51 @@ const defaultValidation: ValidationFieldset = {
         message: "Bitte eine gültige Länge angeben.",
         valid: true
     },
+
+    release_year: {
+        validation: {
+            required: true,
+            minLength: 4,
+            maxLength: 4,
+        },
+        message: "Eingabe muss 4 Zeichen lang sein",
+        valid: true
+    },
+    rental_duration:{
+        validation: {
+            required: true,
+            minLength: 1,
+            maxLength: 4,
+        },
+        message: "Eingabe muss zwischen 1 und 4 Zeichen lang sein",
+        valid: true
+    },
+    rental_rate:  {
+    validation: {
+    required: true,
+        minLength: 1,
+        maxLength: 5,
+},
+message: "Eingabe muss zwischen 1 und 5 Zeichen lang sein",
+    valid: true
+},
+    replacement_cost: {
+        validation: {
+    required: true,
+        minLength: 1,
+        maxLength: 3,
+},
+message: "Eingabe muss zwischen 1 und 3 Zeichen lang sein",
+    valid: true
+},
+
     rating: {
+        validation: {
+            required: false,
+        },
+        valid: true
+    },
+    special_features: {
         validation: {
             required: false,
         },
@@ -153,13 +224,51 @@ const FilmPage = () => {
             <Stack spacing={2} direction={"row"}>
                 <Stack spacing={2} justifyContent="flex-start" direction="column" alignItems="flex-start">
                     <TextField
-                        label="Titel"
+                        label="Film ID"
+                        variant="standard"
+                        value={input.id}
+                        onChange={(e) =>
+                            handleInputChanged("id", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Film Title"
                         variant="standard"
                         value={input.title}
-                        error={!validation.title?.valid}
-                        helperText={!validation.title?.valid && validation.title?.message}
                         onChange={(e) =>
                             handleInputChanged("title", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Beschreibung"
+                        variant="standard"
+                        value={input.description}
+                        onChange={(e) =>
+                            handleInputChanged("description", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Erscheinungs Jahr"
+                        variant="standard"
+                        value={input.release_year}
+                        onChange={(e) =>
+                            handleInputChanged("release_year", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Mietdauer"
+                        variant="standard"
+                        value={input.rental_duration}
+                        onChange={(e) =>
+                            handleInputChanged("rental_duration", e.target.value)
+                        }
+                    />
+                    <TextField
+                        label="Mietgebühr"
+                        variant="standard"
+                        value={input.rental_rate}
+                        onChange={(e) =>
+                            handleInputChanged("rental_rate", e.target.value)
                         }
                     />
 
@@ -167,15 +276,20 @@ const FilmPage = () => {
                         label={"Länge (in Minuten)"}
                         variant="standard"
                         value={input.length}
-                        error={!validation.length?.valid}
-                        helperText={!validation.length?.valid && validation.length?.message}
                         onChange={(e) => {
-                            if (!isNaN(Number(e.target.value)))
+                            if(!isNaN(Number(e.target.value)))
                                 handleInputChanged("length", e.target.value)
                         }}
                     />
-
-                    <FormControl fullWidth>
+                    <TextField
+                        label="Wiederbeschaffungskosten"
+                        variant="standard"
+                        value={input.replacement_cost}
+                        onChange={(e) =>
+                            handleInputChanged("replacement_cost", e.target.value)
+                        }
+                    />
+                    <FormControl variant={"standard"} fullWidth>
                         <InputLabel id="rating-select-label">Rating</InputLabel>
                         <Select
                             labelId={"rating-select-label"}
@@ -193,7 +307,14 @@ const FilmPage = () => {
                             }
                         </Select>
                     </FormControl>
-
+                    <TextField
+                        label="Besondere Merkmale"
+                        variant="standard"
+                        value={input.special_features}
+                        onChange={(e) =>
+                            handleInputChanged("special_features", e.target.value)
+                        }
+                    />
                     <Button variant="contained" onClick={handleSaveClicked}> Save</Button>
                 </Stack>
                 <JsonView value={input}/>
